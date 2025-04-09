@@ -1,35 +1,22 @@
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
 //* Routes
-
+import AuthRoutes from "./AuthRoutes";
+import ROUTES from "@/constants/routes";
 //* Layouts
-
+import DefaultLayout from "@/layouts/DefaultLayout";
 //* Lazy load pages
+const Home = lazy(() => import("@/pages/Home"));
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
     //* PUBLIC routes
-    // {
-    //   element: <PublicLayout />,
-    //   children: [
-    //     { index: true, path: config.routes.public.home, element: <Home /> },
-    //     {
-    //       path: config.routes.public.pricing,
-    //       element: <PricingPage />,
-    //     },
-    //     {
-    //       path: config.routes.auth.payment_method,
-    //       element: <AddPaymentMethod />,
-    //     },
-    //     {
-    //       path: config.routes.auth.checkout,
-    //       element: <Checkout />,
-    //     },
-    //   ],
-    // },
+    {
+      element: <DefaultLayout />,
+      children: [{ index: true, path: ROUTES.PUBLIC.HOME, element: <Home /> }],
+    },
     //* AUTH routes *
-    // ...AuthRoutes,
+    ...AuthRoutes,
     //**** PRIVATE routes ****
     // {
     //   element: <PersistToken />,
