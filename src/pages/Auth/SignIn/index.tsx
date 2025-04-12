@@ -70,7 +70,7 @@ export default function LoginForm() {
             </button>
           </div>
 
-          <div className={styles.footerText}>
+          <div className={`${styles.forgotPass} mb-10`}>
             <a href="#">Bạn quên mật khẩu?</a>
           </div>
 
