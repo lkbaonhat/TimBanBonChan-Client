@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect } from 'react';
-import HeroSection from '@/components/HeroSection';
-import ServiceSection from '@/components/ServiceSection';
-import PetListingSection from '@/components/PetListingSection';
-import AboutUsSection from '@/components/AboutUsSection';
-import CommunitySection from '@/components/CommunitySection';
-import WhatWeDoSection from '@/components/WhatWeDoSection';
-import VolunteerSection from '@/components/VolunteerSection';
-import PetCareSection from '@/components/PetCareSection';
-import PetSuppliesSection from '@/components/PetSuppliesSection';
+import HeroSection from '@/pages/Home/components/HeroSection';
+import ServiceSection from '@/pages/Home/components/ServiceSection';
+import PetListingSection from '@/pages/Home/components/PetListingSection';
+import AboutUsSection from '@/pages/Home/components/AboutUsSection';
+import CommunitySection from '@/pages/Home/components/CommunitySection';
+import WhatWeDoSection from '@/pages/Home/components/WhatWeDoSection';
+import VolunteerSection from '@/pages/Home/components/VolunteerSection';
+import PetCareSection from '@/pages/Home/components/PetCareSection';
+import PetSuppliesSection from '@/pages/Home/components/PetSuppliesSection';
 
 const HomePage = () => {
   useEffect(() => {
