@@ -28,7 +28,7 @@ const VolunteerSection = () => {
   }, []);
 
   return (
-    <section className='py-20 px-20 bg-gradient-to-r from-blue-50 to-blue-100 volunteer-section'>
+    <section className='py-20 px-20 bg-[#C5E2F0] volunteer-section'>
       <div className='container mx-auto'>
         <div className='flex flex-col md:flex-row items-center justify-between gap-12'>
           <div

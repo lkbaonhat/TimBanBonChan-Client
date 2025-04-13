@@ -24,17 +24,20 @@ const Header = () => {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-pink-50 py-4'
+        isScrolled ? 'bg-white shadow-md py-2' : 'bg-[#FFEDFA] py-4'
       }`}
     >
       <div className='container mx-auto px-4'>
         <div className='flex items-center justify-between'>
           {/* Logo */}
-          <Link to='/' className='flex items-center'>
+          <Link
+            to='/'
+            className='flex items-center mr-4 relative z-10 xl:left-30 left-0'
+          >
             <img
-              // src='/logo.png'
+              src='/logowithoutTitle.png'
               alt='Tìm Bạn Bốn Chân'
-              className='h-12 w-auto'
+              className='h-20 w-auto'
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = 'https://via.placeholder.com/120x50?text=Logo';
@@ -46,25 +49,25 @@ const Header = () => {
           <nav className='hidden md:flex items-center space-x-1'>
             <Link
               to='/community'
-              className='px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200'
+              className='px-4 py-2 text-gray-700 hover:text-white  rounded-full hover:bg-pink-300 transition-all duration-200'
             >
               Cộng đồng
             </Link>
             <Link
               to='/adopt'
-              className='px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200'
+              className='px-4 py-2 text-gray-700 hover:text-white  rounded-full hover:bg-pink-300 transition-all duration-200'
             >
               Nhận nuôi bé cưng
             </Link>
             <Link
               to='/search'
-              className='px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200'
+              className='px-4 py-2 text-gray-700 hover:text-white  rounded-full hover:bg-pink-300 transition-all duration-200'
             >
               Tìm nhà cho bé yêu
             </Link>
             <Link
               to='/care'
-              className='px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200'
+              className='px-4 py-2 text-gray-700 hover:text-white  rounded-full hover:bg-pink-300 transition-all duration-200'
             >
               Sổ tay chăm sóc
             </Link>

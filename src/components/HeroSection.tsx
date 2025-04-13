@@ -11,7 +11,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className='py-16 md:py-24 px-20 bg-gradient-to-b from-pink-50 to-white'>
+    <section className='py-16 md:py-24 px-20 bg-[#FFEDFA]'>
       <div className='container mx-auto'>
         <div className='flex flex-col md:flex-row items-center justify-between gap-10'>
           {/* Text Content */}

@@ -28,7 +28,7 @@ const PetCareSection = () => {
   }, []);
 
   return (
-    <section className='py-20 px-20 bg-gradient-to-b from-white to-pink-50 pet-care-section'>
+    <section className='py-20 px-20 bg-[#FFEDFA] pet-care-section'>
       <div className='container mx-auto'>
         <div className='flex flex-col md:flex-row items-center justify-between gap-12'>
           <div
