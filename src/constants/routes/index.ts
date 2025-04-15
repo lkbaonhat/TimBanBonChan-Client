@@ -1,8 +1,9 @@
 const ROUTES = {
   PUBLIC: {
-    HOME: "/",
-    SIGNIN: "/sign-in",
-    SIGNUP: "/sign-up",
+    HOME: '/',
+    SIGNIN: '/sign-in',
+    SIGNUP: '/sign-up',
+    COMMUNITY: '/community',
   },
   ADMIN: {},
 };

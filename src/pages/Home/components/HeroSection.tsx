@@ -24,10 +24,10 @@ const HeroSection = () => {
           >
             <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight'>
               <span className='text-gray-900'>CHIA SẺ </span>
-              <span className='text-blue-600 inline-block'>YÊU THƯƠNG,</span>
+              <span className='text-[#00509D] inline-block'>YÊU THƯƠNG,</span>
               <br />
               <span className='text-gray-900'>MANG LẠI </span>
-              <span className='text-pink-400 inline-block'>HẠNH PHÚC.</span>
+              <span className='text-[#FF99C0] inline-block'>HẠNH PHÚC.</span>
             </h1>
             <p className='text-gray-600 text-lg mb-10 max-w-lg leading-relaxed'>
               Mỗi thú cưng đều xứng đáng có một mái ấm. Hãy cùng chúng tôi thay
@@ -36,13 +36,13 @@ const HeroSection = () => {
             <div className='flex flex-wrap gap-4'>
               <Link
                 to='/adopt'
-                className='px-8 py-4 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
+                className='px-8 py-4 bg-[#00509D] text-white font-medium rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
               >
                 Nhận nuôi thú cưng
               </Link>
               <Link
                 to='/search'
-                className='px-8 py-4 bg-pink-300 text-white font-medium rounded-full hover:bg-pink-400 transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
+                className='px-8 py-4 bg-[#FF99C0] text-white font-medium rounded-full hover:bg-pink-400 transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
               >
                 Tìm nhà mới cho bé
               </Link>
