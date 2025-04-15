@@ -121,7 +121,7 @@ const VolunteerSection = () => {
             </ul> */}
             <div className='flex flex-wrap gap-4 justify-end'>
               <a
-                href='/volunteer/explore'
+                href='/volunteer'
                 className='px-8 py-4 bg-[#FF99C0] from-blue-500 to-blue-600 text-white font-medium rounded-full hover:shadow-lg transition-all duration-300'
               >
                 Khám phá thêm

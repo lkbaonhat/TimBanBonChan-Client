@@ -10,6 +10,7 @@ import PetDetail from "@/pages/PetDetail";
 import AdoptionForm from "@/pages/AdoptionForm";
 //* Lazy load pages
 const Home = lazy(() => import('@/pages/Home'));
+const VolunteerPage = lazy(() => import('@/pages/Volunteer'));
 const CommunityPage = lazy(() => import('@/pages/Community'));
 
 const RouterComponent = () => {
@@ -20,6 +21,7 @@ const RouterComponent = () => {
       children: [
         { index: true, path: ROUTES.PUBLIC.HOME, element: <Home /> },
         { path: ROUTES.PUBLIC.COMMUNITY, element: <CommunityPage /> },
+        { path: ROUTES.PUBLIC.VOLUNTEER, element: <VolunteerPage /> },
         { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
         { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
         { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
