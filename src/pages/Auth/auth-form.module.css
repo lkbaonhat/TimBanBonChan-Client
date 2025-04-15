@@ -11,7 +11,8 @@
     max-width: 677px;
     border-radius: 16px;
     padding: 4rem 3rem;
-    border: 1px solid #4b5563;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   }
   
   .logoContainer {

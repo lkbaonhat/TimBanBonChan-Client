@@ -5,6 +5,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import styles from "../auth-form.module.css";
 import { LOGO } from "@/constants/global";
+import { Link } from "react-router-dom";
+import ROUTES from "@/constants/routes";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -106,9 +108,9 @@ export default function SignUpForm() {
         >
           <p>
             Bạn đã có tài khoản?{" "}
-            <a href="#" className={styles.link}>
+            <Link to={ROUTES.PUBLIC.SIGNIN} className={styles.link}>
               Đăng nhập ngay
-            </a>
+            </Link>
           </p>
         </div>
       </div>
