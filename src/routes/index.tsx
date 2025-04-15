@@ -4,7 +4,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import AuthRoutes from './AuthRoutes';
 import ROUTES from '@/constants/routes';
 //* Layouts
-import DefaultLayout from '@/layouts/DefaultLayout';
+import DefaultLayout from "@/layouts/DefaultLayout";
+import ListPets from "@/pages/ListPets";
+import PetDetail from "@/pages/PetDetail";
+import AdoptionForm from "@/pages/AdoptionForm";
 //* Lazy load pages
 const Home = lazy(() => import('@/pages/Home'));
 const CommunityPage = lazy(() => import('@/pages/Community'));
@@ -17,6 +20,9 @@ const RouterComponent = () => {
       children: [
         { index: true, path: ROUTES.PUBLIC.HOME, element: <Home /> },
         { path: ROUTES.PUBLIC.COMMUNITY, element: <CommunityPage /> },
+        { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
+        { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
+        { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
       ],
     },
     //* AUTH routes *
