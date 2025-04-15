@@ -185,7 +185,7 @@ const PetListingSection = () => {
                             <img
                               src={pet.image || '/placeholder.svg'}
                               alt={pet.name}
-                              className='w-full h-150 object-cover'
+                              className='w-full h-150 object-cover pt-4'
                               style={{
                                 objectFit: 'cover',
                                 transition: 'transform 0.3s ease-in-out',
@@ -217,7 +217,7 @@ const PetListingSection = () => {
                                 <span>{pet.area}</span>
                               </div>
                             </div>
-                            <button className='w-full py-2 bg-pink-300 text-gray-800 rounded-full hover:bg-pink-400 transition-colors'>
+                            <button className='w-full py-2 bg-pink-300 text-white rounded-full hover:bg-pink-400 transition-colors'>
                               Nhận nuôi ngay
                             </button>
                           </div>

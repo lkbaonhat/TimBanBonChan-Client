@@ -23,7 +23,7 @@ const Header = () => {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md py-2" : "bg-pink-50 py-4"
+        isScrolled ? 'bg-white shadow-md py-2' : 'bg-[#FFEDFA] py-4'
       }`}
     >
       <div className="container mx-auto px-4">
@@ -44,8 +44,8 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
             <Link
-              to="/community"
-              className="px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              to='/community'
+              className='px-4 py-2 text-gray-700 hover:text-white  rounded-full hover:bg-pink-300 transition-all duration-200'
             >
               Cộng đồng
             </Link>

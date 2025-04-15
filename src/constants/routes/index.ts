@@ -6,6 +6,7 @@ const ROUTES = {
     LIST_PETS: "/pets",
     PET_DETAIL: "/pets/:id",
     ADOPTION_FORM: "/pets/:id/adoption-form",
+    COMMUNITY: '/community',
   },
   ADMIN: {},
 };

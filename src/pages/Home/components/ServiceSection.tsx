@@ -55,7 +55,7 @@ const ServiceSection = () => {
   }, []);
 
   return (
-    <section className='py-20 px-10 bg-gradient-to-b from-white to-pink-50'>
+    <section className='py-20 px-10 bg-gradient-to-b from-[#FFEDFA] to-pink-50'>
       <div className='container mx-auto'>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
           {services.map((service, index) => (
