@@ -15,25 +15,25 @@ const HomePage = () => {
   useEffect(() => {
     // Add scroll animation
     const handleScroll = () => {
-      const elements = document.querySelectorAll('.animate-on-scroll');
+      const elements = document.querySelectorAll(".animate-on-scroll");
       elements.forEach((element) => {
         const rect = element.getBoundingClientRect();
         const isVisible = rect.top < window.innerHeight - 100;
         if (isVisible) {
-          element.classList.add('animate-fade-in');
+          element.classList.add("animate-fade-in");
         }
       });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     // Trigger once on load
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className='min-h-screen bg-pink-50 '>
+    <div className="min-h-screen bg-pink-50 ">
       <main>
         <HeroSection />
         <ServiceSection />

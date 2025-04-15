@@ -5,6 +5,8 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "../auth-form.module.css";
 import { LOGO } from "@/constants/global";
+import { Link } from "react-router-dom";
+import ROUTES from "@/constants/routes";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -70,16 +72,16 @@ export default function LoginForm() {
             </button>
           </div>
 
-          <div className={styles.footerText}>
+          <div className={`${styles.forgotPass} mb-10`}>
             <a href="#">Bạn quên mật khẩu?</a>
           </div>
 
           <div className={styles.footerText}>
             <p>
               Bạn chưa có tài khoản?{" "}
-              <a href="#" className={styles.link}>
+              <Link to={ROUTES.PUBLIC.SIGNUP} className={styles.link}>
                 Đăng ký ngay
-              </a>
+              </Link>
             </p>
           </div>
         </div>
