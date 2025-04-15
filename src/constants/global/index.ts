@@ -1,6 +1,8 @@
 const LOGO = {
   NO_TEXT:
     "https://res.cloudinary.com/drcj6f81i/image/upload/v1744127084/lctvpmmznvhplxx9ogkp.png",
+  WITH_TEXT:
+    "https://res.cloudinary.com/drcj6f81i/image/upload/v1744256588/c5blrc7tcamlktxpkyyd.png",
   FB_LOGO:
     "https://res.cloudinary.com/drcj6f81i/image/upload/v1744169172/ewi58dubi0wwtystrwtw.png",
   GG_LOGO:

@@ -3,6 +3,9 @@ const ROUTES = {
     HOME: "/",
     SIGNIN: "/sign-in",
     SIGNUP: "/sign-up",
+    LIST_PETS: "/pets",
+    PET_DETAIL: "/pets/:id",
+    ADOPTION_FORM: "/pets/:id/adoption-form",
   },
   ADMIN: {},
 };
