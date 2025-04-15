@@ -1,92 +1,126 @@
 'use client';
 
-import { useEffect } from 'react';
-import Breadcrumb from './components/Breadcrumb';
-import HeroSection from './components/HeroSection';
-import VolunteerBenefits from './components/VolunteerBenefits';
-import FAQ from './components/FAQ';
-import ContactForm from './components/ContactForm';
-import ZeroSection from './components/ZeroSection';
-import ServiceSection from '../Home/components/ServiceSection';
-import VolunteerRoles from './components/VolunteerRoles';
+import { useEffect, useRef } from 'react';
+import CoreValues from './components/CoreValues';
 
-const CommunityPage = () => {
-  // Add the pet illustration image
-  const petIllustration =
-    'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-sW9TtLFsnCCyae6qgZYe14UKBOyUlP.png';
+import Breadcrumb from '../Volunteer/components/Breadcrumb';
+import WhatWeDoSection from '../Home/components/WhatWeDoSection';
+import VolunteerSection from '../Home/components/VolunteerSection';
+
+const AboutUsPage = () => {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const taglineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Add scroll animation classes
-    const animateOnScroll = () => {
-      const elements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-fadeIn');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-      elements.forEach((element) => {
-        const elementPosition = element.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
+    if (titleRef.current) {
+      observer.observe(titleRef.current);
+    }
 
-        if (elementPosition < windowHeight - 100) {
-          element.classList.add('animate-fadeIn');
-        }
-      });
-    };
+    if (descriptionRef.current) {
+      observer.observe(descriptionRef.current);
+    }
 
-    window.addEventListener('scroll', animateOnScroll);
-    // Initial check for elements in view on page load
-    animateOnScroll();
+    if (imageRef.current) {
+      observer.observe(imageRef.current);
+    }
+
+    if (taglineRef.current) {
+      observer.observe(taglineRef.current);
+    }
 
     return () => {
-      window.removeEventListener('scroll', animateOnScroll);
+      observer.disconnect();
     };
   }, []);
 
   return (
-    <div className=' min-h-screen flex flex-col bg-[#FFEDFA]'>
-      <main className='flex-grow '>
+    <div className='min-h-screen flex flex-col  bg-opacity-50 bg-stripes'>
+      <main className='flex-grow'>
         <div className='container mx-auto px-4 md:px-8'>
-          <Breadcrumb
-            items={[
-              { label: 'Cộng đồng', href: '/cong-dong' },
-              { label: 'Tình nguyện viên', href: '/tinh-nguyen-vien' },
-            ]}
-          />
+          <Breadcrumb items={[{ label: 'Cộng đồng', href: '/community' }]} />
         </div>
-        <div className='px-12'>
-          <HeroSection
-            title='Trở thành tình nguyện viên'
-            subtitle='Mỗi thú cưng đều xứng đáng có một mái ấm. Hãy cùng chúng tôi thay đổi cuộc sống của các bé'
-            buttonText='Đăng ký ngay'
-            buttonLink='/dang-ky'
-            imageSrc='multipaws.png'
-          />
 
-          <VolunteerRoles />
-
-          <ServiceSection />
-
-          <div className='py-12 px-4 md:px-8 bg-gradient-to-b to-[#FFEDFA] from-pink-50'>
-            <div className='container mx-auto'>
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-                <div className='col-span-2'>
-                  <FAQ />
-                </div>
-                <div className='col-span-1'>
-                  <ContactForm />
-                </div>
+        <section className='py-12 px-20'>
+          <div className='container mx-auto'>
+            <div className='flex flex-col md:flex-row items-center'>
+              <div className='md:w-1/2 mb-8 md:mb-0'>
+                <h1
+                  ref={titleRef}
+                  className='text-4xl font-bold mb-4 opacity-0 transition-all duration-700'
+                  style={{
+                    transitionDelay: '300ms',
+                    animation: 'fadeIn 1s ease-in-out',
+                    animationDelay: '0.3s',
+                    animationFillMode: 'forwards',
+                    animationDuration: '1s',
+                    animationTimingFunction: 'ease-in-out',
+                    animationName: 'fadeIn',
+                    fontSize: '2.5rem',
+                    lineHeight: '1.2',
+                    color: '#333',
+                    textAlign: 'left',
+                    marginBottom: '1rem',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Tìm Bạn Bốn Chân
+                </h1>
+                <p
+                  ref={descriptionRef}
+                  className='text-gray-700 mb-6 opacity-0 transition-all duration-700 w-3/4'
+                >
+                  Tìm Bạn Bốn Chân là một cộng đồng được tạo ra để kết nối những
+                  người yêu thương động vật, nhằm hướng đến mục tiêu tìm kiếm
+                  những ngôi nhà mới yêu thương và an toàn cho thú cưng.
+                </p>
+              </div>
+              <div className='md:w-1/2'>
+                <img
+                  ref={imageRef}
+                  src='cattouchdog.png'
+                  alt='Dog and cat together'
+                  className='rounded-lg opacity-0 transition-all duration-700'
+                />
               </div>
             </div>
           </div>
+        </section>
 
-          <ZeroSection
-            title='Tham gia '
-            subtitle='Mỗi thú cưng đều xứng đáng có một mái ấm. Hãy cùng chúng tôi thay đổi cuộc sống của các bé'
-            buttonText='Đăng ký ngay'
-            buttonLink='/dang-ky'
-            imageSrc={petIllustration}
-          />
+        <div
+          ref={taglineRef}
+          className='py-12 px-4 md:px-8 text-center opacity-0 transition-all duration-700'
+        >
+          <h2 className='text-5xl font-bold'>
+            CHIA SẺ <span className='text-[#00509D]'>YÊU THƯƠNG,</span>
+            <br />
+            MANG LẠI <span className='text-[#FF99C0]'>HẠNH PHÚC.</span>
+          </h2>
         </div>
+
+        <CoreValues />
+
+        <WhatWeDoSection />
+
+        <VolunteerSection />
       </main>
     </div>
   );
 };
 
-export default CommunityPage;
+export default AboutUsPage;

@@ -7,6 +7,7 @@ import ROUTES from '@/constants/routes';
 import DefaultLayout from '@/layouts/DefaultLayout';
 //* Lazy load pages
 const Home = lazy(() => import('@/pages/Home'));
+const VolunteerPage = lazy(() => import('@/pages/Volunteer'));
 const CommunityPage = lazy(() => import('@/pages/Community'));
 
 const RouterComponent = () => {
@@ -17,6 +18,7 @@ const RouterComponent = () => {
       children: [
         { index: true, path: ROUTES.PUBLIC.HOME, element: <Home /> },
         { path: ROUTES.PUBLIC.COMMUNITY, element: <CommunityPage /> },
+        { path: ROUTES.PUBLIC.VOLUNTEER, element: <VolunteerPage /> },
       ],
     },
     //* AUTH routes *
