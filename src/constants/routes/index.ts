@@ -6,8 +6,10 @@ const ROUTES = {
     LIST_PETS: "/pets",
     PET_DETAIL: "/pets/:id",
     ADOPTION_FORM: "/pets/:id/adoption-form",
-    VOLUNTEER: '/volunteer',
-    COMMUNITY: '/community',
+    VOLUNTEER: "/volunteer",
+    COMMUNITY: "/community",
+    REGISTRATION_SUCCESS: "/registration-success",
+    CONFIRM_EMAIL: "/confirm-email",
   },
   ADMIN: {},
 };
