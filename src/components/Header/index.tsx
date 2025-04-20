@@ -1,11 +1,55 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, Search, ShoppingCart, Phone, Bell, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  X,
+  Search,
+  ShoppingCart,
+  Phone,
+  Bell,
+  User,
+  LogOut,
+  Settings,
+  UserCircle,
+} from "lucide-react";
 import { LOGO } from "@/constants/global";
+import ROUTES from "@/constants/routes";
+import { useSelector, useDispatch } from "react-redux";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Get authentication state from Redux
+  const isAuthenticated = useSelector(
+    (state: any) => state.auth.isAuthenticated
+  );
+
+  // Get user data from localStorage if available
+  const getUserData = () => {
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      try {
+        return JSON.parse(userData);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+    return null;
+  };
+
+  const userData = getUserData();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,10 +64,95 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleLogout = () => {
+    // Clear local storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userData");
+
+    // Update Redux state
+    dispatch({ type: "SIGN_OUT" });
+
+    // Redirect to home page
+    navigate(ROUTES.PUBLIC.HOME);
+  };
+
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (userData?.fullName) {
+      return userData.fullName
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2);
+    }
+    return "U";
+  };
+
+  // Render auth button or user avatar based on authentication status
+  const renderAuthSection = () => {
+    if (isAuthenticated) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="focus:outline-none" aria-label="User menu">
+              <Avatar className="h-10 w-10 cursor-pointer border-2 border-white hover:border-blue-200 transition-all">
+                <AvatarImage
+                  src={userData?.avatarUrl || "/placeholder.svg"}
+                  alt={userData?.fullName || "User"}
+                />
+                <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="flex flex-col">
+                <span className="font-medium">
+                  {userData?.fullName || "Người dùng"}
+                </span>
+                <span className="text-xs text-gray-500 truncate">
+                  {userData?.email || ""}
+                </span>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/profile")}>
+              <UserCircle className="mr-2 h-4 w-4" />
+              <span>Hồ sơ cá nhân</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/settings")}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Cài đặt</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Đăng xuất</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    return (
+      <Link
+        to={ROUTES.PUBLIC.SIGNIN}
+        aria-label="Account"
+        className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center"
+      >
+        <User size={18} className="mr-2" />
+        <span>Đăng nhập</span>
+      </Link>
+    );
+  };
+
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-[#FFEDFA] py-4'
+        isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
       }`}
     >
       <div className="container mx-auto px-4">
@@ -31,7 +160,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img
-              src={LOGO.WITH_TEXT}
+              src={LOGO.WITH_TEXT || "/placeholder.svg"}
               alt="Tìm Bạn Bốn Chân"
               className="h-24 w-auto"
               onError={(e) => {
@@ -44,8 +173,8 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
             <Link
-              to='/community'
-              className='px-4 py-2 text-gray-700 hover:text-white  rounded-full hover:bg-pink-300 transition-all duration-200'
+              to="/community"
+              className="px-4 py-2 text-gray-700 hover:text-white rounded-full hover:bg-pink-300 transition-all duration-200"
             >
               Cộng đồng
             </Link>
@@ -95,13 +224,7 @@ const Header = () => {
             >
               <Bell size={20} />
             </button>
-            <button
-              aria-label="Account"
-              className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center"
-            >
-              <User size={18} className="mr-2" />
-              <span>Đăng nhập</span>
-            </button>
+            {renderAuthSection()}
           </div>
 
           {/* Mobile Menu Button */}
@@ -112,6 +235,9 @@ const Header = () => {
             >
               <Search size={20} />
             </button>
+            {isAuthenticated && (
+              <div className="mr-2">{renderAuthSection()}</div>
+            )}
             <button
               className="p-2 text-gray-700 ml-1"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -174,17 +300,17 @@ const Header = () => {
                 >
                   <Bell size={20} />
                 </button>
-                <button
-                  aria-label="Account"
-                  className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <User size={20} />
-                </button>
               </div>
 
-              <button className="mt-3 w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                Đăng nhập
-              </button>
+              {!isAuthenticated && (
+                <Link
+                  to={ROUTES.PUBLIC.SIGNIN}
+                  className="mt-3 w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Đăng nhập
+                </Link>
+              )}
             </nav>
           </div>
         )}
