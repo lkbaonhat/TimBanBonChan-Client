@@ -1,12 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initialState } from "./state";
 
-const editorSlice = createSlice({
+const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
+  },
 });
 
-export const {} = editorSlice.actions;
+export const { setIsAuthenticated } = authSlice.actions;
 
-export default editorSlice.reducer;
+export { authSlice };
+export default authSlice.reducer;
