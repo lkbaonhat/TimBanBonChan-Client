@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const AboutUsSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,7 +15,7 @@ const AboutUsSection = () => {
       { threshold: 0.1 }
     );
 
-    const element = document.querySelector('.about-section');
+    const element = document.querySelector(".about-section");
     if (element) {
       observer.observe(element);
     }
@@ -28,27 +28,27 @@ const AboutUsSection = () => {
   }, []);
 
   return (
-    <section className='py-20 px-10 bg-gradient-to-b from-pink-50  to-[#FFEDFA] about-section'>
-      <div className='container mx-auto'>
-        <div className='max-w-4xl mx-auto text-center'>
-          <h2 className='text-3xl md:text-4xl font-bold mb-10 relative inline-block'>
+    <section className="py-20 px-10 bg-gradient-to-b from-pink-50  to-[#FFEDFA] about-section">
+      <div className="container mx-auto">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-10 relative inline-block">
             Chúng tôi là ai?
-            {/* <div className='absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-blue-500'></div> */}
+            {/* <div className='absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-[#0053A3]'></div> */}
           </h2>
 
-          <div className='flex flex-col items-center'>
+          <div className="flex flex-col items-center">
             <div
               className={`mb-5 transition-all duration-1000 transform ${
                 isVisible
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-10 opacity-0'
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-10 opacity-0"
               }`}
             >
-              <div className='relative'>
+              <div className="relative">
                 <img
-                  src='logo.png'
-                  alt='Tìm Bạn Bốn Chân Logo'
-                  className='w-80 h-50 mx-auto'
+                  src="logo.png"
+                  alt="Tìm Bạn Bốn Chân Logo"
+                  className="w-80 h-50 mx-auto"
                 />
                 {/* <div className='absolute -bottom-2 -right-2 w-12 h-12 bg-pink-300 rounded-full'></div>
                 <div className='absolute -top-2 -left-2 w-8 h-8 bg-blue-300 rounded-full'></div> */}
@@ -58,8 +58,8 @@ const AboutUsSection = () => {
             <p
               className={`text-lg text-center text-gray-600 leading-relaxed mb-8 transition-all duration-1000 delay-300 transform ${
                 isVisible
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-10 opacity-0'
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-10 opacity-0"
               }`}
             >
               Cộng đồng "Tìm Bạn Bốn Chân" đã được tạo ra để kết nối giữa người

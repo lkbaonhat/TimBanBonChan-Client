@@ -5,6 +5,9 @@ const ROUTES = {
     SIGNUP: '/sign-up',
     VOLUNTEER: '/volunteer',
     COMMUNITY: '/community',
+    PETCARE: '/pet-care',
+    PETCARE_DETAIL: '/pet-care/:id',
+    PETCARE_CREATE: '/pet-care/create',
   },
   ADMIN: {},
 };
