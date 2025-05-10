@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { Link } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
 
 interface HeroSectionProps {
   title: string;
@@ -30,59 +31,62 @@ const HeroSection = ({
     const imageElement = imageRef.current;
 
     if (titleElement && textElement && buttonElement && imageElement) {
-      titleElement.classList.add('animate-fadeInUp');
+      titleElement.classList.add("animate-fadeInUp");
 
       setTimeout(() => {
-        textElement.classList.add('animate-fadeInUp');
+        textElement.classList.add("animate-fadeInUp");
       }, 200);
 
       setTimeout(() => {
-        buttonElement.classList.add('animate-fadeInUp');
+        buttonElement.classList.add("animate-fadeInUp");
       }, 400);
 
       setTimeout(() => {
-        imageElement.classList.add('animate-fadeInRight');
+        imageElement.classList.add("animate-fadeInRight");
       }, 300);
     }
   }, []);
 
   // Split the title to highlight "tình nguyện viên"
-  const titleParts = title.split('tình nguyện viên');
+  const titleParts = title.split("tình nguyện viên");
 
   return (
-    <section className='py-12 px-4 md:px-8'>
-      <div className='container mx-auto'>
-        <div className='flex flex-col md:flex-row items-center'>
-          <div className='md:w-1/2 mb-8 md:mb-0'>
+    <section className="py-12 px-4 md:px-8 bg-[#FFEDFA]">
+      <div className="container mx-auto">
+        <div className="flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 mb-8 md:mb-0">
             <h1
               ref={titleRef}
-              className='text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight'
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
             >
               {titleParts[0]}
               <br />
-              <span className='text-[#00509D] '>tình nguyện viên</span>
+              <span className="text-[#0053A3]">tình nguyện viên</span>
               {titleParts[1]}
             </h1>
             <p
               ref={textRef}
-              className='text-gray-600 text-lg mb-10 max-w-lg leading-relaxed'
+              className="text-gray-600 text-lg mb-10 max-w-lg leading-relaxed"
             >
               {subtitle}
             </p>
-            <Link
+            <Button
+              asChild
+              variant="pink"
+              shape="pill"
+              size="lg"
               ref={buttonRef}
-              to={buttonLink}
-              className='px-8 py-4 bg-[#FF99C0] text-white font-medium rounded-full hover:bg-pink-400 transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
+              className="transition-all duration-700"
             >
-              {buttonText}
-            </Link>
+              <Link to={buttonLink}>{buttonText}</Link>
+            </Button>
           </div>
-          <div className='md:w-1/2'>
+          <div className="md:w-1/2">
             <img
               ref={imageRef}
-              src={imageSrc || '/placeholder.svg'}
-              alt='Pets illustration'
-              className='rounded-lg  opacity-0 transition-all duration-700'
+              src={imageSrc || "multipaws.png"}
+              alt="Pets illustration"
+              className="rounded-lg transition-all duration-700"
             />
           </div>
         </div>

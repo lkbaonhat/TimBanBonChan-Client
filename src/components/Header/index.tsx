@@ -274,7 +274,7 @@ const Header = () => {
                 Tìm nhà cho bé yêu
               </Link>
               <Link
-                to="/care"
+                to="/pet-care"
                 className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
