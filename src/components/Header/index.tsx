@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   Menu,
   X,
@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import styles from "./header.module.scss";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -170,32 +171,58 @@ const Header = () => {
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <Link
+          {/* Desktop Navigation */}         
+          <nav className={`hidden md:flex items-center space-x-4 ${styles.navbar}`}>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                }`
+              }
+            >
+              Trang chủ
+            </NavLink>
+            <NavLink
               to="/community"
-              className="px-4 py-2 text-gray-700 hover:text-white rounded-full hover:bg-pink-300 transition-all duration-200"
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                }`
+              }
             >
               Cộng đồng
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to="/adopt"
-              className="px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                }`
+              }
             >
               Nhận nuôi bé cưng
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to="/search"
-              className="px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                }`
+              }
             >
               Tìm nhà cho bé yêu
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to="/care"
-              className="px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className={({ isActive }) =>
+                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                }`
+              }
             >
               Sổ tay chăm sóc
-            </Link>
+            </NavLink>
           </nav>
 
           {/* Action Icons */}
