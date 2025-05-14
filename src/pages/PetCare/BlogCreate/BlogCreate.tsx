@@ -186,11 +186,17 @@ const BlogCreate = () => {
             <Button
               type="button"
               variant="blue"
+              animation={"none"}
               onClick={() => navigate("/pet-care")}
             >
               Hủy
             </Button>
-            <Button type="submit" variant="pink" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              variant="pink"
+              disabled={isSubmitting}
+              animation={"none"}
+            >
               {isSubmitting ? "Đang lưu..." : "Lưu bài viết"}
             </Button>
           </div>

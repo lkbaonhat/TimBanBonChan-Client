@@ -8,17 +8,26 @@ import DefaultLayout from "@layouts/DefaultLayout";
 //* Lazy load pages
 const Home = lazy(() => import("@pages/Home"));
 const VolunteerPage = lazy(() => import("@pages/Volunteer"));
+const VolunteerForm = lazy(
+  () => import("@pages/Volunteer/VolunteerForm/index")
+);
 const CommunityPage = lazy(() => import("@pages/Community"));
 const PetCare = lazy(() => import("@/pages/PetCare"));
-const ArticleDetail = lazy(() => import("@/pages/PetCare/ArticleDetail"));
+const ArticleDetail = lazy(
+  () => import("@/pages/PetCare/ArticleDetail/ArticleDetail")
+);
+const ClinicDetail = lazy(
+  () => import("@/pages/PetCare/ClinicDetail/ClinicDetail")
+);
 const BlogCreate = lazy(() => import("@/pages/PetCare/BlogCreate/BlogCreate"));
 const ListPets = lazy(() => import("@pages/ListPets"));
-const PetDetail = lazy(() => import("@pages/PetDetail"));
-const AdoptionForm = lazy(() => import("@pages/AdoptionForm"));
+const PetDetail = lazy(() => import("@/pages/ListPets/PetDetail"));
+const AdoptionForm = lazy(() => import("@/pages/ListPets/AdoptionForm"));
 const ConfirmEmail = lazy(() => import("@pages/Auth/ConfirmEmail"));
 const RegistrationSuccess = lazy(
   () => import("@pages/Auth/RegistrationSuccess")
 );
+const ListClinics = lazy(() => import("@/pages/PetCare/ListClinics"));
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -31,6 +40,8 @@ const RouterComponent = () => {
         { path: ROUTES.PUBLIC.VOLUNTEER, element: <VolunteerPage /> },
         { path: ROUTES.PUBLIC.PETCARE, element: <PetCare /> },
         { path: ROUTES.PUBLIC.PETCARE_DETAIL, element: <ArticleDetail /> },
+        { path: ROUTES.PUBLIC.CLINICS, element: <ListClinics /> },
+        { path: ROUTES.PUBLIC.CLINIC_DETAIL, element: <ClinicDetail /> },
         { path: ROUTES.PUBLIC.PETCARE_CREATE, element: <BlogCreate /> },
         { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
         { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
@@ -40,6 +51,7 @@ const RouterComponent = () => {
           element: <RegistrationSuccess />,
         },
         { path: ROUTES.PUBLIC.CONFIRM_EMAIL, element: <ConfirmEmail /> },
+        { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
       ],
     },
     //* AUTH routes *
