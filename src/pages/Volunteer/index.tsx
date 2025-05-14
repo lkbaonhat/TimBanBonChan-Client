@@ -57,7 +57,7 @@ const VolunteerPage = () => {
               title="Trở thành tình nguyện viên"
               subtitle="Mỗi thú cưng đều xứng đáng có một mái ấm. Hãy cùng chúng tôi thay đổi cuộc sống của các bé"
               buttonText="Đăng ký ngay"
-              buttonLink="/dang-ky"
+              buttonLink="/volunteer/registration"
               imageSrc="multipaws.png"
             />
           </div>

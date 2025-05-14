@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Card from "@/components/Card/Card";
 import { Button } from "@/components/ui/button";
+import DotPagination from "@/components/Pagination/DotPagination";
 
 const petCategories = [
   { id: "dog", label: "Chó" },
@@ -128,13 +129,13 @@ const PetListingSection = () => {
 
         {/* Category Tabs */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-full p-1 cursor-pointer">
+          <div className="inline-flex rounded-full p-1 cursor-pointer gap-2">
             {petCategories.map((category) => (
               <Button
                 key={category.id}
                 variant={activeCategory === category.id ? "blue" : "ghost"}
                 shape="pill"
-                size="sm"
+                size="lg"
                 animation="none"
                 onClick={() => {
                   setActiveCategory(category.id);
@@ -143,8 +144,8 @@ const PetListingSection = () => {
                 }}
                 className={
                   activeCategory === category.id
-                    ? "bg-blue-200 text-blue-800 font-medium"
-                    : "text-gray-600 hover:text-blue-600"
+                    ? "bg-[#c5e2f0]  text-grey hover:text-grey hover:bg-[#bae2f7]  font-medium"
+                    : " "
                 }
               >
                 {category.label}
@@ -227,29 +228,21 @@ const PetListingSection = () => {
           </div>
         </div>
 
-        {/* Dots Indicator */}
-        <div className="flex justify-center mt-8 space-x-2">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <Button
-              key={index}
-              variant="ghost"
-              animation="none"
-              onClick={() => handleDotClick(index)}
-              className={`p-0 h-3 min-w-0 ${
-                activeDot === index ? "bg-blue-500 w-6" : "bg-gray-300 w-3"
-              } rounded-full transition-all duration-300`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+        {/* Replace Dots Indicator with DotPagination component */}
+        <DotPagination
+          currentPage={activeDot}
+          totalPages={totalPages}
+          onPageChange={handleDotClick}
+          className="mt-8"
+        />
 
         <div className="text-right mt-6">
           <Button
             asChild
             variant="link"
-            className="text-blue-600 font-medium hover:text-blue-800 transition-colors"
+            className="text-[#0053a3] font-medium  transition-colors"
           >
-            <a href="/pets" className="inline-flex items-center">
+            <a href="/pets" className="inline-none items-center ">
               Xem tất cả
               <ChevronRight size={16} className="ml-1" />
             </a>

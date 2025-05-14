@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { PetCard } from "../PetCard";
-import { PetFilters } from "../PetFilter";
-import { Pagination } from "../Pagination";
+import PageHeader from "@/components/ContentHeader/ContentHeader";
+import Filter, { FilterConfig } from "@/components/Filter/Filter";
+import Pagination from "@/components/Pagination/Pagination";
 import styles from "./pet-gallery.module.css";
 
 // Import pet images
@@ -14,6 +15,47 @@ import beautyImg from "../../../../../public/Danny.png";
 
 export default function PetGallery() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [petType, setPetType] = useState("all");
+  const [age, setAge] = useState("all");
+  const [gender, setGender] = useState("all");
+
+  // Define filter configurations
+  const filterConfigs: FilterConfig[] = [
+    {
+      id: "petType",
+      placeholder: "Loại",
+      value: petType,
+      onChange: setPetType,
+      options: [
+        { id: "all", label: "Tất cả", value: "all" },
+        { id: "dog", label: "Chó", value: "dog" },
+        { id: "cat", label: "Mèo", value: "cat" },
+      ],
+    },
+    {
+      id: "age",
+      placeholder: "Tuổi",
+      value: age,
+      onChange: setAge,
+      options: [
+        { id: "all", label: "Tất cả", value: "all" },
+        { id: "puppy", label: "Nhỏ", value: "puppy" },
+        { id: "adult", label: "Trưởng thành", value: "adult" },
+        { id: "senior", label: "Già", value: "senior" },
+      ],
+    },
+    {
+      id: "gender",
+      placeholder: "Giới tính",
+      value: gender,
+      onChange: setGender,
+      options: [
+        { id: "all", label: "Tất cả", value: "all" },
+        { id: "male", label: "Đực", value: "male" },
+        { id: "female", label: "Cái", value: "female" },
+      ],
+    },
+  ];
 
   const pets: Pet[] = [
     {
@@ -66,24 +108,35 @@ export default function PetGallery() {
     },
   ];
 
+  // Apply filters
+  const filteredPets = pets.filter((pet) => {
+    if (petType !== "all" && pet.gender !== petType) return false;
+    if (age !== "all" && pet.status !== age) return false;
+    if (gender !== "all" && pet.gender !== gender) return false;
+    return true;
+  });
+
+  const totalPages = Math.ceil(filteredPets.length / 6);
+
   return (
     <div className={styles.container}>
-      <div className="flex justify-between">
-        <h1 className="text-3xl font-bold mb-8">Làm quen với các bé</h1>
-
-        <PetFilters />
+      <div className="flex justify-between items-center mb-8">
+        <PageHeader title="Làm quen với các bé" />
+        <Filter filters={filterConfigs} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {pets.map((pet) => (
-          <PetCard key={pet.id} pet={pet} />
-        ))}
+        {filteredPets
+          .slice((currentPage - 1) * 6, currentPage * 6)
+          .map((pet) => (
+            <PetCard key={pet.id} pet={pet} />
+          ))}
       </div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8">
         <Pagination
           currentPage={currentPage}
-          totalPages={3}
+          totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
       </div>

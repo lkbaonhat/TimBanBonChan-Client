@@ -27,7 +27,7 @@ export default function Breadcrumb({
   const lastIndex = items.length - 1;
 
   return (
-    <div className={`container mx-auto px-4 ${className}`}>
+    <div className={`container mx-auto  ${className}`}>
       <nav className="flex py-4" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-3">
           {/* Home link */}
