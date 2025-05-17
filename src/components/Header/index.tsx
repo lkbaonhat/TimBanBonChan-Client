@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import styles from "./header.module.scss";
+import { toast } from "sonner";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -66,15 +67,13 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    // Clear local storage
-    localStorage.removeItem("token");
-    localStorage.removeItem("userData");
-
     // Update Redux state
-    dispatch({ type: "SIGN_OUT" });
-
-    // Redirect to home page
-    navigate(ROUTES.PUBLIC.HOME);
+    dispatch({ type: "LOGOUT", callback: (isSuccess: boolean): void => {
+      if (isSuccess) {
+        toast.success("Đăng xuất thành công");
+        navigate(ROUTES.PUBLIC.HOME);
+      } 
+    } });
   };
 
   // Get user initials for avatar fallback

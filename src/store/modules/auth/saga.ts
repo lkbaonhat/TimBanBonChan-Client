@@ -3,22 +3,33 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { authSlice } from "./slice";
 
+
 function* signInSaga(
-  action: PayloadAction<{ email: string; password: string }>
+  action: PayloadAction<{ email: string; password: string }> & { callback: (success: boolean) => void }, 
 ): Generator {
   try {
     const response = yield call(authService.signIn, action.payload);
     if (response.status === 200) {
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("accessToken", response.data.token);
       yield put(authSlice.actions.setIsAuthenticated(true));
+      action.callback(true);
     }
-
-    console.log(response.data);
-  } catch (error) {
-    console.error("Error in signInSaga:", error);
+  } catch (error: any) {
+    if(error.response.status === 400) {
+      action.callback(false);
+    } else {
+      console.error("Error in signInSaga:", error);
+    }
   }
+}
+
+function* logoutSaga(action: {callback: (isSuccess: boolean) => void}): Generator {
+  localStorage.removeItem("accessToken");
+  yield put(authSlice.actions.setIsAuthenticated(false));
+  action.callback(true);
 }
 
 export function* authSaga() {
   yield takeLatest("SIGN_IN", signInSaga);
+  yield takeLatest("LOGOUT", logoutSaga);
 }

@@ -1,12 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initialState } from "./state";
 
-const editorSlice = createSlice({
+const globalSlice = createSlice({
   name: "global",
   initialState,
-  reducers: {},
+  reducers: {
+    setListPet: (state, action: PayloadAction<any[]>) => {
+      state.listPet = action.payload;
+    }
+  },
 });
 
-export const {} = editorSlice.actions;
+export const { setListPet } = globalSlice.actions;
 
-export default editorSlice.reducer;
+export { globalSlice };
+export default globalSlice.reducer;
