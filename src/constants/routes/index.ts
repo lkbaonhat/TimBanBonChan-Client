@@ -14,6 +14,13 @@ const ROUTES = {
     REGISTRATION_SUCCESS: "/registration-success",
     CONFIRM_EMAIL: "/confirm-email",
   },
+  STAFF: {
+    HOME: '/staff',
+    MANAGE_PETS: '/staff/manage-pets',
+    ADD_PET: '/staff/manage-pets/new',
+    EDIT_PET: '/staff/manage-pets/:id/edit',
+    PET_DETAIL: '/staff/manage-pets/:slug',
+  },
   ADMIN: {},
 };
 
