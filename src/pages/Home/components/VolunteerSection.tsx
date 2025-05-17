@@ -79,7 +79,7 @@ const VolunteerSection = () => {
                 shape="pill"
                 className="hover:shadow-lg transition-all duration-300 px-8 py-4"
               >
-                <a href="/volunteer/register">Đăng ký ngay</a>
+                <a href="/volunteer/registration">Đăng ký ngay</a>
               </Button>
             </div>
           </div>
