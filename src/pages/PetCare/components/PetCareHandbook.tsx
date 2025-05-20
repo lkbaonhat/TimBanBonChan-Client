@@ -74,11 +74,11 @@ export default function PetCareHandbook() {
             <input
               type="text"
               placeholder="Tìm kiếm..."
-              className="w-full md:w-80 h-10 pl-4 pr-10 rounded-full bg-[#ffd7e6] border-none focus:outline-none focus:ring-2 focus:ring-pink-300"
+              className="w-full md:w-80 h-10 pl-4 pr-10 rounded-full bg-pink-50 border-none focus:outline-none focus:ring-2 focus:ring-[#FF99C0]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-pink-500">
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#FF99C0]">
               <Search size={18} />
             </button>
           </div>

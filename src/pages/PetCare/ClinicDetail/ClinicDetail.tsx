@@ -63,13 +63,17 @@ export default function ClinicDetail() {
   ];
 
   return (
-    <div className="bg-[#FFEDFA] min-h-screen pb-12">
+    <div className=" min-h-screen pb-12">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Clinic Content */}
-      <div className="container mx-auto px-4 mt-6">
-        <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+      <div className="container mx-auto  mt-6">
+        <div className="bg-white rounded-xl overflow-hidden shadow-md relative">
+          {/* Decorative circles to match home page style */}
+          <div className="absolute -top-6 -left-6 w-20 h-20 bg-[#C5E2F0] opacity-70 rounded-full z-0 hidden md:block"></div>
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#FF99C0] opacity-60 rounded-full z-0 hidden md:block"></div>
+
           {/* Clinic Banner Image */}
           <div className="h-64 relative">
             <img
@@ -118,67 +122,77 @@ export default function ClinicDetail() {
             </div>
           </div>
 
+          {/* Clinic Description - Added section */}
+          {clinic.description && (
+            <div className="px-6 py-4 bg-blue-50 border-l-4 border-[#0053A3] rounded-r-lg mx-6 my-4 shadow-sm">
+              <p className="text-[#0053A3] font-medium italic">
+                {clinic.description}
+              </p>
+            </div>
+          )}
+
           {/* Clinic Info */}
-          <div className="p-6">
+          <div className="p-6 md:p-8 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
+              <div className="bg-pink-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
                 <ContentHeader
                   title="Thông tin chi tiết"
                   level="h2"
-                  className="mb-4"
+                  className="mb-6 text-[#FF99C0]"
                 />
 
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="flex items-start">
-                    <MapPin
-                      className="text-[#0053A3] mt-1 flex-shrink-0 mr-3"
-                      size={20}
-                    />
+                    <div className="bg-[#FF99C0] p-2 rounded-full mr-4">
+                      <MapPin className="text-white" size={24} />
+                    </div>
                     <div>
-                      <h3 className="font-medium">Địa chỉ</h3>
+                      <h3 className="font-medium text-lg">Địa chỉ</h3>
                       <p className="text-gray-600">{clinic.address}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start">
-                    <Phone
-                      className="text-[#0053A3] mt-1 flex-shrink-0 mr-3"
-                      size={20}
-                    />
+                    <div className="bg-[#FF99C0] p-2 rounded-full mr-4">
+                      <Phone className="text-white" size={24} />
+                    </div>
                     <div>
-                      <h3 className="font-medium">Số điện thoại</h3>
+                      <h3 className="font-medium text-lg">Số điện thoại</h3>
                       <p className="text-gray-600">{clinic.phone}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start">
-                    <Clock
-                      className="text-[#0053A3] mt-1 flex-shrink-0 mr-3"
-                      size={20}
-                    />
+                    <div className="bg-[#FF99C0] p-2 rounded-full mr-4">
+                      <Clock className="text-white" size={24} />
+                    </div>
                     <div>
-                      <h3 className="font-medium">Giờ làm việc</h3>
+                      <h3 className="font-medium text-lg">Giờ làm việc</h3>
                       <p className="text-gray-600">{clinic.hours}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div>
+              <div className="bg-blue-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
                 {/* Services & Prices */}
-                <ContentHeader title="Dịch vụ" level="h2" className="mb-4" />
+                <ContentHeader
+                  title="Dịch vụ"
+                  level="h2"
+                  className="mb-6 text-[#0053A3]"
+                />
 
-                <div className=" rounded-lg ">
-                  <ul className="">
+                <div className="rounded-lg">
+                  <ul className="divide-y divide-gray-200">
                     {clinic.services &&
                       clinic.services.map((service, index) => (
                         <li
                           key={index}
-                          className="py-3 px-2 flex items-start  transition-colors rounded-md group"
+                          className="py-3 px-2 flex items-start transition-colors rounded-md group hover:bg-white"
                         >
-                          <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#0053A3] mt-2 mr-3 "></div>
+                          <div className="flex-shrink-0 w-3 h-3 rounded-full bg-[#0053A3] mt-2 mr-3 group-hover:bg-[#0053A3] transition-colors"></div>
                           <div className="flex-grow">
-                            <span className="text-gray-800 font-medium ">
+                            <span className="text-gray-800 font-medium group-hover:text-[#0053A3] transition-colors">
                               {service}
                             </span>
                           </div>

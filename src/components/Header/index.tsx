@@ -68,12 +68,15 @@ const Header = () => {
 
   const handleLogout = () => {
     // Update Redux state
-    dispatch({ type: "LOGOUT", callback: (isSuccess: boolean): void => {
-      if (isSuccess) {
-        toast.success("Đăng xuất thành công");
-        navigate(ROUTES.PUBLIC.HOME);
-      } 
-    } });
+    dispatch({
+      type: "LOGOUT",
+      callback: (isSuccess: boolean): void => {
+        if (isSuccess) {
+          toast.success("Đăng xuất thành công");
+          navigate(ROUTES.PUBLIC.HOME);
+        }
+      },
+    });
   };
 
   // Get user initials for avatar fallback
@@ -170,13 +173,17 @@ const Header = () => {
             />
           </Link>
 
-          {/* Desktop Navigation */}         
-          <nav className={`hidden md:flex items-center space-x-4 ${styles.navbar}`}>
+          {/* Desktop Navigation */}
+          <nav
+            className={`hidden md:flex items-center space-x-4 ${styles.navbar}`}
+          >
             <NavLink
               to="/"
               className={({ isActive }) =>
                 `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
-                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-pink-300"
                 }`
               }
             >
@@ -186,7 +193,9 @@ const Header = () => {
               to="/community"
               className={({ isActive }) =>
                 `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
-                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-pink-300"
                 }`
               }
             >
@@ -196,7 +205,9 @@ const Header = () => {
               to="/adopt"
               className={({ isActive }) =>
                 `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
-                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-pink-300"
                 }`
               }
             >
@@ -206,7 +217,9 @@ const Header = () => {
               to="/search"
               className={({ isActive }) =>
                 `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
-                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-pink-300"
                 }`
               }
             >
@@ -216,7 +229,9 @@ const Header = () => {
               to="/care"
               className={({ isActive }) =>
                 `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
-                  isActive ? "active" : "text-gray-700 hover:text-white hover:bg-pink-300"
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-pink-300"
                 }`
               }
             >
@@ -293,7 +308,7 @@ const Header = () => {
                 Nhận nuôi bé cưng
               </Link>
               <Link
-                to="/search"
+                to="/find-new-home"
                 className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >

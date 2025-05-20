@@ -16,6 +16,8 @@ const ROUTES = {
     ADOPTION_FORM: "/pets/:id/adoption-form",
     REGISTRATION_SUCCESS: "/registration-success",
     CONFIRM_EMAIL: "/confirm-email",
+    FIND_NEW_HOME: "/find-new-home",
+    FIND_NEW_HOME_DETAIL: "/find-new-home/:id",
   },
   STAFF: {
     HOME: '/staff',
