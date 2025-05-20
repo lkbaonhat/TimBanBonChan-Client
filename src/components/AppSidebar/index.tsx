@@ -1,6 +1,6 @@
 import React from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import { PawPrint, Users, ClipboardCheck, Settings, LogOut, LayoutDashboard, BarChart, FileText, ShieldCheck, TypeIcon as type, LucideIcon } from 'lucide-react'
+import { PawPrint, Users, ClipboardCheck, Settings, LogOut, LayoutDashboard, BarChart, FileText, ShieldCheck, TypeIcon as type, LucideIcon, ChartArea } from 'lucide-react'
 
 import {
   Sidebar,
@@ -33,6 +33,16 @@ type NavGroup = {
 // Define navigation configuration by role
 const navigationConfig: Record<string, NavGroup[]> = {
   staff: [
+    {
+      label: 'Tổng quan',
+      items: [
+        {
+          title: 'Thống kê',
+          path: ROUTES.STAFF.HOME,
+          icon: ChartArea,
+        },
+      ],
+    },
     {
       label: 'Quản lý',
       items: [

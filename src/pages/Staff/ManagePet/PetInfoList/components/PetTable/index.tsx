@@ -28,17 +28,12 @@ interface Pet {
 
 interface PetsTableProps {
     pets: Pet[]
-    onViewDetails: (id: number) => void
+    onViewDetails: (slug: string) => void
     onEdit: (id: number, updatedPet: Pet) => void
     onDelete: (id: number) => void
 }
 
-type SortField = 'name' | 'breed' | 'gender' | 'age' | 'location' | 'status'
-type SortDirection = 'asc' | 'desc'
-
 export function PetsTable({ pets, onViewDetails, onEdit, onDelete }: PetsTableProps) {
-    const [sortField, setSortField] = useState<SortField>('name')
-    const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(5)
     const navigate = useNavigate()

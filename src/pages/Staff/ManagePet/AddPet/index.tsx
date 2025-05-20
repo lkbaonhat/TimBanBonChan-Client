@@ -38,13 +38,14 @@ const petFormSchema = z.object({
     toyPreferences: z.string().optional(),
     compatibleWith: z.string().optional(),
     notCompatibleWith: z.string().optional(),
-    description: z.string().optional(),
-    images: z.array(
+    description: z.string().optional(), avatarImage: z.object({
+        imageUrl: z.string().min(1, 'Ảnh đại diện là bắt buộc'),
+    }),
+    otherImages: z.array(
         z.object({
             imageUrl: z.string().min(1, 'Đường dẫn hình ảnh là bắt buộc'),
-            isPrimary: z.boolean().default(true)
         })
-    ).min(1, 'Cần tối thiểu 1 hình ảnh'),
+    ).optional().default([]),
     createdByUserId: z.number().optional()
 })
 
@@ -80,8 +81,8 @@ export function AddPetPage() {
             toyPreferences: '',
             compatibleWith: '',
             notCompatibleWith: '',
-            description: '',
-            images: [{ imageUrl: '', isPrimary: true }],
+            description: '', avatarImage: { imageUrl: '' },
+            otherImages: [],
             createdByUserId: 0
         }
     })
@@ -99,12 +100,11 @@ export function AddPetPage() {
                 categoryId: Number(values.categoryId),
                 breedId: Number(values.breedId),
                 age: Number(values.age),
-                weight: Number(values.weight),
-                // Make sure at least one image is marked as primary
-                images: values.images.map((img, index) => ({
-                    ...img,
-                    isPrimary: img.isPrimary || (index === 0 && !values.images.some(i => i.isPrimary))
-                })),
+                weight: Number(values.weight),                // Kết hợp ảnh đại diện và các ảnh khác thành một mảng, với ảnh đại diện là isPrimary
+                images: [
+                    { ...values.avatarImage, isPrimary: true },
+                    ...values.otherImages.map(img => ({ ...img, isPrimary: false }))
+                ],
                 createdByUserId: 0 // This would typically come from authentication context
             }
 
@@ -114,7 +114,7 @@ export function AddPetPage() {
             console.log('Submitted pet data:', payload)
 
             // Navigate back to the pets list
-            navigate('/staff/pets', {
+            navigate(ROUTES.STAFF.MANAGE_PETS, {
                 state: {
                     notification: {
                         type: 'success',
@@ -157,21 +157,23 @@ export function AddPetPage() {
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                        <form onSubmit={form.handleSubmit(handleSubmit as any)} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-6">                                    <FormField
-                                    control={form.control}
-                                    name="petName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Tên thú cưng</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Nhập tên thú cưng" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />                                    <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="petName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Tên thú cưng</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Nhập tên thú cưng" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div className="grid grid-cols-2 gap-4">
                                         <FormField
                                             control={form.control}
                                             name="categoryId"
@@ -244,7 +246,8 @@ export function AddPetPage() {
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        />                                        <FormField
+                                        />
+                                        <FormField
                                             control={form.control}
                                             name="age"
                                             render={({ field }) => (
@@ -286,7 +289,8 @@ export function AddPetPage() {
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        />                                        <FormField
+                                        />
+                                        <FormField
                                             control={form.control}
                                             name="weight"
                                             render={({ field }) => (
@@ -328,7 +332,8 @@ export function AddPetPage() {
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
-                                        />                                        <FormField
+                                        />
+                                        <FormField
                                             control={form.control}
                                             name="color"
                                             render={({ field }) => (
@@ -446,92 +451,7 @@ export function AddPetPage() {
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-
-                                <div className="space-y-6">                                    <FormField
-                                    control={form.control}
-                                    name="images"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Hình ảnh</FormLabel>
-                                            <FormControl>
-                                                <div className="space-y-4">
-                                                    <CloudinaryUpload
-                                                        onImageUploaded={(url) => {
-                                                            const newImages = field.value || [];
-                                                            // If this is the first image, or no other image is marked as primary
-                                                            const isPrimary = newImages.length === 0 || !newImages.some(img => img.isPrimary);
-
-                                                            // Add this as the primary image or additional image
-                                                            field.onChange([
-                                                                ...newImages,
-                                                                { imageUrl: url, isPrimary: isPrimary }
-                                                            ]);
-                                                        }}
-                                                        defaultImage={field.value?.[0]?.imageUrl || ''}
-
-                                                    />
-
-                                                    {field.value && field.value.length > 0 && (
-                                                        <div className="grid grid-cols-3 gap-2 mt-2">
-                                                            {field.value.map((image, index) => (
-                                                                <div key={index} className="relative">
-                                                                    <img
-                                                                        src={image.imageUrl}
-                                                                        alt={`Pet image ${index + 1}`}
-                                                                        className="w-full h-24 object-cover rounded-md"
-                                                                    />
-                                                                    {image.isPrimary && (
-                                                                        <span className="absolute top-0 right-0 bg-primary text-white text-xs px-1 rounded-bl">
-                                                                            Chính
-                                                                        </span>
-                                                                    )}
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="icon"
-                                                                        className="absolute top-0 left-0 h-5 w-5"
-                                                                        onClick={() => {
-                                                                            const newImages = field.value.filter((_, i) => i !== index);
-                                                                            // If we removed the primary image, set the first one as primary
-                                                                            if (image.isPrimary && newImages.length > 0) {
-                                                                                newImages[0].isPrimary = true;
-                                                                            }
-                                                                            field.onChange(newImages);
-                                                                        }}
-                                                                    >
-                                                                        <X className="h-3 w-3" />
-                                                                    </Button>
-                                                                    {!image.isPrimary && (
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="secondary"
-                                                                            size="sm"
-                                                                            className="absolute bottom-0 right-0 h-5 text-xs"
-                                                                            onClick={() => {
-                                                                                const newImages = field.value.map((img, i) => ({
-                                                                                    ...img,
-                                                                                    isPrimary: i === index
-                                                                                }));
-                                                                                field.onChange(newImages);
-                                                                            }}
-                                                                        >
-                                                                            Đặt làm ảnh chính
-                                                                        </Button>
-                                                                    )}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </FormControl>
-                                            <FormDescription>
-                                                Tải lên hình ảnh thú cưng. Hình ảnh rõ ràng sẽ giúp tăng cơ hội được nhận nuôi.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                </div>                                <div className="space-y-6">
 
                                     <FormField
                                         control={form.control}
@@ -638,6 +558,81 @@ export function AddPetPage() {
                                         )}
                                     />
                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <FormField
+                                    control={form.control}
+                                    name="avatarImage"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Ảnh đại diện</FormLabel>
+                                            <FormControl>
+                                                <CloudinaryUpload
+                                                    onImageUploaded={(url) => {
+                                                        field.onChange({ imageUrl: url });
+                                                    }}
+                                                    defaultImage={field.value?.imageUrl || ''}
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Ảnh đại diện sẽ được hiển thị chính trên trang thú cưng.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="otherImages"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Các ảnh khác</FormLabel>
+                                            <FormControl>
+                                                <div className="space-y-4">
+                                                    <CloudinaryUpload
+                                                        onImageUploaded={(url) => {
+                                                            const newImages = [...field.value];
+                                                            newImages.push({ imageUrl: url });
+                                                            field.onChange(newImages);
+                                                        }}
+                                                    />
+
+                                                    {field.value && field.value.length > 0 && (
+                                                        <div className="grid grid-cols-3 gap-2 mt-2">
+                                                            {field.value.map((image, index) => (
+                                                                <div key={index} className="relative">
+                                                                    <img
+                                                                        src={image.imageUrl}
+                                                                        alt={`Pet image ${index + 1}`}
+                                                                        className="w-full h-24 object-cover rounded-md"
+                                                                    />
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="destructive"
+                                                                        size="icon"
+                                                                        className="absolute top-0 left-0 h-5 w-5"
+                                                                        onClick={() => {
+                                                                            const newImages = field.value.filter((_, i) => i !== index);
+                                                                            field.onChange(newImages);
+                                                                        }}
+                                                                    >
+                                                                        <X className="h-3 w-3" />
+                                                                    </Button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </FormControl>
+                                            <FormDescription>
+                                                Thêm các ảnh khác để hiển thị rõ hơn về thú cưng.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
 
                             {form.formState.errors.root && (

@@ -102,7 +102,7 @@ export default function PetsPage() {
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Tìm kiếm theo tên, giống, địa điểm..."
-              className="pl-8"
+              className="pl-8 h-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
