@@ -34,6 +34,6 @@ export const authService = {
     return axiosClient.post<AuthResponse>(API_ENDPOINT.AUTH.SIGN_IN, userData);
   },
   confirmEmail: (token: string): Promise<void> => {
-    return axiosClient.get(`/confirm-email?token=${token}`);
+    return axiosClient.post(`/auth/confirm-email?token=${token}`);
   },
 };

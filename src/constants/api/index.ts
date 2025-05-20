@@ -1,8 +1,8 @@
 export const API_ENDPOINT = {
   AUTH: {
-    SIGN_IN: "/login",
-    SIGN_UP: "/send-confirmation",
-    CONFIRM_EMAIL: "/confirm-email",
+    SIGN_IN: "/auth/login",
+    SIGN_UP: "/auth/send-confirmation",
+    CONFIRM_EMAIL: "/auth/confirm-email",
   },
   PET: {
     LIST: "/pets",

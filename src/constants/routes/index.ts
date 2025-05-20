@@ -19,6 +19,13 @@ const ROUTES = {
     FIND_NEW_HOME: "/find-new-home",
     FIND_NEW_HOME_DETAIL: "/find-new-home/:id",
   },
+  STAFF: {
+    HOME: '/staff',
+    MANAGE_PETS: '/staff/manage-pets',
+    ADD_PET: '/staff/manage-pets/new',
+    EDIT_PET: '/staff/manage-pets/:id/edit',
+    PET_DETAIL: '/staff/manage-pets/:slug',
+  },
   ADMIN: {},
 };
 

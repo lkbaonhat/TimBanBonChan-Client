@@ -16,8 +16,8 @@ import {
 import { LOGO } from "@/constants/global";
 import { Link, useNavigate } from "react-router-dom";
 import ROUTES from "@/constants/routes";
-import { authService } from "@/services/authService";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 // Define form schema with Zod
 const signInSchema = z.object({
@@ -59,10 +59,17 @@ export default function SignInForm() {
       setIsSubmitting(true);
       setError(null);
 
-      dispatch({ type: "SIGN_IN", payload: data });
-
-      // Redirect to home page on successful login
-      navigate(ROUTES.PUBLIC.HOME);
+      dispatch({ type: "SIGN_IN", payload: data,
+        callback: (isSuccess: boolean) => {
+          console.log("zo ne")
+          if (!isSuccess) {
+            toast.error("Email hoặc mật khẩu không đúng.");
+          } else {
+            toast.success("Đăng nhập thành công.");
+            navigate(ROUTES.PUBLIC.HOME);
+          }
+        },
+       });
     } catch (error: any) {
       console.error("Login error:", error);
       // Handle API error response

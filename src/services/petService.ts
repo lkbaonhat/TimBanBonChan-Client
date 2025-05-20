@@ -2,10 +2,10 @@ import { axiosClient } from "@/config/axios";
 
 export const petService = {
   getAllPets: () => {
-    return axiosClient.get("/Pets");
+    return axiosClient.get("/pets/filter");
   },
-  getPetById: (id: string) => {
-    return axiosClient.get(`/pets/${id}`);
+  getPetBySlug: (slug: string) => {
+    return axiosClient.get(`/pets/${slug}`);
   },
   createPet: (petData: any) => {
     return axiosClient.post("/pets", petData);

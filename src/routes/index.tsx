@@ -5,8 +5,11 @@ import AuthRoutes from "./AuthRoutes";
 import ROUTES from "@constants/routes";
 //* Layouts
 import DefaultLayout from "@layouts/DefaultLayout";
-import FindNewHome from "@/pages/FindNewHome";
-import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
+import SidebarLayout from "@/layouts/SidebarLayout";
+import StaffDashboard from "@/pages/Staff/Dashboard";
+import PetInfoList from "@/pages/Staff/PetInfoList";
+import { AddPetPage } from "@/pages/Staff/AddPet";
+import { PetDetailsPage } from "@/pages/Staff/PetDetail";
 //* Lazy load pages
 const Home = lazy(() => import("@pages/Home"));
 const VolunteerPage = lazy(() => import("@pages/Volunteer"));
@@ -30,6 +33,8 @@ const RegistrationSuccess = lazy(
   () => import("@pages/Auth/RegistrationSuccess")
 );
 const ListClinics = lazy(() => import("@/pages/PetCare/ListClinics"));
+import FindNewHome from "@/pages/FindNewHome";
+import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -59,6 +64,15 @@ const RouterComponent = () => {
           path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
           element: <ProfileDetail />,
         },
+      ],
+    },
+    {
+      element: <SidebarLayout roleUser="staff" />,
+      children: [
+        { path: ROUTES.STAFF.HOME, element: <StaffDashboard /> },
+        { path: ROUTES.STAFF.MANAGE_PETS, element: <PetInfoList /> },
+        { path: ROUTES.STAFF.ADD_PET, element: <AddPetPage /> },
+        { path: ROUTES.STAFF.PET_DETAIL, element: <PetDetailsPage /> },
       ],
     },
     //* AUTH routes *
