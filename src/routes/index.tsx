@@ -34,6 +34,8 @@ const RegistrationSuccess = lazy(
   () => import("@pages/Auth/RegistrationSuccess")
 );
 const ListClinics = lazy(() => import("@/pages/PetCare/ListClinics"));
+import FindNewHome from "@/pages/FindNewHome";
+import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -58,6 +60,11 @@ const RouterComponent = () => {
         },
         { path: ROUTES.PUBLIC.CONFIRM_EMAIL, element: <ConfirmEmail /> },
         { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+        { path: ROUTES.PUBLIC.FIND_NEW_HOME, element: <FindNewHome /> },
+        {
+          path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
+          element: <ProfileDetail />,
+        },
       ],
     },
     {
@@ -68,7 +75,7 @@ const RouterComponent = () => {
         { path: ROUTES.STAFF.ADD_PET, element: <AddPetPage /> },
         { path: ROUTES.STAFF.PET_DETAIL, element: <PetDetailsPage /> },
         { path: ROUTES.STAFF.MANAGE_VOLUNTEERS, element: <ManageVolunteer /> },
-      ]
+      ],
     },
     //* AUTH routes *
     ...AuthRoutes,
