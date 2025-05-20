@@ -185,7 +185,7 @@ const Header = () => {
               Nhận nuôi bé cưng
             </Link>
             <Link
-              to="/search"
+              to="/find-new-home"
               className="px-4 py-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
             >
               Tìm nhà cho bé yêu
@@ -267,7 +267,7 @@ const Header = () => {
                 Nhận nuôi bé cưng
               </Link>
               <Link
-                to="/search"
+                to="/find-new-home"
                 className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >

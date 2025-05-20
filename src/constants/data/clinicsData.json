@@ -20,7 +20,8 @@
       "Dịch vụ xuất cảnh",
       "Bảo hiểm thú cưng",
       "Petshop"
-    ]
+    ],
+    "description": "Bệnh viện thú y đa khoa hàng đầu với đội ngũ bác sĩ chuyên môn cao, trang thiết bị X‑Quang, siêu âm và xét nghiệm hiện đại. Cung cấp dịch vụ khám chữa nội – ngoại khoa, tiêm phòng định kỳ và phẫu thuật tại cả cơ sở và tại nhà. Ngoài ra, PetPro còn có khu boarding thoáng mát, dịch vụ grooming trọn gói, petshop và hỗ trợ thủ tục xuất cảnh, bảo hiểm thú cưng."
   },
   {
     "id": 2,
@@ -40,7 +41,8 @@
       "Khám chữa bệnh tại nhà & vận chuyển",
       "Cấp cứu 24/7",
       "Lưu trú – boarding"
-    ]
+    ],
+    "description": "PetCare nổi bật với dịch vụ grooming chuyên sâu (tắm – sấy – tạo kiểu), chăm sóc răng miệng và phòng ngừa ký sinh trùng. Đội ngũ bác sĩ trực cấp cứu 24/7, hỗ trợ khám tại nhà và vận chuyển thú cưng. Trung tâm còn phụ trách thủ tục xuất cảnh, boarding trong môi trường an toàn, rộng rãi."
   },
   {
     "id": 3,
@@ -60,7 +62,8 @@
       "Làm đẹp & Grooming (tắm khô/ướt, cắt tỉa lông, cắt móng)",
       "Lưu trú – boarding",
       "Khám chữa bệnh tại nhà"
-    ]
+    ],
+    "description": "Pet Galaxy trang bị phòng mổ vô khuẩn, dịch vụ cấp cứu 24/7 và khám tại nhà theo yêu cầu. Bên cạnh khám chữa thông thường và tiêm phòng, trung tâm còn cung cấp đầy đủ gói grooming thẩm mỹ và khu boarding đạt chuẩn."
   },
   {
     "id": 4,
@@ -80,7 +83,8 @@
       "Chăm sóc răng miệng",
       "Grooming – spa thú cưng",
       "Lưu trú ngắn hạn"
-    ]
+    ],
+    "description": "K9 chuyên tư vấn dinh dưỡng và chăm sóc nha khoa. Hỗ trợ cấp cứu ban đêm, phẫu thuật ngoại khoa cơ bản. Spa grooming với các gói massage, tắm bọt tuyết, cùng khu boarding ngắn hạn tiện lợi."
   },
   {
     "id": 5,
@@ -99,7 +103,8 @@
       "Chăm sóc răng miệng",
       "Grooming & spa thú cưng",
       "Lưu trú – boarding"
-    ]
+    ],
+    "description": "Hoàng Bách là điểm đến cho các ca cần xét nghiệm chuyên sâu và phẫu thuật xử lý vết thương. Kết hợp grooming spa và boarding chuẩn khách sạn thú cưng."
   },
   {
     "id": 6,
@@ -118,7 +123,8 @@
       "Phẫu thuật cơ bản",
       "Grooming – tắm gội & tạo kiểu",
       "Lưu trú – boarding"
-    ]
+    ],
+    "description": "Family Vet ưu tiên không gian thân thiện, trang bị máy siêu âm và X‑Quang. Dịch vụ phẫu thuật cơ bản, grooming tạo kiểu cá nhân hóa và khu boarding 24h."
   },
   {
     "id": 7,
@@ -136,7 +142,8 @@
       "Phẫu thuật răng miệng",
       "Chăm sóc thẩm mỹ – grooming",
       "Lưu trú – trông giữ thú cưng"
-    ]
+    ],
+    "description": "Pet Clinic tập trung vào kiểm tra sức khỏe tổng quát, xét nghiệm cơ bản và phẫu thuật răng miệng. Grooming đơn giản và dịch vụ giữ thú ngắn hạn."
   },
   {
     "id": 8,
@@ -151,10 +158,11 @@
     "services": [
       "Khám & tư vấn sức khỏe",
       "Tiêm phòng & tẩy giun",
-      "Phẫu thuật – khâu, xử trí vết thương",
+      "Phẫu thuật – khâu, xử lý vết thương",
       "Grooming – cắt tỉa lông",
       "Lưu trú – boarding"
-    ]
+    ],
+    "description": "Thi Thi Pet Clinic nổi tiếng với khâu vá vết thương và tẩy giun định kỳ. Grooming nhẹ nhàng, không gian sạch sẽ, hỗ trợ boarding an toàn."
   },
   {
     "id": 9,
@@ -172,7 +180,8 @@
       "Phẫu thuật – loại nhỏ",
       "Chăm sóc răng miệng",
       "Grooming & spa đơn giản"
-    ]
+    ],
+    "description": "Quang Vinh phù hợp với các ca khám cơ bản và xét nghiệm nhanh, chi phí tiết kiệm. Cung cấp grooming – spa đơn giản."
   },
   {
     "id": 10,
@@ -191,7 +200,8 @@
       "Chăm sóc răng miệng",
       "Grooming – tạo kiểu lông",
       "Lưu trú – boarding"
-    ]
+    ],
+    "description": "Vinpet.vn là chuỗi phòng khám đa chi nhánh, chuyên ngoại khoa, tiêm phòng và grooming theo kiểu salon."
   },
   {
     "id": 11,
@@ -209,7 +219,8 @@
       "Chăm sóc răng miệng",
       "Grooming – spa cơ bản",
       "Lưu trú thú cưng"
-    ]
+    ],
+    "description": "HiPet phục vụ nhu cầu cơ bản: tiêm ngừa, tẩy giun, chăm sóc răng miệng và grooming spa nhẹ nhàng."
   },
   {
     "id": 12,
@@ -227,7 +238,8 @@
       "Phẫu thuật – xử lý vết thương",
       "Chăm sóc răng miệng",
       "Grooming & tắm gội"
-    ]
+    ],
+    "description": "Phòng khám phong cách quốc tế, đội ngũ bác sĩ ngoại và Việt Nam, chú trọng xét nghiệm và xử lý vết thương."
   },
   {
     "id": 13,
@@ -245,7 +257,8 @@
       "Phẫu thuật – đa khoa",
       "Chăm sóc nha khoa thú y",
       "Nghiên cứu & đào tạo"
-    ]
+    ],
+    "description": "Bệnh viện trường ĐH Nông Lâm với khoa xét nghiệm chuyên sâu, phẫu thuật đa khoa và trung tâm nghiên cứu đào tạo."
   },
   {
     "id": 14,
@@ -262,7 +275,8 @@
       "Tiêm phòng & tẩy giun",
       "Grooming – tắm gội & cắt tỉa",
       "Lưu trú ngắn hạn"
-    ]
+    ],
+    "description": "Petwish phù hợp cho nhu cầu chăm sóc thường xuyên, giá cả hợp lý, giao động các gói grooming và lưu trú ngắn hạn."
   },
   {
     "id": 15,
@@ -279,7 +293,8 @@
       "Tiêm phòng & xét nghiệm cơ bản",
       "Phẫu thuật – khâu vết thương nhỏ",
       "Grooming – spa đơn giản"
-    ]
+    ],
+    "description": "Như Ý tập trung vào khâu vết thương nhỏ, tư vấn sức khỏe dị chế độ dinh dưỡng và grooming spa đơn giản."
   },
   {
     "id": 16,
@@ -296,7 +311,8 @@
       "Tiêm phòng & tẩy giun",
       "Grooming – tạo kiểu & vệ sinh tai",
       "Lưu trú thú cưng"
-    ]
+    ],
+    "description": "Smart Pet cung cấp dịch vụ vệ sinh tai, grooming tạo kiểu hiện đại và lưu trú thú cưng trong môi trường an toàn."
   },
   {
     "id": 17,
@@ -313,7 +329,8 @@
       "Tiêm phòng & xét nghiệm nhanh",
       "Chăm sóc răng miệng",
       "Grooming – vệ sinh & cắt tỉa lông"
-    ]
+    ],
+    "description": "Thành Ngọc là phòng khám địa phương tiện lợi, xử lý nhanh các ca tiêm phòng, xét nghiệm và grooming cơ bản."
   },
   {
     "id": 18,
@@ -329,7 +346,8 @@
       "Spa & chăm sóc ngoại hình (tắm, cắt tỉa lông)",
       "Massage & vệ sinh tai mắt",
       "Trông giữ & boarding thú cưng"
-    ]
+    ],
+    "description": "Pet shop kết hợp spa, chuyên chăm sóc ngoại hình, massage thư giãn và boarding với giá mềm."
   },
   {
     "id": 19,
@@ -345,7 +363,8 @@
       "Khám tổng quát & xét nghiệm",
       "Tiêm phòng & tẩy giun",
       "Grooming – spa cơ bản"
-    ]
+    ],
+    "description": "Vũ Tuyền cung cấp khám tổng quát, tẩy giun và grooming spa cơ bản với chi phí tiết kiệm."
   },
   {
     "id": 20,
@@ -363,6 +382,7 @@
       "Phẫu thuật đa khoa",
       "Grooming – spa cao cấp",
       "Lưu trú & boarding"
-    ]
+    ],
+    "description": "Bệnh viện kết hợp spa cao cấp, trang thiết bị hiện đại, phù hợp thú cưng cần dịch vụ khám đa khoa và thư giãn cao cấp."
   }
 ]

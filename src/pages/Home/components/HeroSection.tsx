@@ -39,7 +39,7 @@ const HeroSection = () => {
                 <Link to="/adopt">Nhận nuôi thú cưng</Link>
               </Button>
               <Button asChild variant="pink" size="lg" shape="pill">
-                <Link to="/search">Tìm nhà mới cho bé</Link>
+                <Link to="/find-new-home">Tìm nhà mới cho bé</Link>
               </Button>
             </div>
           </div>

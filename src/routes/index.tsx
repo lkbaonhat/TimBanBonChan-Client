@@ -5,6 +5,8 @@ import AuthRoutes from "./AuthRoutes";
 import ROUTES from "@constants/routes";
 //* Layouts
 import DefaultLayout from "@layouts/DefaultLayout";
+import FindNewHome from "@/pages/FindNewHome";
+import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
 //* Lazy load pages
 const Home = lazy(() => import("@pages/Home"));
 const VolunteerPage = lazy(() => import("@pages/Volunteer"));
@@ -52,6 +54,11 @@ const RouterComponent = () => {
         },
         { path: ROUTES.PUBLIC.CONFIRM_EMAIL, element: <ConfirmEmail /> },
         { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+        { path: ROUTES.PUBLIC.FIND_NEW_HOME, element: <FindNewHome /> },
+        {
+          path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
+          element: <ProfileDetail />,
+        },
       ],
     },
     //* AUTH routes *
