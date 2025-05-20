@@ -21,11 +21,10 @@ export function CloudinaryUpload({ onImageUploaded, defaultImage }: CloudinaryUp
         setProgress(10)
         setError(null)
 
-        try {
-            // Create a FormData object to send the file
+        try {            // Create a FormData object to send the file
             const formData = new FormData()
             formData.append('file', file)
-            formData.append('upload_preset', 'pet_adoption') // Replace with your Cloudinary upload preset
+            formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
 
             // Simulate progress (in a real app, you might use an upload progress event)
             const progressInterval = setInterval(() => {
@@ -40,7 +39,7 @@ export function CloudinaryUpload({ onImageUploaded, defaultImage }: CloudinaryUp
 
             // Upload to Cloudinary
             const response = await fetch(
-                `https://api.cloudinary.com/v1_1/your-cloud-name/image/upload`, // Replace with your Cloudinary cloud name
+                `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
                 {
                     method: 'POST',
                     body: formData,
@@ -51,15 +50,11 @@ export function CloudinaryUpload({ onImageUploaded, defaultImage }: CloudinaryUp
 
             if (!response.ok) {
                 throw new Error('Upload failed')
-            }
-
-            const data = await response.json()
-            setProgress(100)            // In a real app, this would be the actual URL from Cloudinary
-            // For this example, we'll use the preview URL
+            } const data = await response.json()
+            setProgress(100)
+            // Sử dụng URL thực từ Cloudinary
             onImageUploaded(data.secure_url)
 
-            // For demo purposes, we'll just use the local preview
-            // Remove this in a real implementation
             setTimeout(() => {
                 setUploading(false)
             }, 500)
@@ -98,32 +93,17 @@ export function CloudinaryUpload({ onImageUploaded, defaultImage }: CloudinaryUp
     const removeImage = () => {
         setPreviewUrl(null)
         onImageUploaded('')
-    }
-
-    // For demo purposes, simulate Cloudinary upload with the local preview
-    const handleDemoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    }    // Xử lý khi người dùng chọn file qua input
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0]
+
+            // Tạo preview URL
             const objectUrl = URL.createObjectURL(file)
             setPreviewUrl(objectUrl)
 
-            // Simulate upload process
-            setUploading(true)
-            setProgress(0)
-
-            let currentProgress = 0
-            const progressInterval = setInterval(() => {
-                currentProgress += 10
-                setProgress(currentProgress)
-
-                if (currentProgress >= 100) {
-                    clearInterval(progressInterval)
-                    setTimeout(() => {
-                        setUploading(false)
-                        onImageUploaded(objectUrl) // In a real app, this would be the Cloudinary URL
-                    }, 500)
-                }
-            }, 200)
+            // Upload lên Cloudinary
+            uploadToCloudinary(file)
         }
     }
 
@@ -159,7 +139,7 @@ export function CloudinaryUpload({ onImageUploaded, defaultImage }: CloudinaryUp
                     className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary'
                         }`}
                 >
-                    <input {...getInputProps()} onChange={handleDemoUpload} />
+                    <input {...getInputProps()} onChange={handleFileUpload} />
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="bg-primary/10 p-3 rounded-full">
                             <Upload className="h-6 w-6 text-primary" />

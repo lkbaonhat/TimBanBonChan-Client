@@ -7,9 +7,10 @@ import ROUTES from "@constants/routes";
 import DefaultLayout from "@layouts/DefaultLayout";
 import SidebarLayout from "@/layouts/SidebarLayout";
 import StaffDashboard from "@/pages/Staff/Dashboard";
-import PetInfoList from "@/pages/Staff/PetInfoList";
-import { AddPetPage } from "@/pages/Staff/AddPet";
-import { PetDetailsPage } from "@/pages/Staff/PetDetail";
+import PetInfoList from "@/pages/Staff/ManagePet/PetInfoList";
+import { AddPetPage } from "@/pages/Staff/ManagePet/AddPet";
+import { PetDetailsPage } from "@/pages/Staff/ManagePet/PetDetail";
+import ManageVolunteer from "@/pages/Staff/ManageVolunteer";
 //* Lazy load pages
 const Home = lazy(() => import("@pages/Home"));
 const VolunteerPage = lazy(() => import("@pages/Volunteer"));
@@ -66,8 +67,8 @@ const RouterComponent = () => {
         { path: ROUTES.STAFF.MANAGE_PETS, element: <PetInfoList /> },
         { path: ROUTES.STAFF.ADD_PET, element: <AddPetPage /> },
         { path: ROUTES.STAFF.PET_DETAIL, element: <PetDetailsPage /> },
+        { path: ROUTES.STAFF.MANAGE_VOLUNTEERS, element: <ManageVolunteer /> },
       ]
-
     },
     //* AUTH routes *
     ...AuthRoutes,
