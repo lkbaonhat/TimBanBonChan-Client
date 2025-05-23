@@ -156,7 +156,7 @@ export function PetDetailsPage() {
                     <Button
                         variant="outline"
                         className="gap-2"
-                        onClick={() => navigate(`/staff/pets/edit/${pet.petId}`)}
+                        onClick={() => navigate(`/staff/manage-pets/${pet.petId}/edit`)}
                     >
                         <Edit className="h-4 w-4" />
                         Chỉnh sửa

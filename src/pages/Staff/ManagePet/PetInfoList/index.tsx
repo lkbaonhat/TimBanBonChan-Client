@@ -22,11 +22,22 @@ export default function PetsPage() {
     type: 'success' | 'error';
     message: string;
   } | null>(null)
-
   // Check for notifications from navigation state
   useEffect(() => {
     dispatch({ type: 'GET_ALL_PETS' })
-  }, [location.state])
+
+    // Check if there's a notification in location state
+    if (location.state?.notification) {
+      setNotification(location.state.notification)
+
+      // Clear notification after 5 seconds
+      const timer = setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [location.state, dispatch])
 
   // Filter pets based on search term and filters
   const filteredPets = listPet.filter(pet => {
@@ -45,16 +56,18 @@ export default function PetsPage() {
       type: 'success',
       message: 'Thú cưng đã được xóa thành công!'
     })
-  }
-
-  // Handle viewing pet details
+  }  // Handle viewing pet details
   const handleViewPetDetails = (slug: string) => {
     navigate(`/staff/manage-pets/${slug}`)
   }
 
-  // Handle editing a pet
-  const handleEditPet = (id: number) => {
-    navigate(`/staff/pets/edit/${id}`)
+  // Handle editing a pet (this is just a placeholder as we're navigating directly from the dialog)
+  const handleEditPet = (_id: number, updatedPet: any) => {
+    console.log('Updated pet:', updatedPet)
+    setNotification({
+      type: 'success',
+      message: 'Thú cưng đã được cập nhật thành công!'
+    })
   }
 
   return (
