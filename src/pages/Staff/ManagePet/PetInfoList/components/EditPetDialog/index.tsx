@@ -1,8 +1,7 @@
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import React, { useState } from 'react'
-import { PetForm, PetFormValues } from '../PetForm'
-
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import ROUTES from '@/constants/routes'
 
 interface EditPetDialogProps {
   pet: any
@@ -10,58 +9,23 @@ interface EditPetDialogProps {
   trigger?: React.ReactNode
 }
 
-export function EditPetDialog({ pet, onPetUpdated, trigger }: EditPetDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function EditPetDialog({ pet, trigger }: EditPetDialogProps) {
+  const navigate = useNavigate()
 
-  const handleSubmit = async (values: PetFormValues) => {
-    setIsSubmitting(true)
-    try {
-      // In a real app, you would make an API call here
-      // For now, we'll simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const updatedPet = {
-        ...pet,
-        ...values
-      }
-      
-      onPetUpdated(pet.id, updatedPet)
-      setOpen(false)
-    } catch (error) {
-      console.error('Failed to update pet:', error)
-    } finally {
-      setIsSubmitting(false)
-    }
+  const handleEdit = () => {
+    // Navigate to the edit page with the pet ID
+    navigate(`/staff/manage-pets/${pet.petId}/edit`)
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || <Button variant="outline">Chỉnh sửa</Button>}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
-          <DialogTitle>Chỉnh sửa thông tin thú cưng</DialogTitle>
-          <DialogDescription>
-            Cập nhật thông tin chi tiết về thú cưng.
-          </DialogDescription>
-        </DialogHeader>
-        <PetForm 
-          defaultValues={{
-            name: pet.name,
-            image: pet.image,
-            gender: pet.gender,
-            age: pet.age,
-            location: pet.location,
-            breed: pet.breed,
-            type: pet.type || 'dog',
-            description: pet.description || '',
-          }} 
-          onSubmit={handleSubmit} 
-          isSubmitting={isSubmitting} 
-        />
-      </DialogContent>
-    </Dialog>
+    <>
+      {trigger ? (
+        <div onClick={handleEdit}>
+          {trigger}
+        </div>
+      ) : (
+        <Button variant="outline" onClick={handleEdit}>Chỉnh sửa</Button>
+      )}
+    </>
   )
 }

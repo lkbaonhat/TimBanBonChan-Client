@@ -22,8 +22,9 @@ interface Pet {
     breed: string
     categoryName: string
     adoptionStatus: string,
-    createdDate: string,
+    createdDate?: string,
     slug: string
+    [key: string]: any; // Allow for additional properties
 }
 
 interface PetsTableProps {
@@ -157,11 +158,10 @@ export function PetsTable({ pets, onViewDetails, onEdit, onDelete }: PetsTablePr
                                     <Avatar className="h-10 w-10">
                                         <AvatarImage src={pet.petImageUrls || "/placeholder.svg"} alt={pet.petName} />
                                         <AvatarFallback>{pet.petName}</AvatarFallback>
-                                    </Avatar>
-                                    {pet.petName}
+                                    </Avatar>                                    {pet.petName}
                                 </TableCell>
                                 <TableCell>{pet.categoryName}</TableCell>
-                                <TableCell>{formatDate(pet.createdDate)}</TableCell>
+                                <TableCell>{pet.createdDate ? formatDate(pet.createdDate) : 'N/A'}</TableCell>
                                 <TableCell>
                                     <Badge variant={getStatusBadgeVariant(pet.adoptionStatus)}>
                                         {getStatusDisplayText(pet.adoptionStatus.toLocaleLowerCase())}
