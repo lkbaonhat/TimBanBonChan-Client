@@ -59,9 +59,11 @@ export default function SignInForm() {
       setIsSubmitting(true);
       setError(null);
 
-      dispatch({ type: "SIGN_IN", payload: data,
+      dispatch({
+        type: "SIGN_IN",
+        payload: data,
         callback: (isSuccess: boolean) => {
-          console.log("zo ne")
+          console.log("zo ne");
           if (!isSuccess) {
             toast.error("Email hoặc mật khẩu không đúng.");
           } else {
@@ -69,7 +71,7 @@ export default function SignInForm() {
             navigate(ROUTES.PUBLIC.HOME);
           }
         },
-       });
+      });
     } catch (error: any) {
       console.error("Login error:", error);
       // Handle API error response

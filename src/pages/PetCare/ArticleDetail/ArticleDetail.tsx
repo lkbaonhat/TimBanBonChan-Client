@@ -80,26 +80,22 @@ export default function ArticleDetail() {
   const likeCount = liked ? article.likes + 1 : article.likes;
 
   return (
-    <div className="bg-[#FFEDFA] min-h-screen pb-12">
+    <div className=" min-h-screen pb-12 ">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Article Content */}
-      <div className="container mx-auto mt-6">
-        <div className="bg-white rounded-xl overflow-hidden shadow-md relative">
+      <div className="container mx-auto ">
+        <div className=" rounded-xl overflow-hidden relative">
           {/* Decorative circles to match home page style */}
           <div className="absolute -top-6 -right-6 w-24 h-24 bg-[#C5E2F0] opacity-70 rounded-full z-0 hidden md:block"></div>
           <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-[#FF99C0] opacity-60 rounded-full z-0 hidden md:block"></div>
 
-          <div className="p-6 md:p-8 relative z-10">
+          <div className="relative z-10">
             {/* Back button and actions */}
             <div className="flex justify-between items-center mb-6">
               {/* Article title */}
-              <ContentHeader
-                title={article.title}
-                level="h1"
-                className=" text-[#0053A3]"
-              />
+              <ContentHeader title={article.title} level="h1" />
 
               <div className="flex gap-2">
                 <Button
@@ -141,8 +137,8 @@ export default function ArticleDetail() {
             </div>
 
             {/* Author info */}
-            <div className="flex items-center mb-8 p-4 bg-blue-50 rounded-lg">
-              <Avatar className="h-16 w-16 mr-4 border-2 border-[#FF99C0]">
+            <div className="flex items-center mb-6 rounded-lg">
+              <Avatar className="h-16 w-16 mr-4 ">
                 <AvatarImage
                   src={article.author.avatar}
                   alt={article.author.name}
@@ -150,11 +146,23 @@ export default function ArticleDetail() {
                 <AvatarFallback>{article.author.initials}</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium text-xl text-gray-900">
+                <p className="font-medium text-xl text--900">
                   {article.author.name}
                 </p>
-                <p className="text-gray-500">{article.author.date}</p>
+                <p className="">{article.author.date}</p>
               </div>
+            </div>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {article.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-4 py-2  text-[#FF99C0] rounded-full text-sm font-medium hover:bg-pink-200 transition-colors cursor-pointer"
+                >
+                  #{tag}
+                </span>
+              ))}
             </div>
 
             {/* Article content */}
@@ -162,18 +170,6 @@ export default function ArticleDetail() {
               className="prose max-w-none mb-8 prose-headings:text-[#0053A3] prose-a:text-[#FF99C0]"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {article.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-4 py-2 bg-pink-100 text-[#FF99C0] rounded-full text-sm font-medium hover:bg-pink-200 transition-colors cursor-pointer"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
 
             {/* Like button */}
             <div className="flex items-center justify-end">
@@ -207,7 +203,7 @@ export default function ArticleDetail() {
                   to={`/pet-care/${relArticle.id}`}
                   className="block transform transition-transform hover:scale-[1.02]"
                 >
-                  <div className="bg-white p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+                  <div className="p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
                     <div className="h-40 mb-4 overflow-hidden rounded-lg">
                       <img
                         src={relArticle.thumbnail || "/petcarebg.png"}
@@ -218,7 +214,7 @@ export default function ArticleDetail() {
                     <h3 className="font-bold text-lg mb-2 text-[#0053A3] hover:text-[#FF99C0] transition-colors">
                       {relArticle.title}
                     </h3>
-                    <div className="flex items-center text-gray-500 text-sm mt-auto pt-4">
+                    <div className="flex items-center  text-sm mt-auto pt-4">
                       <Avatar className="h-8 w-8 mr-2">
                         <AvatarImage
                           src={relArticle.author.avatar}

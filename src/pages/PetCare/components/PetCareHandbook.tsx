@@ -64,7 +64,7 @@ export default function PetCareHandbook() {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <div className="container mx-auto mt-6">
+    <div className="container mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <ContentHeader title="Sổ tay chăm sóc các bé" level="h1" />
 
@@ -103,11 +103,11 @@ export default function PetCareHandbook() {
       </div> */}
 
       {/* Featured Image */}
-      <div className="w-full h-100 rounded-xl overflow-hidden mb-8">
+      <div className="w-full h-120 rounded-xl overflow-hidden mb-8">
         <img
           src="/petcarebg.png"
           alt="Dogs playing together"
-          className="w-full h-full object-cover"
+          className="w-full h-full "
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = "https://via.placeholder.com/1200x400?text=Pet+Care";

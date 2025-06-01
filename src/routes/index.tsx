@@ -21,9 +21,7 @@ const PetCare = lazy(() => import("@/pages/PetCare"));
 const ArticleDetail = lazy(
   () => import("@/pages/PetCare/ArticleDetail/ArticleDetail")
 );
-const ClinicDetail = lazy(
-  () => import("@/pages/PetCare/ClinicDetail/ClinicDetail")
-);
+
 const BlogCreate = lazy(() => import("@/pages/PetCare/BlogCreate/BlogCreate"));
 const ListPets = lazy(() => import("@pages/ListPets"));
 const PetDetail = lazy(() => import("@/pages/ListPets/PetDetail"));
@@ -35,6 +33,10 @@ const RegistrationSuccess = lazy(
 const ListClinics = lazy(() => import("@/pages/PetCare/ListClinics"));
 import FindNewHome from "@/pages/FindNewHome";
 import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
+import VetClinicProfile from "@/pages/PetCare/ClinicDetail";
+const ProfilePage = lazy(() => import("@/pages/Profile"));
+import AddPet from "@/pages/Profile/AddPet";
+import UpdatePetInfo from "@/pages/Profile/UpdatePetInfo";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -48,7 +50,7 @@ const RouterComponent = () => {
         { path: ROUTES.PUBLIC.PETCARE, element: <PetCare /> },
         { path: ROUTES.PUBLIC.PETCARE_DETAIL, element: <ArticleDetail /> },
         { path: ROUTES.PUBLIC.CLINICS, element: <ListClinics /> },
-        { path: ROUTES.PUBLIC.CLINIC_DETAIL, element: <ClinicDetail /> },
+        { path: ROUTES.PUBLIC.CLINIC_DETAIL, element: <VetClinicProfile /> },
         { path: ROUTES.PUBLIC.PETCARE_CREATE, element: <BlogCreate /> },
         { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
         { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
@@ -64,6 +66,9 @@ const RouterComponent = () => {
           path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
           element: <ProfileDetail />,
         },
+        { path: ROUTES.PUBLIC.PROFILE, element: <ProfilePage /> },
+        { path: ROUTES.PUBLIC.ADD_PET, element: <AddPet /> },
+        { path: ROUTES.PUBLIC.UPDATE_PET, element: <UpdatePetInfo /> },
       ],
     },
     {

@@ -16,6 +16,7 @@ import { LOGO } from "@/constants/global";
 import ROUTES from "@/constants/routes";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -122,7 +123,7 @@ const Header = () => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/profile")}>
+            <DropdownMenuItem onClick={() => navigate(ROUTES.PUBLIC.PROFILE)}>
               <UserCircle className="mr-2 h-4 w-4" />
               <span>Hồ sơ cá nhân</span>
             </DropdownMenuItem>
@@ -144,7 +145,7 @@ const Header = () => {
       <Link
         to={ROUTES.PUBLIC.SIGNIN}
         aria-label="Account"
-        className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center"
+        className="ml-2 px-4 py-2  flex items-center  bg-[#0053A3] text-white rounded-full hover:bg-[#004080] transition-colors text-center"
       >
         <User size={18} className="mr-2" />
         <span>Đăng nhập</span>
@@ -180,10 +181,10 @@ const Header = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                `px-4 py-2 rounded-full transition-all duration-200  ${
                   isActive
                     ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-pink-300"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -192,46 +193,46 @@ const Header = () => {
             <NavLink
               to="/community"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                `px-4 py-2 rounded-full transition-all duration-200  ${
                   isActive
                     ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-pink-300"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
               Cộng đồng
             </NavLink>
             <NavLink
-              to="/adopt"
+              to="/pets"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                `px-4 py-2 rounded-full transition-all duration-200  ${
                   isActive
                     ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-pink-300"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
               Nhận nuôi bé cưng
             </NavLink>
             <NavLink
-              to="/search"
+              to="/find-new-home"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                `px-4 py-2 rounded-full transition-all duration-200  ${
                   isActive
                     ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-pink-300"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
               Tìm nhà cho bé yêu
             </NavLink>
             <NavLink
-              to="/care"
+              to="/pet-care"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200 font-bold ${
+                `px-4 py-2 rounded-full transition-all duration-200  ${
                   isActive
                     ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-pink-300"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -241,51 +242,63 @@ const Header = () => {
 
           {/* Action Icons */}
           <div className="hidden md:flex items-center space-x-1">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Search"
-              className="p-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
             >
               <Search size={20} />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Cart"
-              className="p-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
             >
               <ShoppingCart size={20} />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Contact"
-              className="p-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
             >
               <Phone size={20} />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Notifications"
-              className="p-2 text-gray-700 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-200"
+              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
             >
               <Bell size={20} />
-            </button>
+            </Button>
             {renderAuthSection()}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Search"
-              className="p-2 text-gray-700 hover:text-blue-600 transition-colors mr-1"
+              className="text-gray-700 hover:text-[#0053A3] mr-1"
             >
               <Search size={20} />
-            </button>
+            </Button>
             {isAuthenticated && (
               <div className="mr-2">{renderAuthSection()}</div>
             )}
-            <button
-              className="p-2 text-gray-700 ml-1"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
+              className="text-gray-700 ml-1"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -295,58 +308,64 @@ const Header = () => {
             <nav className="flex flex-col space-y-1 px-4">
               <Link
                 to="/community"
-                className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                className="px-4 py-3 text-gray-700 hover:text-[#0053A3] hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cộng đồng
               </Link>
               <Link
-                to="/adopt"
-                className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                to="/pets"
+                className="px-4 py-3 text-gray-700 hover:text-[#0053A3] hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Nhận nuôi bé cưng
               </Link>
               <Link
                 to="/find-new-home"
-                className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                className="px-4 py-3 text-gray-700 hover:text-[#0053A3] hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Tìm nhà cho bé yêu
               </Link>
               <Link
                 to="/pet-care"
-                className="px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                className="px-4 py-3 text-gray-700 hover:text-[#0053A3] hover:bg-blue-50 rounded-lg transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Sổ tay chăm sóc các bé
               </Link>
 
               <div className="flex justify-between pt-4 border-t border-gray-100 mt-2">
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label="Cart"
-                  className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-700 hover:text-[#0053A3]"
                 >
                   <ShoppingCart size={20} />
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label="Contact"
-                  className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-700 hover:text-[#0053A3]"
                 >
                   <Phone size={20} />
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label="Notifications"
-                  className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-700 hover:text-[#0053A3]"
                 >
                   <Bell size={20} />
-                </button>
+                </Button>
               </div>
 
               {!isAuthenticated && (
                 <Link
                   to={ROUTES.PUBLIC.SIGNIN}
-                  className="mt-3 w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                  className="mt-3 w-full py-3 bg-[#0053A3] text-white rounded-lg hover:bg-[#004080] transition-colors text-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Đăng nhập

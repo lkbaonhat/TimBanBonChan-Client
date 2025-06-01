@@ -48,7 +48,7 @@ export default function ArticleItem({
             <img
               src={thumbnail || "/petcarebg.png"}
               alt={title}
-              className="w-20 h-20 rounded-md object-cover"
+              className="w-27 h-27 rounded-md object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "/petcarebg.png";
@@ -57,10 +57,10 @@ export default function ArticleItem({
           </div>
 
           <div className="flex-grow">
-            <h2 className="text-xl font-semibold text-gray-900 hover:text-[#0053A3] transition-colors mb-2">
+            <h2 className="text-xl font-semibold text-gray-900  transition-colors mb-2">
               {title}
             </h2>
-            <p className="text-gray-600 mb-4 line-clamp-2">{summary}</p>
+            <p className="text-gray-600 mb-2 line-clamp-2">{summary}</p>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center">

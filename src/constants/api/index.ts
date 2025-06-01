@@ -5,8 +5,8 @@ export const API_ENDPOINT = {
     CONFIRM_EMAIL: "/auth/confirm-email",
   },
   PET: {
-    LIST: "/pets",
-    DETAIL: "/pets/:id",
+    LIST: "/pets/filter",
+    DETAIL: "/pets/:slug", // Updated to use slug for pet details
     ADOPTION_FORM: "/pets/:id/adoption-form",
   },
   VOLUNTEER: {

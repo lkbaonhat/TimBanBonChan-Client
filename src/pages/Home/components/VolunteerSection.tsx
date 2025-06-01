@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const VolunteerSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -70,7 +71,7 @@ const VolunteerSection = () => {
                 shape="pill"
                 className="hover:shadow-lg transition-all duration-300 px-8 py-4"
               >
-                <a href="/volunteer">Khám phá thêm</a>
+                <Link to="/volunteer">Khám phá thêm</Link>
               </Button>
               <Button
                 asChild
@@ -79,7 +80,7 @@ const VolunteerSection = () => {
                 shape="pill"
                 className="hover:shadow-lg transition-all duration-300 px-8 py-4"
               >
-                <a href="/volunteer/registration">Đăng ký ngay</a>
+                <Link to="/volunteer/registration">Đăng ký ngay</Link>
               </Button>
             </div>
           </div>
