@@ -14,7 +14,7 @@ export default function PetsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
-  const listPet = useSelector(selectorGlobal.listPet)
+  const listPet = useSelector(selectorGlobal.listPet) || []
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
@@ -39,36 +39,29 @@ export default function PetsPage() {
     }
   }, [location.state, dispatch])
 
+  const getValueType = (param: string) => {
+    switch (param) {
+      case "Chó":
+        return "dog"
+      case "Mèo":
+        return "cat"
+      default:
+        return "all"
+    }
+  }
+
   // Filter pets based on search term and filters
-  const filteredPets = listPet.filter(pet => {
-    const matchesSearch =
-      pet.petName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPets = React.useMemo(() => {
+    return listPet.filter(pet => {
+      const matchesSearch =
+        pet.petName.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesType = filterType === 'all' || pet.categoryName === filterType
-    const matchesStatus = filterStatus === 'all' || pet.adoptionStatus === filterStatus
+      const matchesType = filterType === 'all' || getValueType(pet.categoryName) === filterType
+      const matchesStatus = filterStatus === 'all' || pet.adoptionStatus.toLowerCase() === filterStatus
 
-    return matchesSearch && matchesType && matchesStatus
-  })
-
-  // Handle deleting a pet
-  const handleDeletePet = (id: number) => {
-    setNotification({
-      type: 'success',
-      message: 'Thú cưng đã được xóa thành công!'
+      return matchesSearch && matchesType && matchesStatus
     })
-  }  // Handle viewing pet details
-  const handleViewPetDetails = (slug: string) => {
-    navigate(`/staff/manage-pets/${slug}`)
-  }
-
-  // Handle editing a pet (this is just a placeholder as we're navigating directly from the dialog)
-  const handleEditPet = (_id: number, updatedPet: any) => {
-    console.log('Updated pet:', updatedPet)
-    setNotification({
-      type: 'success',
-      message: 'Thú cưng đã được cập nhật thành công!'
-    })
-  }
+  }, [listPet, searchTerm, filterType, filterStatus])
 
   return (
     <div>
@@ -147,9 +140,6 @@ export default function PetsPage() {
 
         <PetsTable
           pets={filteredPets}
-          onViewDetails={handleViewPetDetails}
-          onEdit={handleEditPet}
-          onDelete={handleDeletePet}
         />
       </div>
     </div>

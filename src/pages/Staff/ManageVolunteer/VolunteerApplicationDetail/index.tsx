@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { volunteerServices } from '@/services/volunteerService';
 import { formatDate } from '@/utils/helper';
-import { ArrowLeft, Check, X } from 'lucide-react';
+import { ArrowLeft, CalendarIcon, Check, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import ROUTES from '@/constants/routes';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Volunteer {
     applicationId: string;
@@ -36,34 +37,6 @@ interface Volunteer {
     availableHours?: string;
 }
 
-// Giả lập dữ liệu để kiểm thử
-const getMockApplicationData = (id: string): Volunteer => {
-    return {
-        applicationId: id,
-        userId: 'user-123',
-        fullName: 'Vuu Thanhh Ann',
-        email: 'vuthanhan3547@gmail.com',
-        phoneNumber: '0123654758',
-        gender: 'male',
-        applicationStatus: 'pending',
-        createdDate: '2023-05-15T08:30:00',
-        address: 'Quận 9, Thành phố Hồ Chí Minh',
-        skills: ['Chăm sóc thú cưng', 'Tư vấn', 'Nhiếp ảnh'],
-        experience: 'Từng tham gia các hoạt động tình nguyện về động vật tại trường đại học. Có kinh nghiệm chăm sóc thú cưng tại nhà trong 3 năm.',
-        availability: 'Các ngày trong tuần sau 18h, cả ngày cuối tuần',
-        reason: 'Tôi yêu thích động vật và muốn đóng góp cho cộng đồng. Tôi tin rằng mỗi thú cưng đều xứng đáng có một mái ấm yêu thương.',
-        // Các trường mới từ API
-        birthDate: '2000-01-05',
-        occupation: 'Sinh Viên',
-        facebookLink: 'https://facebook.com/vuthanhan',
-        preferredRole: 'Tình nguyện viên chăm sóc thú cưng',
-        previousExperience: 'Đã từng tham gia nhiều hoạt động tình nguyện tại trường đại học',
-        motivation: 'Yêu thích động vật và muốn đóng góp cho cộng đồng',
-        availableDays: 'Thứ 2-6 sau 17h, Thứ 7-CN cả ngày',
-        availableHours: '17:00-21:00 các ngày trong tuần, 08:00-17:00 cuối tuần'
-    };
-};
-
 function VolunteerApplicationDetail() {
     const { id } = useParams<{ id: string }>();
     const [application, setApplication] = useState<Volunteer | null>(null);
@@ -75,22 +48,11 @@ function VolunteerApplicationDetail() {
         const fetchApplicationDetail = async () => {
             if (!id) return;
 
-            // DEVELOPMENT: Sử dụng dữ liệu giả lập
-            const useMockData = true; // Đặt thành false khi sẵn sàng sử dụng API thật
-
-            if (useMockData) {
-                // Giả lập độ trễ để kiểm tra trạng thái loading
-                setTimeout(() => {
-                    setApplication(getMockApplicationData(id));
-                    setLoading(false);
-                }, 1000);
-                return;
-            }
-
             try {
                 setLoading(true);
                 const response = await volunteerServices.getVolunteerApplicationById(id);
                 setApplication(response.data.data);
+                console.log(application)
             } catch (error) {
                 console.error('Error fetching volunteer application details:', error);
                 toast.error('Không thể tải thông tin đơn đăng ký');
@@ -100,7 +62,9 @@ function VolunteerApplicationDetail() {
         };
 
         fetchApplicationDetail();
-    }, [id]); const handleStatusUpdate = async (newStatus: string) => {
+    }, [id]);
+
+    const handleStatusUpdate = async (newStatus: string) => {
         if (!id) return;
 
         // DEVELOPMENT: Sử dụng dữ liệu giả lập
@@ -142,9 +106,9 @@ function VolunteerApplicationDetail() {
             case 'active':
                 return 'default';
             case 'pending':
-                return 'secondary';
+                return 'pending';
             case 'approved':
-                return 'outline';
+                return 'success';
             case 'rejected':
                 return 'destructive';
             default:
@@ -213,77 +177,120 @@ function VolunteerApplicationDetail() {
                 </Breadcrumb>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Thông tin chính */}
-                <Card className="col-span-2">
-                    <CardHeader>
+            {application.applicationStatus.toLowerCase() === 'pending' && (
+                <div className="flex justify-end">
+                    <div className='flex space-y-2 gap-2'>
+                        <Button
+                            onClick={() => handleStatusUpdate('approved')}
+                            variant="success"
+                            size="sm"
+                            disabled={updating}
+                        >
+                            <Check className="mr-2 h-4 w-4" />
+                            Duyệt
+                        </Button>
+                        <Button
+                            onClick={() => handleStatusUpdate('rejected')}
+                            variant="destructive"
+                            size='sm'
+                            disabled={updating}
+                        >
+                            <X className="mr-2 h-4 w-4" />
+                            Từ chối
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+
+            {/* Thông tin chính */}
+            <Card className="col-span-2">
+                <CardHeader className='flex justify-between'>
+                    <div>
                         <CardTitle className="text-xl">Thông tin ứng viên</CardTitle>
                         <CardDescription>Thông tin chi tiết về ứng viên tình nguyện viên</CardDescription>
-                    </CardHeader>                    <CardContent className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </div>
+                    <div>
+                        <Badge variant={getStatusBadgeVariant(application.applicationStatus)} className="text-sm py-1 px-3 h- w-20">
+                            {getStatusDisplayText(application.applicationStatus.toLowerCase())}
+                        </Badge>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="bg-gradient-to-r from-[#5B7CCB] to-[#0052A3] p-6 text-white">
+                        <div className="flex items-center gap-4">
+                            <Avatar className="h-20 w-20 border-4 border-white">
+                                <AvatarImage
+                                    src={application.fullName || "/placeholder.svg"}
+                                    alt={application.fullName}
+                                />
+                                <AvatarFallback className="bg-[#FFBDEF] text-[#0052A3]">
+                                    {application.fullName.split(" ").pop()?.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
                             <div>
-                                <h3 className="text-sm font-medium text-gray-500">Họ và tên</h3>
-                                <p className="text-base mt-1">{application.fullName}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Email</h3>
-                                <p className="text-base mt-1">{application.email}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Số điện thoại</h3>
-                                <p className="text-base mt-1">{application.phoneNumber}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Giới tính</h3>
-                                <p className="text-base mt-1">{application.gender === 'male' ? 'Nam' : 'Nữ'}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Ngày sinh</h3>
-                                <p className="text-base mt-1">{application.birthDate ? formatDate(application.birthDate) : 'Chưa cung cấp'}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Nghề nghiệp</h3>
-                                <p className="text-base mt-1">{application.occupation || 'Chưa cung cấp'}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Địa chỉ</h3>
-                                <p className="text-base mt-1">{application.address || 'Chưa cung cấp'}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500">Ngày đăng ký</h3>
-                                <p className="text-base mt-1">{formatDate(application.createdDate)}</p>
-                            </div>
-                            {application.facebookLink && (
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-500">Facebook</h3>
-                                    <p className="text-base mt-1">
-                                        <a
-                                            href={application.facebookLink}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline"
-                                        >
-                                            {application.facebookLink}
-                                        </a>
-                                    </p>
+                                <h2 className="text-2xl font-bold">{application.fullName}</h2>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <CalendarIcon className="h-4 w-4" />
+                                    <span className="text-sm">Ngày nộp đơn: {formatDate(application.createdDate)}</span>
                                 </div>
-                            )}
+                            </div>
                         </div>
-
-                        <Separator />
-
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Họ và tên</h3>
+                            <p className="text-base mt-1">{application.fullName}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Email</h3>
+                            <p className="text-base mt-1">{application.email}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Số điện thoại</h3>
+                            <p className="text-base mt-1">{application.phoneNumber}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Giới tính</h3>
+                            <p className="text-base mt-1">{application.gender === 'male' ? 'Nam' : 'Nữ'}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Ngày sinh</h3>
+                            <p className="text-base mt-1">{application.birthDate ? formatDate(application.birthDate) : 'Chưa cung cấp'}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Nghề nghiệp</h3>
+                            <p className="text-base mt-1">{application.occupation || 'Chưa cung cấp'}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Địa chỉ</h3>
+                            <p className="text-base mt-1">{application.address || 'Chưa cung cấp'}</p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Ngày đăng ký</h3>
+                            <p className="text-base mt-1">{formatDate(application.createdDate)}</p>
+                        </div>
+                        {application.facebookLink && (
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500">Facebook</h3>
+                                <p className="text-base mt-1">
+                                    <a
+                                        href={application.facebookLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {application.facebookLink}
+                                    </a>
+                                </p>
+                            </div>
+                        )}
                         <div>
                             <h3 className="text-sm font-medium text-gray-500 mb-2">Kỹ năng</h3>
                             <div className="flex flex-wrap gap-2">
-                                {application.skills && application.skills.length > 0 ? (
-                                    application.skills.map((skill, index) => (
-                                        <Badge key={index} variant="outline">
-                                            {skill}
-                                        </Badge>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-400">Chưa cung cấp thông tin</p>
-                                )}
+                                <Badge variant="outline">
+                                    {application.skills}
+                                </Badge>
                             </div>
                         </div>
 
@@ -300,73 +307,27 @@ function VolunteerApplicationDetail() {
                                 {application.experience || application.previousExperience || 'Chưa cung cấp thông tin'}
                             </p>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500 mb-2">Ngày có thể tham gia</h3>
-                                <p className="text-base whitespace-pre-line">
-                                    {application.availableDays || application.availability || 'Chưa cung cấp thông tin'}
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-500 mb-2">Giờ có thể tham gia</h3>
-                                <p className="text-base whitespace-pre-line">
-                                    {application.availableHours || 'Chưa cung cấp thông tin'}
-                                </p>
-                            </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500 mb-2">Ngày có thể tham gia</h3>
+                            <p className="text-base whitespace-pre-line">
+                                {application.availableDays || application.availability || 'Chưa cung cấp thông tin'}
+                            </p>
                         </div>
-
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500 mb-2">Giờ có thể tham gia</h3>
+                            <p className="text-base whitespace-pre-line">
+                                {application.availableHours || 'Chưa cung cấp thông tin'}
+                            </p>
+                        </div>
                         <div>
                             <h3 className="text-sm font-medium text-gray-500 mb-2">Lý do tham gia</h3>
                             <p className="text-base whitespace-pre-line">
                                 {application.reason || application.motivation || 'Chưa cung cấp thông tin'}
                             </p>
                         </div>
-                    </CardContent>
-                </Card>
-
-                {/* Thông tin trạng thái và hành động */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-xl">Trạng thái</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div>
-                            <h3 className="text-sm font-medium text-gray-500 mb-2">Trạng thái hiện tại</h3>
-                            <Badge variant={getStatusBadgeVariant(application.applicationStatus)} className="text-base py-1 px-3">
-                                {getStatusDisplayText(application.applicationStatus.toLowerCase())}
-                            </Badge>
-                        </div>
-
-                        <div>
-                            <h3 className="text-sm font-medium text-gray-500 mb-2">Mã đơn đăng ký</h3>
-                            <p className="text-sm font-mono bg-gray-100 p-2 rounded">{application.applicationId}</p>
-                        </div>
-                    </CardContent>
-
-                    {application.applicationStatus.toLowerCase() === 'pending' && (
-                        <CardFooter className="flex flex-col space-y-2">
-                            <Button
-                                onClick={() => handleStatusUpdate('approved')}
-                                className="w-full"
-                                disabled={updating}
-                            >
-                                <Check className="mr-2 h-4 w-4" />
-                                Duyệt đơn đăng ký
-                            </Button>
-                            <Button
-                                onClick={() => handleStatusUpdate('rejected')}
-                                variant="destructive"
-                                className="w-full"
-                                disabled={updating}
-                            >
-                                <X className="mr-2 h-4 w-4" />
-                                Từ chối đơn đăng ký
-                            </Button>
-                        </CardFooter>
-                    )}
-                </Card>
-            </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
