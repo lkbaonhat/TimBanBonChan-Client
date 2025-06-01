@@ -1,131 +1,117 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Save, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { CloudinaryUpload } from '@/components/CloudinaryUpload'
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
-import ROUTES from '@/constants/routes'
-import { useSelector } from 'react-redux'
-import { selectorGlobal } from '@/store/modules/global/selector'
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, FieldValues } from "react-hook-form"
+import * as z from "zod"
+import { Save, X, Heart, MapPin, Calendar, Weight, Palette, Ruler, Shield, Award, Users, Home } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { CloudinaryUpload } from "@/components/CloudinaryUpload"
 
-// Define the form schema with zod
 const petFormSchema = z.object({
-    petName: z.string().min(1, 'Tên thú cưng là bắt buộc'),
-    categoryId: z.number().min(0, 'Loại thú cưng là bắt buộc'),
-    breedId: z.number().min(0, 'Giống là bắt buộc'),
-    age: z.number().min(0, 'Độ tuổi là bắt buộc'),
-    ageUnit: z.string().min(1, 'Đơn vị tuổi là bắt buộc'),
-    gender: z.string().min(1, 'Giới tính là bắt buộc'),
-    size: z.string().min(1, 'Kích thước là bắt buộc'),
-    color: z.string().min(1, 'Màu sắc là bắt buộc'),
-    weight: z.number().min(0, 'Cân nặng là bắt buộc'),
-    location: z.string().min(1, 'Địa điểm là bắt buộc'),
+    petName: z.string().min(1, "Tên thú cưng là bắt buộc"),
+    categoryId: z.number().min(0, "Loại thú cưng là bắt buộc"),
+    breedId: z.number().min(0, "Giống là bắt buộc"),
+    age: z.number().min(0, "Độ tuổi là bắt buộc"),
+    ageUnit: z.string().min(1, "Đơn vị tuổi là bắt buộc"),
+    gender: z.string().min(1, "Giới tính là bắt buộc"),
+    size: z.string().min(1, "Kích thước là bắt buộc"),
+    color: z.string().min(1, "Màu sắc là bắt buộc"),
+    weight: z.number().min(0, "Cân nặng là bắt buộc"),
+    location: z.string().min(1, "Địa điểm là bắt buộc"),
     isVaccinated: z.boolean().default(false),
     isNeutered: z.boolean().default(false),
     isTrained: z.boolean().default(false),
-    healthStatus: z.string().min(1, 'Tình trạng sức khỏe là bắt buộc'),
+    healthStatus: z.string().min(1, "Tình trạng sức khỏe là bắt buộc"),
     personality: z.string().optional(),
-    adoptionStatus: z.string().min(1, 'Trạng thái nhận nuôi là bắt buộc'),
+    adoptionStatus: z.string().min(1, "Trạng thái nhận nuôi là bắt buộc"),
     foodPreferences: z.string().optional(),
     toyPreferences: z.string().optional(),
     compatibleWith: z.string().optional(),
     notCompatibleWith: z.string().optional(),
-    description: z.string().optional(), avatarImage: z.object({
-        imageUrl: z.string().min(1, 'Ảnh đại diện là bắt buộc'),
-    }),
-    otherImages: z.array(
-        z.object({
-            imageUrl: z.string().min(1, 'Đường dẫn hình ảnh là bắt buộc'),
-        })
-    ).optional().default([]),
-    createdByUserId: z.number().optional()
+    description: z.string().optional(),
+    primaryImageUrl: z.string().min(1, "Ảnh đại diện là bắt buộc"),
+    additionalImageUrls: z.array(z.string()).optional(),
+    createdByUserId: z.number().optional(),
 })
 
-// Define the form values type from the zod schema
 export type PetFormValues = z.infer<typeof petFormSchema>
 
-export function AddPetPage() {
-    const navigate = useNavigate()
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const petCategories = useSelector(selectorGlobal.petCategories)
+const mockPetCategories = [
+    { categoryId: 1, categoryName: "Chó" },
+    { categoryId: 2, categoryName: "Mèo" },
+    { categoryId: 3, categoryName: "Thỏ" },
+    { categoryId: 4, categoryName: "Chim" },
+]
 
-    // Type-safe form definition with generic parameter
-    const form = useForm<PetFormValues>({
-        resolver: zodResolver(petFormSchema) as any, // Cast to any to resolve typing issues
+export default function AddPetPage() {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const form = useForm<z.infer<typeof petFormSchema>>({
+        resolver: zodResolver(petFormSchema),
         defaultValues: {
-            petName: '',
+            petName: "",
             categoryId: 0,
             breedId: 0,
-            gender: '',
+            gender: "",
             age: 0,
-            ageUnit: '',
-            size: '',
-            color: '',
+            ageUnit: "",
+            size: "",
+            color: "",
             weight: 0,
-            location: '',
+            location: "",
             isVaccinated: false,
             isNeutered: false,
             isTrained: false,
-            healthStatus: '',
-            personality: '',
-            adoptionStatus: '',
-            foodPreferences: '',
-            toyPreferences: '',
-            compatibleWith: '',
-            notCompatibleWith: '',
-            description: '', avatarImage: { imageUrl: '' },
-            otherImages: [],
-            createdByUserId: 0
-        }
+            healthStatus: "",
+            personality: "",
+            adoptionStatus: "",
+            foodPreferences: "",
+            toyPreferences: "",
+            compatibleWith: "",
+            notCompatibleWith: "",
+            description: "",
+            primaryImageUrl: "",
+            additionalImageUrls: [],
+            createdByUserId: 0,
+        },
     })
 
-    const handleSubmit = async (values: z.infer<typeof petFormSchema>) => {
+    const handleSubmit = async (values: PetFormValues) => {
         setIsSubmitting(true)
         try {
-            // In a real app, you would make an API call here
-            // Format values according to the API payload structure
-
-            // Ensure we have proper numeric values
             const payload = {
                 ...values,
-                // Ensure these are proper numbers
                 categoryId: Number(values.categoryId),
                 breedId: Number(values.breedId),
                 age: Number(values.age),
-                weight: Number(values.weight),                // Kết hợp ảnh đại diện và các ảnh khác thành một mảng, với ảnh đại diện là isPrimary
-                images: [
-                    { ...values.avatarImage, isPrimary: true },
-                    ...values.otherImages.map(img => ({ ...img, isPrimary: false }))
-                ],
-                createdByUserId: 0 // This would typically come from authentication context
+                weight: Number(values.weight),
+                primaryImageUrl: values.primaryImageUrl,
+                additionalImageUrls: values.additionalImageUrls || [],
+                createdByUserId: 0,
             }
 
-            // Simulate API call with a delay
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+            console.log("Submitted pet data:", payload)
 
-            console.log('Submitted pet data:', payload)
-
-            // Navigate back to the pets list
-            navigate(ROUTES.STAFF.MANAGE_PETS, {
-                state: {
-                    notification: {
-                        type: 'success',
-                        message: 'Thú cưng đã được tạo thành công!'
-                    }
-                }
-            })
+            // Simulate success
+            alert("Thú cưng đã được tạo thành công!")
         } catch (error) {
-            console.error('Failed to add pet:', error)
-            form.setError('root', {
-                message: 'Có lỗi xảy ra khi tạo thú cưng. Vui lòng thử lại.'
+            console.error("Failed to add pet:", error)
+            form.setError("root", {
+                message: "Có lỗi xảy ra khi tạo thú cưng. Vui lòng thử lại.",
             })
         } finally {
             setIsSubmitting(false)
@@ -133,380 +119,585 @@ export function AddPetPage() {
     }
 
     return (
-        <div>
-            <Breadcrumb className="mb-6">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link to={ROUTES.STAFF.MANAGE_PETS}>Thú cưng</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Thêm thú cưng mới</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+        <div className="min-h-screen">
+            <div className="">
+                {/* Header Section */}
+                <div className="mb-8">
+                    <Breadcrumb className="mb-6">
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/pets" className="text-blue-600 hover:text-blue-800">
+                                    Thú cưng
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-gray-600">Thêm thú cưng mới</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Thông tin thú cưng</CardTitle>
-                    <CardDescription>
-                        Điền thông tin chi tiết về thú cưng cần được nhận nuôi.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit as any)} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-6">
-                                    <FormField
-                                        control={form.control}
-                                        name="petName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Tên thú cưng</FormLabel>
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+                            <Heart className="h-8 w-8 text-white" />
+                        </div>
+                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Thêm thú cưng mới</h1>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Điền thông tin chi tiết về thú cưng để giúp chúng tìm được gia đình yêu thương
+                        </p>
+                    </div>
+                </div>
+
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+                        {/* Image Upload Section */}
+                        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
+                                <CardTitle className="flex items-center gap-2 text-xl">
+                                    <Award className="h-6 w-6" />
+                                    Hình ảnh thú cưng
+                                </CardTitle>
+                                <CardDescription className="text-blue-100">Thêm ảnh đẹp để thu hút người nhận nuôi</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8">
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                    <div className="lg:col-span-1">
+                                        <FormField
+                                            control={form.control}
+                                            name="primaryImageUrl"
+                                            render={({ field }) => (<FormItem>
+                                                <FormLabel className="text-lg font-semibold text-gray-700">Ảnh đại diện</FormLabel>
+                                                <FormDescription className="text-gray-500 mb-4">
+                                                    Ảnh chính sẽ hiển thị đầu tiên trong danh sách
+                                                </FormDescription>
                                                 <FormControl>
-                                                    <Input placeholder="Nhập tên thú cưng" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="categoryId"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Loại thú cưng</FormLabel>
-                                                    <Select
-                                                        onValueChange={(value) => field.onChange(parseInt(value))}
-                                                        defaultValue={field.value.toString()}
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Chọn loại thú cưng" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {petCategories.map((category) => (
-                                                                <SelectItem
-                                                                    key={category.categoryId}
-                                                                    value={category.categoryId.toString()}
-                                                                >
-                                                                    {category.categoryName}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="breedId"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Giống</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="Chọn giống thú cưng"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="gender"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Giới tính</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Chọn giới tính" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="Đực">Đực</SelectItem>
-                                                            <SelectItem value="Cái">Cái</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="age"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Độ tuổi</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="Nhập tuổi"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="ageUnit"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Đơn vị tuổi</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Chọn đơn vị" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="Ngày">Ngày</SelectItem>
-                                                            <SelectItem value="Tháng">Tháng</SelectItem>
-                                                            <SelectItem value="Năm">Năm</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="weight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Cân nặng (kg)</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="Nhập cân nặng"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="size"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Kích thước</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Chọn kích thước" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="Nhỏ">Nhỏ</SelectItem>
-                                                            <SelectItem value="Trung bình">Trung bình</SelectItem>
-                                                            <SelectItem value="Lớn">Lớn</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="color"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Màu sắc</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Nhập màu sắc" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <FormField
-                                        control={form.control}
-                                        name="location"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Địa điểm</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Nhập địa điểm" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="isVaccinated"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                                                    <FormControl>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={field.value}
-                                                            onChange={field.onChange}
-                                                            className="h-4 w-4"
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel>Đã tiêm vaccine</FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="isNeutered"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                                                    <FormControl>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={field.value}
-                                                            onChange={field.onChange}
-                                                            className="h-4 w-4"
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel>Đã triệt sản</FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="isTrained"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                                                    <FormControl>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={field.value}
-                                                            onChange={field.onChange}
-                                                            className="h-4 w-4"
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel>Đã huấn luyện</FormLabel>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>                                    <FormField
-                                        control={form.control}
-                                        name="personality"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Tính cách</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Nhập tính cách thú cưng" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="description"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Mô tả</FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Nhập mô tả về thú cưng"
-                                                        className="resize-none"
-                                                        rows={4}
-                                                        {...field}
+                                                    <CloudinaryUpload
+                                                        onImageUploaded={(url) => {
+                                                            if (url && url.trim() !== "") {
+                                                                field.onChange(url);
+                                                            }
+                                                        }}
+                                                        defaultImage={field.value || ""}
+                                                        isPrimary={true}
                                                     />
                                                 </FormControl>
-                                                <FormDescription>
-                                                    Mô tả chi tiết về thú cưng và các thông tin khác.
-                                                </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
-                                        )}
-                                    />
-                                </div>                                <div className="space-y-6">
-
-                                    <FormField
-                                        control={form.control}
-                                        name="healthStatus"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Tình trạng sức khỏe</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="lg:col-span-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="additionalImageUrls"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-lg font-semibold text-gray-700">Ảnh bổ sung</FormLabel>
+                                                    <FormDescription className="text-gray-500 mb-4">
+                                                        Add more images to show details about the pet
+                                                    </FormDescription>
                                                     <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Chọn tình trạng sức khỏe" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="Tốt">Tốt</SelectItem>
-                                                        <SelectItem value="Bình thường">Bình thường</SelectItem>
-                                                        <SelectItem value="Cần chăm sóc đặc biệt">Cần chăm sóc đặc biệt</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                                        <div className="space-y-6">
+                                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                                                {/* Upload button always visible in first column */}
+                                                                <div className="md:col-span-2">
+                                                                    <CloudinaryUpload
+                                                                        onImageUploaded={(url) => {
+                                                                            if (url && url.trim() !== "") {
+                                                                                const newUrls = Array.isArray(field.value) ? [...field.value] : []
+                                                                                newUrls.push(url)
+                                                                                field.onChange(newUrls)
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </div>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="adoptionStatus"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Trạng thái nhận nuôi</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                                {/* Grid of uploaded images */}
+                                                                {Array.isArray(field.value) && field.value.length > 0 && (
+                                                                    <div className="md:col-span-2">
+                                                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                                                                            <div className="flex items-center justify-between mb-3">
+                                                                                <h4 className="font-medium text-gray-700">
+                                                                                    Ảnh đã tải lên ({field.value.length})
+                                                                                </h4>
+                                                                            </div>
+                                                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                                                                {field.value.map((url, index) => (
+                                                                                    <div key={index} className="relative group">                                                                                    <img
+                                                                                        src={url}
+                                                                                        alt={`Pet image ${index + 1}`}
+                                                                                        className="w-full h-24 object-cover rounded-lg border-2 border-gray-200 group-hover:border-blue-400 transition-colors"
+                                                                                        onError={(e) => {
+                                                                                            // Fallback if the image URL is invalid
+                                                                                            (e.target as HTMLImageElement).src = "/placeholder.svg";
+                                                                                        }}
+                                                                                    />
+                                                                                        <Button
+                                                                                            type="button"
+                                                                                            variant="destructive"
+                                                                                            size="icon"
+                                                                                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                                            onClick={() => {
+                                                                                                const newUrls = field.value?.filter((_, i) => i !== index)
+                                                                                                field.onChange(newUrls)
+                                                                                            }}
+                                                                                        >
+                                                                                            <X className="h-3 w-3" />
+                                                                                        </Button>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {Array.isArray(field.value) && field.value.length > 0 && (
+                                                                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                                                    <p className="text-sm text-green-700 font-medium flex items-center gap-2">
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="16"
+                                                                            height="16"
+                                                                            viewBox="0 0 24 24"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth="2"
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            className="lucide lucide-check-circle"
+                                                                        >
+                                                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                                            <polyline points="22 4 12 14.01 9 11.01" />
+                                                                        </svg>
+                                                                        Uploaded {field.value.length} additional images
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Basic Information */}
+                        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                            <CardHeader className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-t-lg">
+                                <CardTitle className="flex items-center gap-2 text-xl">
+                                    <Heart className="h-6 w-6" />
+                                    Thông tin cơ bản
+                                </CardTitle>
+                                <CardDescription className="text-green-100">Thông tin chính về thú cưng</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <div className="space-y-6">
+                                        <FormField
+                                            control={form.control}
+                                            name="petName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                        <Heart className="h-4 w-4 text-red-500" />
+                                                        Tên thú cưng
+                                                    </FormLabel>
                                                     <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Chọn trạng thái" />
-                                                        </SelectTrigger>
+                                                        <Input
+                                                            placeholder="Nhập tên thú cưng"
+                                                            className="h-12 text-base border-2 focus:border-blue-400"
+                                                            {...field}
+                                                        />
                                                     </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="Có thể nhận nuôi">Có thể nhận nuôi</SelectItem>
-                                                        <SelectItem value="Đang xử lý">Đang xử lý</SelectItem>
-                                                        <SelectItem value="Đã nhận nuôi">Đã nhận nuôi</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="categoryId"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-base font-semibold">Loại thú cưng</FormLabel>
+                                                        <Select
+                                                            onValueChange={(value) => field.onChange(Number.parseInt(value))}
+                                                            defaultValue={field.value.toString()}
+                                                        >
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-12 border-2 focus:border-blue-400">
+                                                                    <SelectValue placeholder="Chọn loại" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {mockPetCategories.map((category) => (
+                                                                    <SelectItem key={category.categoryId} value={category.categoryId.toString()}>
+                                                                        {category.categoryName}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="breedId"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-base font-semibold">Giống</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                placeholder="ID giống"
+                                                                className="h-12 border-2 focus:border-blue-400"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="gender"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-base font-semibold">Giới tính</FormLabel>
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-12 border-2 focus:border-blue-400">
+                                                                    <SelectValue placeholder="Chọn giới tính" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="Đực">Đực</SelectItem>
+                                                                <SelectItem value="Cái">Cái</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="age"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                            <Calendar className="h-4 w-4 text-blue-500" />
+                                                            Độ tuổi
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                placeholder="Nhập tuổi"
+                                                                className="h-12 border-2 focus:border-blue-400"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="ageUnit"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-base font-semibold">Đơn vị tuổi</FormLabel>
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-12 border-2 focus:border-blue-400">
+                                                                    <SelectValue placeholder="Chọn đơn vị" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="Ngày">Ngày</SelectItem>
+                                                                <SelectItem value="Tháng">Tháng</SelectItem>
+                                                                <SelectItem value="Năm">Năm</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="weight"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                            <Weight className="h-4 w-4 text-purple-500" />
+                                                            Cân nặng (kg)
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                placeholder="Nhập cân nặng"
+                                                                className="h-12 border-2 focus:border-blue-400"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="size"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                            <Ruler className="h-4 w-4 text-orange-500" />
+                                                            Kích thước
+                                                        </FormLabel>
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-12 border-2 focus:border-blue-400">
+                                                                    <SelectValue placeholder="Chọn kích thước" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="Nhỏ">Nhỏ</SelectItem>
+                                                                <SelectItem value="Trung bình">Trung bình</SelectItem>
+                                                                <SelectItem value="Lớn">Lớn</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="color"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                            <Palette className="h-4 w-4 text-pink-500" />
+                                                            Màu sắc
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder="Nhập màu sắc"
+                                                                className="h-12 border-2 focus:border-blue-400"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        <FormField
+                                            control={form.control}
+                                            name="location"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                        <MapPin className="h-4 w-4 text-red-500" />
+                                                        Địa điểm
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="Nhập địa điểm"
+                                                            className="h-12 border-2 focus:border-blue-400"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <FormField
+                                            control={form.control}
+                                            name="healthStatus"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                        <Shield className="h-4 w-4 text-green-500" />
+                                                        Tình trạng sức khỏe
+                                                    </FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="h-12 border-2 focus:border-blue-400">
+                                                                <SelectValue placeholder="Chọn tình trạng" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="Tốt">Tốt</SelectItem>
+                                                            <SelectItem value="Bình thường">Bình thường</SelectItem>
+                                                            <SelectItem value="Cần chăm sóc đặc biệt">Cần chăm sóc đặc biệt</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="adoptionStatus"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2 text-base font-semibold">
+                                                        <Home className="h-4 w-4 text-blue-500" />
+                                                        Trạng thái nhận nuôi
+                                                    </FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="h-12 border-2 focus:border-blue-400">
+                                                                <SelectValue placeholder="Chọn trạng thái" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="Có thể nhận nuôi">Có thể nhận nuôi</SelectItem>
+                                                            <SelectItem value="Đang xử lý">Đang xử lý</SelectItem>
+                                                            <SelectItem value="Đã nhận nuôi">Đã nhận nuôi</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <div className="bg-gray-50 rounded-xl p-6 space-y-4">
+                                            <h3 className="font-semibold text-gray-700 mb-4">Tình trạng chăm sóc</h3>
+                                            <div className="grid grid-cols-1 gap-4">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="isVaccinated"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                                            <FormControl>
+                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} className="h-5 w-5" />
+                                                            </FormControl>
+                                                            <FormLabel className="text-base font-medium">✅ Đã tiêm vaccine</FormLabel>
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="isNeutered"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                                            <FormControl>
+                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} className="h-5 w-5" />
+                                                            </FormControl>
+                                                            <FormLabel className="text-base font-medium">✂️ Đã triệt sản</FormLabel>
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="isTrained"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                                            <FormControl>
+                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} className="h-5 w-5" />
+                                                            </FormControl>
+                                                            <FormLabel className="text-base font-medium">🎓 Đã huấn luyện</FormLabel>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <FormField
+                                            control={form.control}
+                                            name="personality"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-base font-semibold">Tính cách</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="Nhập tính cách thú cưng"
+                                                            className="h-12 border-2 focus:border-blue-400"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="description"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-base font-semibold">Mô tả</FormLabel>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            placeholder="Nhập mô tả về thú cưng"
+                                                            className="resize-none border-2 focus:border-blue-400"
+                                                            rows={4}
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription>Mô tả chi tiết về thú cưng và các thông tin khác</FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Preferences Section */}
+                        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                            <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-t-lg">
+                                <CardTitle className="flex items-center gap-2 text-xl">
+                                    <Users className="h-6 w-6" />
+                                    Sở thích & Tương thích
+                                </CardTitle>
+                                <CardDescription className="text-purple-100">
+                                    Thông tin về sở thích và khả năng tương thích
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <FormField
                                         control={form.control}
                                         name="foodPreferences"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Sở thích ăn uống</FormLabel>
+                                                <FormLabel className="text-base font-semibold">Sở thích ăn uống</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Nhập sở thích ăn uống" {...field} />
+                                                    <Input
+                                                        placeholder="Nhập sở thích ăn uống"
+                                                        className="h-12 border-2 focus:border-blue-400"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -518,9 +709,13 @@ export function AddPetPage() {
                                         name="toyPreferences"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Sở thích đồ chơi</FormLabel>
+                                                <FormLabel className="text-base font-semibold">Sở thích đồ chơi</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Nhập sở thích đồ chơi" {...field} />
+                                                    <Input
+                                                        placeholder="Nhập sở thích đồ chơi"
+                                                        className="h-12 border-2 focus:border-blue-400"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -532,13 +727,15 @@ export function AddPetPage() {
                                         name="compatibleWith"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Tương thích với</FormLabel>
+                                                <FormLabel className="text-base font-semibold">Tương thích với</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Nhập những đối tượng tương thích" {...field} />
+                                                    <Input
+                                                        placeholder="Trẻ em, người lớn tuổi, thú cưng khác..."
+                                                        className="h-12 border-2 focus:border-blue-400"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
-                                                <FormDescription>
-                                                    Ví dụ: trẻ em, người lớn tuổi, thú cưng khác...
-                                                </FormDescription>
+                                                <FormDescription>Ví dụ: trẻ em, người lớn tuổi, thú cưng khác...</FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -549,120 +746,65 @@ export function AddPetPage() {
                                         name="notCompatibleWith"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Không tương thích với</FormLabel>
+                                                <FormLabel className="text-base font-semibold">Không tương thích với</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Nhập những đối tượng không tương thích" {...field} />
+                                                    <Input
+                                                        placeholder="Nhập những đối tượng không tương thích"
+                                                        className="h-12 border-2 focus:border-blue-400"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
                                 </div>
-                            </div>
+                            </CardContent>
+                        </Card>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <FormField
-                                    control={form.control}
-                                    name="avatarImage"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Ảnh đại diện</FormLabel>
-                                            <FormControl>
-                                                <CloudinaryUpload
-                                                    onImageUploaded={(url) => {
-                                                        field.onChange({ imageUrl: url });
-                                                    }}
-                                                    defaultImage={field.value?.imageUrl || ''}
-                                                />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Ảnh đại diện sẽ được hiển thị chính trên trang thú cưng.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="otherImages"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Các ảnh khác</FormLabel>
-                                            <FormControl>
-                                                <div className="space-y-4">
-                                                    <CloudinaryUpload
-                                                        onImageUploaded={(url) => {
-                                                            const newImages = [...field.value];
-                                                            newImages.push({ imageUrl: url });
-                                                            field.onChange(newImages);
-                                                        }}
-                                                    />
-
-                                                    {field.value && field.value.length > 0 && (
-                                                        <div className="grid grid-cols-3 gap-2 mt-2">
-                                                            {field.value.map((image, index) => (
-                                                                <div key={index} className="relative">
-                                                                    <img
-                                                                        src={image.imageUrl}
-                                                                        alt={`Pet image ${index + 1}`}
-                                                                        className="w-full h-24 object-cover rounded-md"
-                                                                    />
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="icon"
-                                                                        className="absolute top-0 left-0 h-5 w-5"
-                                                                        onClick={() => {
-                                                                            const newImages = field.value.filter((_, i) => i !== index);
-                                                                            field.onChange(newImages);
-                                                                        }}
-                                                                    >
-                                                                        <X className="h-3 w-3" />
-                                                                    </Button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </FormControl>
-                                            <FormDescription>
-                                                Thêm các ảnh khác để hiển thị rõ hơn về thú cưng.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            {form.formState.errors.root && (
-                                <div className="rounded-md bg-destructive/10 p-3 text-destructive text-sm">
-                                    {form.formState.errors.root.message}
+                        {/* Error Display */}
+                        {form.formState.errors.root && (
+                            <div className="rounded-xl bg-red-50 border-2 border-red-200 p-4">
+                                <div className="flex items-center gap-2 text-red-700">
+                                    <X className="h-5 w-5" />
+                                    <span className="font-medium">{form.formState.errors.root.message}</span>
                                 </div>
-                            )}
-
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className='bg-white'
-                                    onClick={() => navigate(ROUTES.STAFF.MANAGE_PETS)}
-                                >
-                                    Hủy
-                                </Button>
-                                <Button type="submit" disabled={isSubmitting} className="gap-2">
-                                    {isSubmitting ? 'Đang lưu...' : (
-                                        <>
-                                            <Save className="h-4 w-4" />
-                                            Lưu thú cưng
-                                        </>
-                                    )}
-                                </Button>
                             </div>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex justify-center gap-4 pt-8">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="lg"
+                                className="px-8 py-3 text-base border-2 hover:bg-gray-50"
+                                onClick={() => window.history.back()}
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                size="lg"
+                                className="px-8 py-3 text-base bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200"
+                            >
+                                {isSubmitting ? (
+                                    <div className="flex items-center gap-2">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                        Đang lưu...
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <Save className="h-5 w-5" />
+                                        Lưu thú cưng
+                                    </div>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </div>
         </div>
     )
 }

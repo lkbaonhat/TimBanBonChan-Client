@@ -7,7 +7,7 @@ function* getAllPetsSaga(): Generator {
   try {
     const response = yield call(petService.getAllPets);
     if (response.status === 200) {
-      yield put(globalSlice.actions.setListPet(response.data.data));
+      yield put(globalSlice.actions.setListPet(response.data.data.items));
     }
   } catch (error) {
     console.error("Error:", error);

@@ -6,7 +6,7 @@ export const volunteerServices = {
         return axiosClient.get(`${API_ENDPOINT.VOLUNTEER.APPLICATIONS}?PageNumber=${pageNumber}&PageSize=${pageSize}`);
     },
     getVolunteerApplicationById: (id: string) => {
-        return axiosClient.get(`/volunteer-applications/${id}`);
+        return axiosClient.get(`/volunteerApplication/${id}`);
     },
     createVolunteerApplication: (applicationData: any) => {
         return axiosClient.post("/volunteer-applications", applicationData);

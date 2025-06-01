@@ -8,7 +8,7 @@ import DefaultLayout from "@layouts/DefaultLayout";
 import SidebarLayout from "@/layouts/SidebarLayout";
 import StaffDashboard from "@/pages/Staff/Dashboard";
 import PetInfoList from "@/pages/Staff/ManagePet/PetInfoList";
-import { AddPetPage } from "@/pages/Staff/ManagePet/AddPet";
+import AddPetPage from "@/pages/Staff/ManagePet/AddPet";
 import { PetDetailsPage } from "@/pages/Staff/ManagePet/PetDetail";
 import EditPetPage from "@/pages/Staff/ManagePet/EditPet";
 import VerifyPetsPage from "@/pages/Staff/VerifyPet";

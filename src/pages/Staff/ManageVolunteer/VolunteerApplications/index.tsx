@@ -10,29 +10,19 @@ import { volunteerServices } from '@/services/volunteerService'
 import { formatDate } from '@/utils/helper'
 import ROUTES from '@/constants/routes'
 import { Button } from '@/components/ui/button'
+import { VolunteerApplicationTable } from './components/VolunteerApplicationTable'
 
 interface Volunteer {
-    applicationId: string;
-    userId?: string;
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    gender: string;
-    applicationStatus: string;
-    createdDate: string;
-    skills?: string[];
-    experience?: string;
-    availability?: string;
-    address?: string;
-    // Các trường mới từ API
-    birthDate?: string;
-    occupation?: string;
-    facebookLink?: string;
-    preferredRole?: string;
-    previousExperience?: string;
-    motivation?: string;
-    availableDays?: string;
-    availableHours?: string;
+    applicationId: number
+    fullName: string
+    email: string
+    phoneNumber: string
+    gender: string
+    createdDate: string
+    location: string
+    breed: string
+    categoryName: string
+    applicationStatus: string,
 }
 
 // Giả lập dữ liệu danh sách đơn đăng ký
@@ -163,12 +153,12 @@ function VolunteerApplication() {
     const [applications, setApplications] = useState<Volunteer[]>([])
     // Thêm state cho filter và search
     const [searchTerm, setSearchTerm] = useState('')
-    const [statusFilter, setStatusFilter] = useState('')
-    const [genderFilter, setGenderFilter] = useState('')
+    const [statusFilter, setStatusFilter] = useState('all')
+    const [genderFilter, setGenderFilter] = useState('all')
 
     const fetchData = async () => {
         // DEVELOPMENT: Sử dụng dữ liệu giả lập
-        const useMockData = true; // Đặt thành false khi sẵn sàng sử dụng API thật
+        const useMockData = false; // Đặt thành false khi sẵn sàng sử dụng API thật
 
         if (useMockData) {
             // Giả lập độ trễ để kiểm tra trạng thái loading nếu cần
@@ -199,7 +189,6 @@ function VolunteerApplication() {
     }, [searchTerm, statusFilter, genderFilter])
 
     // Lọc dữ liệu dựa trên tìm kiếm và bộ lọc
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const filteredApplications = useMemo(() => {
         return applications.filter((volunteer) => {
             // Lọc theo từ khóa tìm kiếm
@@ -211,109 +200,18 @@ function VolunteerApplication() {
 
             // Lọc theo trạng thái
             const statusMatch =
-                statusFilter === '' ||
+                statusFilter === 'all' ||
                 volunteer.applicationStatus.toLowerCase() === statusFilter.toLowerCase();
 
             // Lọc theo giới tính
             const genderMatch =
-                genderFilter === '' ||
+                genderFilter === 'all' ||
                 volunteer.gender.toLowerCase() === genderFilter.toLowerCase();
 
             return searchMatch && statusMatch && genderMatch;
         });
     }, [applications, searchTerm, statusFilter, genderFilter]);
 
-    // Cập nhật phân trang với dữ liệu đã lọc
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const startIndex = (currentPage - 1) * pageSize;
-    // endIndex không được sử dụng trực tiếp ở đây nhưng có thể cần cho việc hiển thị khoảng dữ liệu
-
-    // Handle page change
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page)
-    }
-
-    // Generate page numbers for pagination
-    const getPageNumbers = () => {
-        const pages = []
-        const maxPagesToShow = 5
-
-        if (totalPages <= maxPagesToShow) {
-            // Show all pages if total pages is less than or equal to maxPagesToShow
-            for (let i = 1; i <= totalPages; i++) {
-                pages.push(i)
-            }
-        } else {
-            // Always show first page
-            pages.push(1)
-
-            // Calculate start and end of middle pages
-            let startPage = Math.max(2, currentPage - 1)
-            let endPage = Math.min(totalPages - 1, currentPage + 1)
-
-            // Adjust if we're near the beginning
-            if (currentPage <= 3) {
-                endPage = 4
-            }
-
-            // Adjust if we're near the end
-            if (currentPage >= totalPages - 2) {
-                startPage = totalPages - 3
-            }
-
-            // Add ellipsis after first page if needed
-            if (startPage > 2) {
-                pages.push('ellipsis1')
-            }
-
-            // Add middle pages
-            for (let i = startPage; i <= endPage; i++) {
-                pages.push(i)
-            }
-
-            // Add ellipsis before last page if needed
-            if (endPage < totalPages - 1) {
-                pages.push('ellipsis2')
-            }
-
-            // Always show last page
-            pages.push(totalPages)
-        }
-
-        return pages
-    }
-
-    // Get status badge variant
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'active':
-                return 'default'
-            case 'pending':
-                return 'secondary'
-            case 'approved':
-                return 'outline'
-            case 'rejected':
-                return 'destructive'
-            default:
-                return 'default'
-        }
-    }
-
-    // Get status display text
-    const getStatusDisplayText = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'active':
-                return 'Đang hoạt động'
-            case 'pending':
-                return 'Đang xử lý'
-            case 'approved':
-                return 'Đã duyệt'
-            case 'rejected':
-                return 'Đã từ chối'
-            default:
-                return status
-        }
-    }
 
     return (
         <div className='px-6'>
@@ -321,7 +219,7 @@ function VolunteerApplication() {
                 <h2 className="text-2xl font-bold">Danh sách đơn đăng ký tình nguyện viên</h2>
             </div>
             <div className='rounded-md border bg-white'>
-                <div className="p-4">
+                <div className="p-6">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         {/* Thanh tìm kiếm */}
                         <div className="relative w-full md:w-96">
@@ -335,7 +233,7 @@ function VolunteerApplication() {
                             {searchTerm && (
                                 <button
                                     onClick={() => setSearchTerm('')}
-                                    className="absolute right-2 top-2.5"
+                                    className="absolute right-2 top-2.5 hover:cursor-pointer"
                                 >
                                     <X className="h-4 w-4 text-muted-foreground" />
                                 </button>
@@ -370,93 +268,9 @@ function VolunteerApplication() {
                         </div>
                     </div>
                 </div>
-                <div className='p-6'>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Họ và tên</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Số điện thoại</TableHead>
-                                <TableHead>Giới tính</TableHead>
-                                <TableHead>Ngày đăng ký</TableHead>
-                                <TableHead>Trạng thái</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {applications.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
-                                        Không có dữ liệu tình nguyện viên
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                applications.map((volunteer: Volunteer) => (
-                                    <TableRow key={volunteer.applicationId}>
-                                        <TableCell className="font-medium">
-                                            {volunteer.fullName}
-                                        </TableCell>
-                                        <TableCell>{volunteer.email}</TableCell>
-                                        <TableCell>{volunteer.phoneNumber}</TableCell>
-                                        <TableCell>{volunteer.gender === 'male' ? 'Nam' : 'Nữ'}</TableCell>
-                                        <TableCell>{formatDate(volunteer.createdDate)}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={getStatusBadgeVariant(volunteer.applicationStatus)}>
-                                                {getStatusDisplayText(volunteer.applicationStatus.toLowerCase())}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                onClick={() => navigate(ROUTES.STAFF.VOLUNTEER_APPLICATION_DETAIL.replace(':id', volunteer.applicationId))}
-                                                size='icon'
-                                            >
-                                                <Eye />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                    {/* Pagination */}
-                    <div className="flex items-center justify-between py-4">
-                        <div className="text-sm text-muted-foreground w-full">
-                            Hiển thị {applications.length} trên {totalCount} kết quả
-                        </div>
-                        <Pagination className='justify-end'>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                        className={`${currentPage === 1 ? 'pointer-events-none opacity-50' : ''} hover:cursor-pointer`}
-                                    />
-                                </PaginationItem>
-
-                                {getPageNumbers().map((page, index) => (
-                                    <PaginationItem key={index} className='hover:cursor-pointer'>
-                                        {page === 'ellipsis1' || page === 'ellipsis2' ? (
-                                            <PaginationEllipsis />
-                                        ) : (
-                                            <PaginationLink
-                                                isActive={currentPage === page}
-                                                onClick={() => handlePageChange(page as number)}
-                                                className='bg-white'
-                                            >
-                                                {page}
-                                            </PaginationLink>
-                                        )}
-                                    </PaginationItem>
-                                ))}
-
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                        className={`${currentPage === totalPages ? 'pointer-events-none opacity-50' : ''} hover:cursor-pointer`}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
-                </div>
+                <VolunteerApplicationTable
+                    applications={filteredApplications}
+                />
             </div>
         </div>
     )

@@ -225,13 +225,11 @@ function ActiveVolunteers() {
                     </Select>
                 </div>
                 {/* Filtered and paginated volunteer table */}
-                <div className='p-6'>
+                <div className='px-6 py-2'>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Avatar</TableHead>
-                                <TableHead>Họ và tên</TableHead>
-                                <TableHead>Email</TableHead>
+                                <TableHead>Tình nguyện viên</TableHead>
                                 <TableHead>Số điện thoại</TableHead>
                                 <TableHead>Giới tính</TableHead>
                                 <TableHead>Ngày tham gia</TableHead>
@@ -247,15 +245,17 @@ function ActiveVolunteers() {
                         ) : (
                             currentVolunteers.map((volunteer) => (<TableRow key={volunteer.id}>
                                 <TableCell>
-                                    <Avatar className="h-10 w-10">
-                                        <AvatarImage src={volunteer.avatar || "/placeholder.svg"} alt={volunteer.fullName} />
-                                        <AvatarFallback>{volunteer.fullName.charAt(0)}</AvatarFallback>
-                                    </Avatar>
+                                    <div className='flex items-center gap-2'>
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={volunteer.avatar || "/placeholder.svg"} alt={volunteer.fullName} />
+                                            <AvatarFallback>{volunteer.fullName.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className='text-sm font-medium'>{volunteer.fullName}</p>
+                                            <p className='text-muted-foreground'>{volunteer.email}</p>
+                                        </div>
+                                    </div>
                                 </TableCell>
-                                <TableCell className="font-medium">
-                                    {volunteer.fullName}
-                                </TableCell>
-                                <TableCell>{volunteer.email}</TableCell>
                                 <TableCell>{volunteer.phoneNumber}</TableCell>
                                 <TableCell>{volunteer.gender === 'male' ? 'Nam' : 'Nữ'}</TableCell>
                                 <TableCell>{formatDate(volunteer.joinDate)}</TableCell>
