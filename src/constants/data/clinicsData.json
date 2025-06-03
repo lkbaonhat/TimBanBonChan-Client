@@ -1,0 +1,388 @@
+[
+  {
+    "id": 1,
+    "name": "Bệnh Viện Thú Y PetPro",
+    "location": "Quận Tân Phú",
+    "address": "550 Lũy Bán Bích, Phường Hòa Thạnh, Quận Tân Phú, TP. HCM",
+    "rating": 5.0,
+    "phone": "028 3861 2977",
+    "hours": "8:00 - 20:00",
+    "price": "~700.000 VND",
+    "image": "/clinic1.jpg",
+    "services": [
+      "Khám chữa bệnh (Nội, Ngoại, Nhiễm)",
+      "Tiêm phòng",
+      "Siêu âm, X-Quang, Xét nghiệm",
+      "Khám bệnh, phẫu thuật tại nhà",
+      "Chăm sóc răng miệng",
+      "Grooming (tắm khô/ướt, cắt tỉa lông, cắt móng)",
+      "Lưu trú – boarding",
+      "Dịch vụ xuất cảnh",
+      "Bảo hiểm thú cưng",
+      "Petshop"
+    ],
+    "description": "Bệnh viện thú y đa khoa hàng đầu với đội ngũ bác sĩ chuyên môn cao, trang thiết bị X‑Quang, siêu âm và xét nghiệm hiện đại. Cung cấp dịch vụ khám chữa nội – ngoại khoa, tiêm phòng định kỳ và phẫu thuật tại cả cơ sở và tại nhà. Ngoài ra, PetPro còn có khu boarding thoáng mát, dịch vụ grooming trọn gói, petshop và hỗ trợ thủ tục xuất cảnh, bảo hiểm thú cưng."
+  },
+  {
+    "id": 2,
+    "name": "Trung Tâm Chăm Sóc Thú Cưng PetCare",
+    "location": "Quận 2",
+    "address": "124A Xuân Thủy, Phường Thảo Điền, Quận 2, TP. HCM",
+    "rating": 4.9,
+    "phone": "028 3744 2505",
+    "hours": "8:00 - 19:00",
+    "price": "~600.000 VND",
+    "image": "/clinic2.jpg",
+    "services": [
+      "Chăm sóc răng miệng",
+      "Thẩm mỹ & Grooming (tắm khô/ướt, chải xù, cắt lông, cắt móng)",
+      "Tiêm phòng & phòng chống ký sinh trùng",
+      "Thủ tục xuất cảnh",
+      "Khám chữa bệnh tại nhà & vận chuyển",
+      "Cấp cứu 24/7",
+      "Lưu trú – boarding"
+    ],
+    "description": "PetCare nổi bật với dịch vụ grooming chuyên sâu (tắm – sấy – tạo kiểu), chăm sóc răng miệng và phòng ngừa ký sinh trùng. Đội ngũ bác sĩ trực cấp cứu 24/7, hỗ trợ khám tại nhà và vận chuyển thú cưng. Trung tâm còn phụ trách thủ tục xuất cảnh, boarding trong môi trường an toàn, rộng rãi."
+  },
+  {
+    "id": 3,
+    "name": "Phòng Khám Thú Y Pet Galaxy",
+    "location": "Quận Tân Bình",
+    "address": "61 Bình Giã, Phường 13, Quận Tân Bình, TP. HCM",
+    "rating": 4.8,
+    "phone": "0762 028 028",
+    "hours": "9:00 - 18:00",
+    "price": "~550.000 VND",
+    "image": "/clinic3.jpg",
+    "services": [
+      "Khám – điều trị các bệnh thông thường",
+      "Tiêm phòng – chích ngừa",
+      "Phẫu thuật – ngoại khoa",
+      "Cấp cứu 24/7",
+      "Làm đẹp & Grooming (tắm khô/ướt, cắt tỉa lông, cắt móng)",
+      "Lưu trú – boarding",
+      "Khám chữa bệnh tại nhà"
+    ],
+    "description": "Pet Galaxy trang bị phòng mổ vô khuẩn, dịch vụ cấp cứu 24/7 và khám tại nhà theo yêu cầu. Bên cạnh khám chữa thông thường và tiêm phòng, trung tâm còn cung cấp đầy đủ gói grooming thẩm mỹ và khu boarding đạt chuẩn."
+  },
+  {
+    "id": 4,
+    "name": "Phòng Khám Thú Y K9",
+    "location": "Quận 5",
+    "address": "71 Trần Hưng Đạo, Phường 6, Quận 5, TP. HCM",
+    "rating": 4.7,
+    "phone": "028 3775 0894",
+    "hours": "8:00 - 19:30",
+    "price": "~500.000 VND",
+    "image": "/clinic4.jpg",
+    "services": [
+      "Khám bệnh & tư vấn dinh dưỡng",
+      "Tiêm phòng định kỳ",
+      "Phẫu thuật – ngoại khoa cơ bản",
+      "Cấp cứu ban đêm",
+      "Chăm sóc răng miệng",
+      "Grooming – spa thú cưng",
+      "Lưu trú ngắn hạn"
+    ],
+    "description": "K9 chuyên tư vấn dinh dưỡng và chăm sóc nha khoa. Hỗ trợ cấp cứu ban đêm, phẫu thuật ngoại khoa cơ bản. Spa grooming với các gói massage, tắm bọt tuyết, cùng khu boarding ngắn hạn tiện lợi."
+  },
+  {
+    "id": 5,
+    "name": "Phòng Khám Thú Y Hoàng Bách",
+    "location": "Quận 12",
+    "address": "R13 Đường số 6, Hưng Vượng 2, Phường Tân Phong, Quận 7, TP. HCM",
+    "rating": 4.6,
+    "phone": "028 5412 1175",
+    "hours": "8:00 - 19:00",
+    "price": "~650.000 VND",
+    "image": "/clinic5.jpg",
+    "services": [
+      "Khám bệnh – chăm sóc sức khỏe tổng quát",
+      "Tiêm phòng & xét nghiệm",
+      "Phẫu thuật – xử trí vết thương",
+      "Chăm sóc răng miệng",
+      "Grooming & spa thú cưng",
+      "Lưu trú – boarding"
+    ],
+    "description": "Hoàng Bách là điểm đến cho các ca cần xét nghiệm chuyên sâu và phẫu thuật xử lý vết thương. Kết hợp grooming spa và boarding chuẩn khách sạn thú cưng."
+  },
+  {
+    "id": 6,
+    "name": "Phòng Khám Thú Y Family Vet",
+    "location": "TP. Thủ Đức",
+    "address": "72 Hữu Nghị, Phường Bình Thọ, TP. Thủ Đức, TP. HCM",
+    "rating": 4.5,
+    "phone": "028 3507 1151",
+    "hours": "8:00 - 20:00",
+    "price": "~500.000 VND",
+    "image": "/clinic6.jpg",
+    "services": [
+      "Khám & điều trị bệnh lý",
+      "Tiêm phòng định kỳ",
+      "Siêu âm – X-Quang",
+      "Phẫu thuật cơ bản",
+      "Grooming – tắm gội & tạo kiểu",
+      "Lưu trú – boarding"
+    ],
+    "description": "Family Vet ưu tiên không gian thân thiện, trang bị máy siêu âm và X‑Quang. Dịch vụ phẫu thuật cơ bản, grooming tạo kiểu cá nhân hóa và khu boarding 24h."
+  },
+  {
+    "id": 7,
+    "name": "Phòng Khám Thú Y Pet Clinic",
+    "location": "Quận Gò Vấp",
+    "address": "424 Phan Huy Ích, Phường 12, Quận Gò Vấp, TP. HCM",
+    "rating": 4.4,
+    "phone": "033 2188 201",
+    "hours": "8:00 - 19:00",
+    "price": "~450.000 VND",
+    "image": "/clinic7.jpg",
+    "services": [
+      "Khám tổng quát & xét nghiệm",
+      "Tiêm ngừa – phòng bệnh",
+      "Phẫu thuật răng miệng",
+      "Chăm sóc thẩm mỹ – grooming",
+      "Lưu trú – trông giữ thú cưng"
+    ],
+    "description": "Pet Clinic tập trung vào kiểm tra sức khỏe tổng quát, xét nghiệm cơ bản và phẫu thuật răng miệng. Grooming đơn giản và dịch vụ giữ thú ngắn hạn."
+  },
+  {
+    "id": 8,
+    "name": "Thi Thi Pet Clinic",
+    "location": "Quận Bình Thạnh",
+    "address": "143 Xô Viết Nghệ Tĩnh, Phường 21, Quận Bình Thạnh, TP. HCM",
+    "rating": 4.3,
+    "phone": "0902 345 678",
+    "hours": "9:00 - 18:30",
+    "price": "~480.000 VND",
+    "image": "/clinic8.jpg",
+    "services": [
+      "Khám & tư vấn sức khỏe",
+      "Tiêm phòng & tẩy giun",
+      "Phẫu thuật – khâu, xử lý vết thương",
+      "Grooming – cắt tỉa lông",
+      "Lưu trú – boarding"
+    ],
+    "description": "Thi Thi Pet Clinic nổi tiếng với khâu vá vết thương và tẩy giun định kỳ. Grooming nhẹ nhàng, không gian sạch sẽ, hỗ trợ boarding an toàn."
+  },
+  {
+    "id": 9,
+    "name": "Phòng Khám Thú Y Quang Vinh",
+    "location": "Quận 3",
+    "address": "157 Nguyễn Thiện Thuật, Phường 1, Quận 3, TP. HCM",
+    "rating": 4.2,
+    "phone": "028 3830 3489",
+    "hours": "8:00 - 17:00",
+    "price": "~400.000 VND",
+    "image": "/clinic9.jpg",
+    "services": [
+      "Khám – điều trị bệnh cơ bản",
+      "Tiêm phòng & xét nghiệm máu",
+      "Phẫu thuật – loại nhỏ",
+      "Chăm sóc răng miệng",
+      "Grooming & spa đơn giản"
+    ],
+    "description": "Quang Vinh phù hợp với các ca khám cơ bản và xét nghiệm nhanh, chi phí tiết kiệm. Cung cấp grooming – spa đơn giản."
+  },
+  {
+    "id": 10,
+    "name": "Hệ Thống Vinpet.vn",
+    "location": "Quận 12",
+    "address": "38 Nguyễn Ảnh Thủ, Phường Tân Chánh Hiệp, Quận 12, TP. HCM",
+    "rating": 4.1,
+    "phone": "0987 006 117",
+    "hours": "8:00 - 19:00",
+    "price": "~500.000 VND",
+    "image": "/clinic10.jpg",
+    "services": [
+      "Khám chữa bệnh tổng quát",
+      "Tiêm phòng định kỳ",
+      "Phẫu thuật – ngoại khoa",
+      "Chăm sóc răng miệng",
+      "Grooming – tạo kiểu lông",
+      "Lưu trú – boarding"
+    ],
+    "description": "Vinpet.vn là chuỗi phòng khám đa chi nhánh, chuyên ngoại khoa, tiêm phòng và grooming theo kiểu salon."
+  },
+  {
+    "id": 11,
+    "name": "Phòng Khám Thú Y HiPet",
+    "location": "Quận 8",
+    "address": "2790A Phạm Thế Hiển, Phường 7, Quận 8, TP. HCM",
+    "rating": 4.0,
+    "phone": "0969 888 618",
+    "hours": "8:00 - 18:00",
+    "price": "~450.000 VND",
+    "image": "/clinic11.jpg",
+    "services": [
+      "Khám & điều trị bệnh",
+      "Tiêm ngừa & tẩy giun",
+      "Chăm sóc răng miệng",
+      "Grooming – spa cơ bản",
+      "Lưu trú thú cưng"
+    ],
+    "description": "HiPet phục vụ nhu cầu cơ bản: tiêm ngừa, tẩy giun, chăm sóc răng miệng và grooming spa nhẹ nhàng."
+  },
+  {
+    "id": 12,
+    "name": "Saigon Veterinary Clinic",
+    "location": "Quận Gò Vấp",
+    "address": "21 Đường 14, Phường 8, Quận Gò Vấp, TP. HCM",
+    "rating": 3.9,
+    "phone": "(+84) 8-6273-6470",
+    "hours": "8:00 - 17:00",
+    "price": "~500.000 VND",
+    "image": "/clinic12.jpg",
+    "services": [
+      "Khám & xét nghiệm",
+      "Tiêm phòng & tiêm nhắc lại",
+      "Phẫu thuật – xử lý vết thương",
+      "Chăm sóc răng miệng",
+      "Grooming & tắm gội"
+    ],
+    "description": "Phòng khám phong cách quốc tế, đội ngũ bác sĩ ngoại và Việt Nam, chú trọng xét nghiệm và xử lý vết thương."
+  },
+  {
+    "id": 13,
+    "name": "Bệnh Viện Thú Y Đại Học Nông Lâm",
+    "location": "TP. Thủ Đức",
+    "address": "Khu phố 6, Phường Linh Trung, TP. Thủ Đức, TP. HCM",
+    "rating": 3.8,
+    "phone": "028 3896 7596",
+    "hours": "7:30 - 17:00",
+    "price": "~350.000 VND",
+    "image": "/clinic13.jpg",
+    "services": [
+      "Khám lâm sàng & xét nghiệm chuyên sâu",
+      "Tiêm phòng & xét nghiệm huyết học",
+      "Phẫu thuật – đa khoa",
+      "Chăm sóc nha khoa thú y",
+      "Nghiên cứu & đào tạo"
+    ],
+    "description": "Bệnh viện trường ĐH Nông Lâm với khoa xét nghiệm chuyên sâu, phẫu thuật đa khoa và trung tâm nghiên cứu đào tạo."
+  },
+  {
+    "id": 14,
+    "name": "Phòng Khám Thú Y Petwish",
+    "location": "Quận 5",
+    "address": "27 Trần Xuân Soạn, Phường 8, Quận 5, TP. HCM",
+    "rating": 3.7,
+    "phone": "0905 123 789",
+    "hours": "8:00 - 18:00",
+    "price": "~420.000 VND",
+    "image": "/clinic14.jpg",
+    "services": [
+      "Khám & điều trị bệnh cơ bản",
+      "Tiêm phòng & tẩy giun",
+      "Grooming – tắm gội & cắt tỉa",
+      "Lưu trú ngắn hạn"
+    ],
+    "description": "Petwish phù hợp cho nhu cầu chăm sóc thường xuyên, giá cả hợp lý, giao động các gói grooming và lưu trú ngắn hạn."
+  },
+  {
+    "id": 15,
+    "name": "Phòng Khám Thú Y Như Ý",
+    "location": "Quận 6",
+    "address": "2290 Huỳnh Tấn Phát, Phường Phú Xuân, Huyện Nhà Bè, TP. HCM",
+    "rating": 3.6,
+    "phone": "0906 234 890",
+    "hours": "8:00 - 17:30",
+    "price": "~400.000 VND",
+    "image": "/clinic15.jpg",
+    "services": [
+      "Khám & tư vấn sức khỏe",
+      "Tiêm phòng & xét nghiệm cơ bản",
+      "Phẫu thuật – khâu vết thương nhỏ",
+      "Grooming – spa đơn giản"
+    ],
+    "description": "Như Ý tập trung vào khâu vết thương nhỏ, tư vấn sức khỏe dị chế độ dinh dưỡng và grooming spa đơn giản."
+  },
+  {
+    "id": 16,
+    "name": "Thú Y Smart Pet",
+    "location": "Quận 12",
+    "address": "50 An Phú Đông 1, Phường An Phú Đông, Quận 12, TP. HCM",
+    "rating": 3.5,
+    "phone": "0835 725 366",
+    "hours": "8:00 - 19:00",
+    "price": "~380.000 VND",
+    "image": "/clinic16.jpg",
+    "services": [
+      "Khám & điều trị bệnh",
+      "Tiêm phòng & tẩy giun",
+      "Grooming – tạo kiểu & vệ sinh tai",
+      "Lưu trú thú cưng"
+    ],
+    "description": "Smart Pet cung cấp dịch vụ vệ sinh tai, grooming tạo kiểu hiện đại và lưu trú thú cưng trong môi trường an toàn."
+  },
+  {
+    "id": 17,
+    "name": "Thú Y Thành Ngọc",
+    "location": "Huyện Nhà Bè",
+    "address": "2290 Huỳnh Tấn Phát, Phường Phú Xuân, Huyện Nhà Bè, TP. HCM",
+    "rating": 3.4,
+    "phone": "0908 012 345",
+    "hours": "8:00 - 18:00",
+    "price": "~360.000 VND",
+    "image": "/clinic17.jpg",
+    "services": [
+      "Khám & điều trị bệnh cơ bản",
+      "Tiêm phòng & xét nghiệm nhanh",
+      "Chăm sóc răng miệng",
+      "Grooming – vệ sinh & cắt tỉa lông"
+    ],
+    "description": "Thành Ngọc là phòng khám địa phương tiện lợi, xử lý nhanh các ca tiêm phòng, xét nghiệm và grooming cơ bản."
+  },
+  {
+    "id": 18,
+    "name": "17 PET SHOP & SPA",
+    "location": "Quận 12",
+    "address": "50 An Phú Đông 1, Phường An Phú Đông, Quận 12, TP. HCM",
+    "rating": 3.3,
+    "phone": "0835 725 366",
+    "hours": "9:00 - 18:00",
+    "price": "~300.000 VND",
+    "image": "/clinic18.jpg",
+    "services": [
+      "Spa & chăm sóc ngoại hình (tắm, cắt tỉa lông)",
+      "Massage & vệ sinh tai mắt",
+      "Trông giữ & boarding thú cưng"
+    ],
+    "description": "Pet shop kết hợp spa, chuyên chăm sóc ngoại hình, massage thư giãn và boarding với giá mềm."
+  },
+  {
+    "id": 19,
+    "name": "Phòng Khám Thú Y Vũ Tuyền",
+    "location": "Quận 12",
+    "address": "62/3 Thạnh Lộc 15, Phường Thạnh Lộc, Quận 12, TP. HCM",
+    "rating": 3.2,
+    "phone": "0963 979 798",
+    "hours": "8:00 - 18:00",
+    "price": "~330.000 VND",
+    "image": "/clinic19.jpg",
+    "services": [
+      "Khám tổng quát & xét nghiệm",
+      "Tiêm phòng & tẩy giun",
+      "Grooming – spa cơ bản"
+    ],
+    "description": "Vũ Tuyền cung cấp khám tổng quát, tẩy giun và grooming spa cơ bản với chi phí tiết kiệm."
+  },
+  {
+    "id": 20,
+    "name": "New Pet Hospital & Spa",
+    "location": "Quận 10",
+    "address": "262 Lý Thường Kiệt, Phường 14, Quận 10, TP. HCM",
+    "rating": 3.1,
+    "phone": "028 6256 3939",
+    "hours": "8:00 - 19:00",
+    "price": "~550.000 VND",
+    "image": "/clinic20.jpg",
+    "services": [
+      "Khám & điều trị bệnh",
+      "Tiêm phòng & xét nghiệm kháng thể",
+      "Phẫu thuật đa khoa",
+      "Grooming – spa cao cấp",
+      "Lưu trú & boarding"
+    ],
+    "description": "Bệnh viện kết hợp spa cao cấp, trang thiết bị hiện đại, phù hợp thú cưng cần dịch vụ khám đa khoa và thư giãn cao cấp."
+  }
+]
