@@ -60,6 +60,11 @@ const navigationConfig: Record<string, NavGroup[]> = {
           icon: CheckSquare,
         },
         {
+          title: 'Xác minh người dùng',
+          path: ROUTES.STAFF.VERIFY_USER,
+          icon: CheckSquare,
+        },
+        {
           title: 'Tình nguyện viên',
           path: ROUTES.STAFF.MANAGE_VOLUNTEERS,
           icon: Users,

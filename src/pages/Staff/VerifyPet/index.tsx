@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import ROUTES from '@/constants/routes'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectorGlobal } from '@/store/modules/global/selector'
+import VerifyPetTable from './components/VerifyPetTable'
 
 export default function VerifyPetsPage() {
     const navigate = useNavigate()
@@ -118,53 +119,11 @@ export default function VerifyPetsPage() {
                     </Select>
                 </div>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Tên thú cưng</TableHead>
-                            <TableHead>Loại</TableHead>
-                            <TableHead>Người đăng</TableHead>
-                            <TableHead>Ngày đăng</TableHead>
-                            <TableHead>Trạng thái</TableHead>
-                            <TableHead className="text-right">Thao tác</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredPets.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={7} className="text-center py-6">
-                                    Không có thú cưng nào cần xác minh
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            filteredPets.map((pet) => (
-                                <TableRow key={pet.id}>
-                                    <TableCell className="font-medium">{pet.petName}</TableCell>
-                                    <TableCell>{pet.categoryName}</TableCell>
-                                    <TableCell>{pet.ownerName || 'Không có thông tin'}</TableCell>
-                                    <TableCell>{new Date(pet.createdAt).toLocaleDateString('vi-VN')}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-                                            Chờ xác minh
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleViewPetDetails(pet.slug)}
-                                            >
-                                                <Eye className="h-4 w-4 mr-1" />
-                                                Xem
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                <VerifyPetTable
+                    pets={filteredPets}
+                    onVerifyPet={handleVerifyPet}
+                    onViewDetails={handleViewPetDetails}
+                />
             </div>
         </div>
     )

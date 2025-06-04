@@ -65,7 +65,7 @@ export default function SidebarLayout({ roleUser }: { roleUser: 'staff' | 'admin
                     </div>
                 </header>
 
-                <main className='bg-white px-20 py-10 flex-1'>
+                <main className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-10'>
                     <Outlet />
                 </main>
             </div>

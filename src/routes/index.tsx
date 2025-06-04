@@ -12,7 +12,7 @@ import AddPetPage from "@/pages/Staff/ManagePet/AddPet";
 import { PetDetailsPage } from "@/pages/Staff/ManagePet/PetDetail";
 import EditPetPage from "@/pages/Staff/ManagePet/EditPet";
 import VerifyPetsPage from "@/pages/Staff/VerifyPet";
-import VerifyPetDetail from "@/pages/Staff/VerifyPet/PetDetail";
+import VerifyPetDetail from "@/pages/Staff/VerifyPet/components/PetDetail";
 import ActiveVolunteers from "@/pages/Staff/ManageVolunteer/ActiveVolunteer";
 import VolunteerApplications from "@/pages/Staff/ManageVolunteer/VolunteerApplications";
 import VolunteerApplicationDetail from "@/pages/Staff/ManageVolunteer/VolunteerApplicationDetail";
@@ -40,6 +40,7 @@ const RegistrationSuccess = lazy(
 const ListClinics = lazy(() => import("@/pages/PetCare/ListClinics"));
 import FindNewHome from "@/pages/FindNewHome";
 import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
+import VerifyUser from "@/pages/Staff/VerifyUser";
 import VetClinicProfile from "@/pages/PetCare/ClinicDetail";
 const ProfilePage = lazy(() => import("@/pages/Profile"));
 import AddPet from "@/pages/Profile/AddPet";
@@ -80,17 +81,20 @@ const RouterComponent = () => {
     },
     {
       element: <SidebarLayout roleUser="staff" />,
-      children: [{ path: ROUTES.STAFF.HOME, element: <StaffDashboard /> },
-      { path: ROUTES.STAFF.MANAGE_PETS, element: <PetInfoList /> },
-      { path: ROUTES.STAFF.ADD_PET, element: <AddPetPage /> },
-      { path: ROUTES.STAFF.EDIT_PET, element: <EditPetPage /> },
-      { path: ROUTES.STAFF.PET_DETAIL, element: <PetDetailsPage /> },
-      { path: ROUTES.STAFF.VERIFY_PETS, element: <VerifyPetsPage /> }, { path: ROUTES.STAFF.VERIFY_PET_DETAIL, element: <VerifyPetDetail /> },
-      { path: ROUTES.STAFF.MANAGE_VOLUNTEERS, element: <ActiveVolunteers /> },
-      { path: ROUTES.STAFF.VOLUNTEER_APPLICATIONS, element: <VolunteerApplications /> },
-      { path: ROUTES.STAFF.VOLUNTEER_APPLICATION_DETAIL, element: <VolunteerApplicationDetail /> },
-      { path: ROUTES.STAFF.ADOPTIONS, element: <ManageAdoptions /> },
-      { path: ROUTES.STAFF.ADOPTION_DETAIL, element: <AdoptionApplicationDetail /> },
+      children: [
+        { path: ROUTES.STAFF.HOME, element: <StaffDashboard /> },
+        { path: ROUTES.STAFF.MANAGE_PETS, element: <PetInfoList /> },
+        { path: ROUTES.STAFF.ADD_PET, element: <AddPetPage /> },
+        { path: ROUTES.STAFF.EDIT_PET, element: <EditPetPage /> },
+        { path: ROUTES.STAFF.PET_DETAIL, element: <PetDetailsPage /> },
+        { path: ROUTES.STAFF.VERIFY_PETS, element: <VerifyPetsPage /> },
+        { path: ROUTES.STAFF.VERIFY_PET_DETAIL, element: <VerifyPetDetail /> },
+        { path: ROUTES.STAFF.MANAGE_VOLUNTEERS, element: <ActiveVolunteers /> },
+        { path: ROUTES.STAFF.VOLUNTEER_APPLICATIONS, element: <VolunteerApplications /> },
+        { path: ROUTES.STAFF.VOLUNTEER_APPLICATION_DETAIL, element: <VolunteerApplicationDetail /> },
+        { path: ROUTES.STAFF.ADOPTIONS, element: <ManageAdoptions /> },
+        { path: ROUTES.STAFF.ADOPTION_DETAIL, element: <AdoptionApplicationDetail /> },
+        { path: ROUTES.STAFF.VERIFY_USER, element: <VerifyUser /> }
       ],
     },
     //* AUTH routes *

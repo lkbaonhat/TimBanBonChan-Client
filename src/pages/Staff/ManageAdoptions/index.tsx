@@ -1,13 +1,11 @@
-"use client"
-
 import { useState, useMemo } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Eye, Search, Filter, Users, Clock, CheckCircle, XCircle, Heart } from "lucide-react"
+import AdoptionApplicationTable from "./AdoptionApplicationTable"
 
 interface AdoptionApplication {
     id: string
@@ -88,8 +86,6 @@ const mockApplications: AdoptionApplication[] = [
 ]
 
 export default function ManageAdoptions() {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [pageSize] = useState(5)
     const [applications, setApplications] = useState<AdoptionApplication[]>(mockApplications)
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState("")
@@ -116,10 +112,7 @@ export default function ManageAdoptions() {
         })
     }, [applications, searchTerm, statusFilter, petFilter])
 
-    const totalPages = Math.ceil(filteredApplications.length / pageSize)
-    const startIndex = (currentPage - 1) * pageSize
-    const endIndex = Math.min(startIndex + pageSize, filteredApplications.length)
-    const currentApplications = filteredApplications.slice(startIndex, endIndex)
+
 
     const getStatusBadgeVariant = (status: string) => {
         switch (status.toLowerCase()) {
@@ -164,6 +157,22 @@ export default function ManageAdoptions() {
             default:
                 return <Clock className="h-4 w-4 text-gray-600" />
         }
+    }
+
+    const handleViewDetail = (application: AdoptionApplication) => {
+        console.log(`View application ${application.id}`, application)
+        // Có thể navigate đến trang chi tiết hoặc mở modal
+    }
+
+    const handleUpdateStatus = (id: string, status: string) => {
+        setApplications(prev =>
+            prev.map(app =>
+                app.id === id
+                    ? { ...app, applicationStatus: status }
+                    : app
+            )
+        )
+        console.log(`Updated application ${id} status to ${status}`)
     }
 
     const formatDate = (dateString: string) => {
@@ -315,126 +324,13 @@ export default function ManageAdoptions() {
                         </div>
                     </CardContent>
                 </Card>
-
                 {/* Table Section */}
                 <Card className="shadow-xl border-0 bg-white/70 backdrop-blur-sm overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader className="bg-gradient-to-r from-lightBlue-200 to-lightPurple-200">
-                                <TableRow className="hover:bg-transparent">
-                                    <TableHead className="font-semibold text-gray-700 py-4">Họ và tên</TableHead>
-                                    <TableHead className="font-semibold text-gray-700">Email</TableHead>
-                                    <TableHead className="font-semibold text-gray-700">Số điện thoại</TableHead>
-                                    <TableHead className="font-semibold text-gray-700">Thú cưng</TableHead>
-                                    <TableHead className="font-semibold text-gray-700">Ngày đăng ký</TableHead>
-                                    <TableHead className="font-semibold text-gray-700">Trạng thái</TableHead>
-                                    <TableHead className="font-semibold text-gray-700 text-center">Hành động</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {currentApplications.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={7} className="text-center h-32">
-                                            <div className="flex flex-col items-center gap-3">
-                                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                                                    <Users className="h-8 w-8 text-gray-400" />
-                                                </div>
-                                                <p className="text-gray-500 font-medium">Không có dữ liệu đơn nhận nuôi</p>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    currentApplications.map((application, index) => (
-                                        <TableRow
-                                            key={application.id}
-                                            className="hover:bg-gradient-to-r hover:from-lightBlue-25 hover:to-lightPurple-25 transition-all duration-200"
-                                            style={{ animationDelay: `${index * 0.1}s` }}
-                                        >
-                                            <TableCell className="font-medium py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-full flex items-center justify-center text-white font-semibold">
-                                                        {application.fullName.charAt(0)}
-                                                    </div>
-                                                    <span>{application.fullName}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-gray-600">{application.email}</TableCell>
-                                            <TableCell className="text-gray-600">{application.phoneNumber}</TableCell>
-                                            <TableCell>
-                                                <span className="inline-flex items-center gap-2 bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">
-                                                    <Heart className="h-3 w-3" />
-                                                    {application.petName}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell className="text-gray-600">{formatDate(application.createdDate)}</TableCell>
-                                            <TableCell>
-                                                <Badge
-                                                    variant={getStatusBadgeVariant(application.applicationStatus)}
-                                                    className="flex items-center gap-1 w-fit"
-                                                >
-                                                    {getStatusIcon(application.applicationStatus)}
-                                                    {getStatusDisplayText(application.applicationStatus)}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600 transition-all duration-200"
-                                                    onClick={() => console.log(`View application ${application.id}`)}
-                                                >
-                                                    <Eye className="h-4 w-4 mr-2" />
-                                                    Xem chi tiết
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    {/* Pagination */}
-                    {filteredApplications.length > 0 && (
-                        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-lightBlue-50 to-lightPurple-50 border-t">
-                            <div className="text-sm text-gray-600">
-                                Hiển thị {startIndex + 1}-{endIndex} trên {filteredApplications.length} kết quả
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="hover:bg-primary-50"
-                                >
-                                    Trước
-                                </Button>
-
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                    <Button
-                                        key={page}
-                                        variant={currentPage === page ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setCurrentPage(page)}
-                                        className={currentPage === page ? "bg-primary-500 hover:bg-primary-600" : "hover:bg-primary-50"}
-                                    >
-                                        {page}
-                                    </Button>
-                                ))}
-
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="hover:bg-primary-50"
-                                >
-                                    Sau
-                                </Button>
-                            </div>
-                        </div>
-                    )}
+                    <AdoptionApplicationTable
+                        data={filteredApplications}
+                        onViewDetail={handleViewDetail}
+                        onUpdateStatus={handleUpdateStatus}
+                    />
                 </Card>
             </div>
         </div>
