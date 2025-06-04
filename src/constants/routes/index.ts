@@ -12,8 +12,8 @@ const ROUTES = {
     CLINIC_DETAIL: '/clinics/:id',
     PETCARE_CREATE: '/pet-care/create',
     LIST_PETS: "/pets",
-    PET_DETAIL: "/pets/:slug", // Change from :id to :slug to match navigation
-    ADOPTION_FORM: "/pets/:slug/adoption-form", // Change from :id to :slug to match the URL structure
+    PET_DETAIL: "/pets/:slug",
+    ADOPTION_FORM: "/pets/:slug/adoption-form",
     REGISTRATION_SUCCESS: "/registration-success",
     CONFIRM_EMAIL: "/confirm-email",
     FIND_NEW_HOME: "/find-new-home",
@@ -29,7 +29,9 @@ const ROUTES = {
     EDIT_PET: '/staff/manage-pets/:id/edit',
     PET_DETAIL: '/staff/manage-pets/:slug',
     VERIFY_PETS: '/staff/verify-pets',
-    VERIFY_PET_DETAIL: '/staff/verify-pets/:slug', MANAGE_VOLUNTEERS: '/staff/volunteers',
+    VERIFY_PET_DETAIL: '/staff/verify-pets/:slug',
+    VERIFY_USER: '/staff/verify-users',
+    MANAGE_VOLUNTEERS: '/staff/volunteers',
     VOLUNTEER_APPLICATIONS: '/staff/volunteers/applications',
     VOLUNTEER_APPLICATION_DETAIL: '/staff/volunteers/applications/:id',
     ADOPTIONS: '/staff/adoptions',

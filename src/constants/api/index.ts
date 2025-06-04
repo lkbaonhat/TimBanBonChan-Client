@@ -13,6 +13,7 @@ export const API_ENDPOINT = {
   VOLUNTEER: {
     LIST: "/volunteer",
     APPLICATIONS: "/volunteerApplication",
+    UPDATE_APPLICATIONS: `/volunteerApplication/update`,
   },
   COMMUNITY: {
     LIST: "/community",

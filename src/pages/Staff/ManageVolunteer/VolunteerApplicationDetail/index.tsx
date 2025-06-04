@@ -44,52 +44,34 @@ function VolunteerApplicationDetail() {
     const [updating, setUpdating] = useState<boolean>(false);
     const navigate = useNavigate();
 
+    const fetchApplicationDetail = async () => {
+        if (!id) return;
+
+        try {
+            setLoading(true);
+            const response = await volunteerServices.getVolunteerApplicationById(id);
+            setApplication(response.data.data);
+        } catch (error) {
+            console.error('Error fetching volunteer application details:', error);
+            toast.error('Không thể tải thông tin đơn đăng ký');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchApplicationDetail = async () => {
-            if (!id) return;
-
-            try {
-                setLoading(true);
-                const response = await volunteerServices.getVolunteerApplicationById(id);
-                setApplication(response.data.data);
-                console.log(application)
-            } catch (error) {
-                console.error('Error fetching volunteer application details:', error);
-                toast.error('Không thể tải thông tin đơn đăng ký');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchApplicationDetail();
     }, [id]);
 
     const handleStatusUpdate = async (newStatus: string) => {
         if (!id) return;
 
-        // DEVELOPMENT: Sử dụng dữ liệu giả lập
-        const useMockData = true; // Đặt thành false khi sẵn sàng sử dụng API thật
-
-        setUpdating(true);
-
-        if (useMockData) {
-            // Giả lập độ trễ khi cập nhật
-            setTimeout(() => {
-                // Cập nhật trạng thái trong state
-                setApplication(prev => prev ? { ...prev, applicationStatus: newStatus } : null);
-
-                // Hiển thị thông báo thành công
-                toast.success(`Đã ${newStatus === 'approved' ? 'duyệt' : 'từ chối'} đơn đăng ký thành công`);
-                setUpdating(false);
-            }, 1000);
-            return;
-        }
-
         try {
+            const payload = {
+                applicationId: id,
+                adminUserId: id,
+            }
             await volunteerServices.updateVolunteerApplicationStatus(id, newStatus);
-
-            // Cập nhật trạng thái trong state
-            setApplication(prev => prev ? { ...prev, applicationStatus: newStatus } : null);
 
             toast.success(`Đã ${newStatus === 'approved' ? 'duyệt' : 'từ chối'} đơn đăng ký thành công`);
         } catch (error) {
@@ -177,8 +159,12 @@ function VolunteerApplicationDetail() {
                 </Breadcrumb>
             </div>
 
-            {application.applicationStatus.toLowerCase() === 'pending' && (
-                <div className="flex justify-end">
+            <div className="flex justify-between mb-6">
+                <div>
+                    <h3 className="text-2xl font-bold">Thông tin ứng viên</h3>
+                    <p className="text-sm text-muted-foreground">Thông tin chi tiết về ứng viên tình nguyện viên</p>
+                </div>
+                {application.applicationStatus.toLowerCase() === 'pending' && (
                     <div className='flex space-y-2 gap-2'>
                         <Button
                             onClick={() => handleStatusUpdate('approved')}
@@ -199,17 +185,12 @@ function VolunteerApplicationDetail() {
                             Từ chối
                         </Button>
                     </div>
-                </div>
-            )}
-
+                )}
+            </div>
 
             {/* Thông tin chính */}
             <Card className="col-span-2">
                 <CardHeader className='flex justify-between'>
-                    <div>
-                        <CardTitle className="text-xl">Thông tin ứng viên</CardTitle>
-                        <CardDescription>Thông tin chi tiết về ứng viên tình nguyện viên</CardDescription>
-                    </div>
                     <div>
                         <Badge variant={getStatusBadgeVariant(application.applicationStatus)} className="text-sm py-1 px-3 h- w-20">
                             {getStatusDisplayText(application.applicationStatus.toLowerCase())}
