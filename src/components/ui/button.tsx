@@ -27,6 +27,8 @@ const buttonVariants = cva(
           "border border-[#FF99C0] bg-transparent text-[#FF99C0] shadow-xs hover:bg-[#FF99C0]/10 focus-visible:ring-[#FF99C0]/30",
         blueOutline:
           "border border-[#0053A3] bg-transparent text-[#0053A3] shadow-xs hover:bg-[#0053A3]/10 focus-visible:ring-[#0053A3]/30",
+        success:
+          "bg-green-600 text-white shadow-xs hover:bg-green-700 focus-visible:ring-green-600/50",
       },
       size: {
         default: "h-10 px-6 py-3 text-base",

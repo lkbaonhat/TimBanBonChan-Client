@@ -28,6 +28,12 @@ const ROUTES = {
     ADD_PET: '/staff/manage-pets/new',
     EDIT_PET: '/staff/manage-pets/:id/edit',
     PET_DETAIL: '/staff/manage-pets/:slug',
+    VERIFY_PETS: '/staff/verify-pets',
+    VERIFY_PET_DETAIL: '/staff/verify-pets/:slug', MANAGE_VOLUNTEERS: '/staff/volunteers',
+    VOLUNTEER_APPLICATIONS: '/staff/volunteers/applications',
+    VOLUNTEER_APPLICATION_DETAIL: '/staff/volunteers/applications/:id',
+    ADOPTIONS: '/staff/adoptions',
+    ADOPTION_DETAIL: '/staff/adoptions/:id',
   },
   ADMIN: {},
 };

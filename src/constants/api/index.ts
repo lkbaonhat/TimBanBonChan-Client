@@ -6,11 +6,13 @@ export const API_ENDPOINT = {
   },
   PET: {
     LIST: "/pets/filter",
-    DETAIL: "/pets/:slug", // Updated to use slug for pet details
+    DETAIL: "/pets/:slug", 
     ADOPTION_FORM: "/pets/:id/adoption-form",
+    ADOPTION_APPLICATIONS: "/adoptionApplication",
   },
   VOLUNTEER: {
     LIST: "/volunteer",
+    APPLICATIONS: "/volunteerApplication",
   },
   COMMUNITY: {
     LIST: "/community",

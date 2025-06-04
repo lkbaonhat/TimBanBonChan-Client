@@ -12,63 +12,6 @@ import { DeletePetDialog } from '../PetInfoList/components/DeletePetDialog'
 import ROUTES from '@/constants/routes'
 import { petService } from '@/services/petService'
 
-
-// Sample pet data (in a real app, this would come from an API)
-const samplePets = [
-    {
-        petId: 1,
-        petName: "Diva",
-        petImageUrls: "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*",
-        gender: "Cái",
-        color: "Nâu nhạt",
-        description: "Xin giới thiệu Diva - một chú chó có cái tên như tính cách của bạn ấy! Cô chó trẻ trung này cá tính và tràn đầy năng lượng, sẵn sàng thắp sáng bất kỳ căn phòng nào bạn ấy bước vào. Với bản tính tự tin và hướng ngoại, Diva thích trở thành trung tâm của sự chú ý, nơi bạn ấy có thể tương tác với mọi người và nhận được tất cả tình yêu thương mà bạn ấy khao khát. Tinh thần vui tươi của bạn ấy chắc chắn sẽ chinh phục bạn.",
-        foodPreferences: null,
-        toyPreferences: null,
-        compatibleWith: "Diva sẽ phát triển tốt nhất trong một môi trường yêu thương, nơi bạn ấy là trung tâm của sự chú ý và có thể nhận được nhiều tình cảm và thời gian vui chơi.Diva sẽ cần một ngôi nhà nơi bạn ấy là chú chó duy nhất hoặc một ngôi nhà có một chú chó lớn tuổi và điềm tĩnh.Diva sẽ cần được chải long thường xuyên để đảm bảo bộ lông mềm mại của bạn ấy luôn trong tình trạng tốt.Diva sẽ cần một ngôi nhà có sân an toàn.",
-        notCompatibleWith: null,
-        location: "Thủ Đức",
-        categoryId: 1,
-        categoryName: "Chó",
-        breedId: 1,
-        breed: "Chó Poodle",
-        age: 12,
-        size: "Trung bình",
-        weight: 5.2,
-        isVaccinated: true,
-        isNeutered: true,
-        isTrained: false,
-        healthStatus: "Khỏe mạnh",
-        personality: "Thân thiện, năng động",
-        adoptionStatus: "Available"
-    },
-    {
-        petId: 2,
-        petName: "Luna",
-        petImageUrls: "/placeholder.svg?height=300&width=300",
-        gender: "Cái",
-        color: "Đen trắng",
-        description: "Luna là một con mèo xiêm rất dịu dàng và thông minh.",
-        foodPreferences: "Thức ăn khô cao cấp",
-        toyPreferences: "Đồ chơi chuột nhỏ",
-        compatibleWith: "Luna thích ở trong môi trường yên tĩnh và thích được vuốt ve.",
-        notCompatibleWith: "Không thích chó và trẻ em ồn ào",
-        location: "Quận 1",
-        categoryId: 2,
-        categoryName: "Mèo",
-        breedId: 5,
-        breed: "Mèo Xiêm",
-        age: 24,
-        size: "Nhỏ",
-        weight: 3.5,
-        isVaccinated: true,
-        isNeutered: true,
-        isTrained: true,
-        healthStatus: "Khỏe mạnh",
-        personality: "Điềm tĩnh, thông minh",
-        adoptionStatus: "Pending"
-    }
-]
-
 export function PetDetailsPage() {
     const { slug } = useParams<{ slug: string }>()
     const navigate = useNavigate()
@@ -213,7 +156,7 @@ export function PetDetailsPage() {
                     <Button
                         variant="outline"
                         className="gap-2"
-                        onClick={() => navigate(`/staff/pets/edit/${pet.petId}`)}
+                        onClick={() => navigate(`/staff/manage-pets/${pet.petId}/edit`)}
                     >
                         <Edit className="h-4 w-4" />
                         Chỉnh sửa

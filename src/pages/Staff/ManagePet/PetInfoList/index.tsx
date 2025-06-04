@@ -14,7 +14,7 @@ export default function PetsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
-  const listPet = useSelector(selectorGlobal.listPet)
+  const listPet = useSelector(selectorGlobal.listPet) || []
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
@@ -22,40 +22,46 @@ export default function PetsPage() {
     type: 'success' | 'error';
     message: string;
   } | null>(null)
-
   // Check for notifications from navigation state
   useEffect(() => {
     dispatch({ type: 'GET_ALL_PETS' })
-  }, [location.state])
+
+    // Check if there's a notification in location state
+    if (location.state?.notification) {
+      setNotification(location.state.notification)
+
+      // Clear notification after 5 seconds
+      const timer = setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [location.state, dispatch])
+
+  const getValueType = (param: string) => {
+    switch (param) {
+      case "Chó":
+        return "dog"
+      case "Mèo":
+        return "cat"
+      default:
+        return "all"
+    }
+  }
 
   // Filter pets based on search term and filters
-  const filteredPets = listPet.filter(pet => {
-    const matchesSearch =
-      pet.petName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPets = React.useMemo(() => {
+    return listPet.filter(pet => {
+      const matchesSearch =
+        pet.petName.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesType = filterType === 'all' || pet.categoryName === filterType
-    const matchesStatus = filterStatus === 'all' || pet.adoptionStatus === filterStatus
+      const matchesType = filterType === 'all' || getValueType(pet.categoryName) === filterType
+      const matchesStatus = filterStatus === 'all' || pet.adoptionStatus.toLowerCase() === filterStatus
 
-    return matchesSearch && matchesType && matchesStatus
-  })
-
-  // Handle deleting a pet
-  const handleDeletePet = (id: number) => {
-    setNotification({
-      type: 'success',
-      message: 'Thú cưng đã được xóa thành công!'
+      return matchesSearch && matchesType && matchesStatus
     })
-  }
-
-  // Handle viewing pet details
-  const handleViewPetDetails = (slug: string) => {
-    navigate(`/staff/manage-pets/${slug}`)
-  }
-
-  // Handle editing a pet
-  const handleEditPet = (id: number) => {
-    navigate(`/staff/pets/edit/${id}`)
-  }
+  }, [listPet, searchTerm, filterType, filterStatus])
 
   return (
     <div>
@@ -102,7 +108,7 @@ export default function PetsPage() {
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Tìm kiếm theo tên, giống, địa điểm..."
-              className="pl-8"
+              className="pl-8 h-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -134,9 +140,6 @@ export default function PetsPage() {
 
         <PetsTable
           pets={filteredPets}
-          onViewDetails={handleViewPetDetails}
-          onEdit={handleEditPet}
-          onDelete={handleDeletePet}
         />
       </div>
     </div>
