@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const PetCareSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,7 +53,7 @@ const PetCareSection = () => {
               shape="pill"
               className="hover:shadow-lg transition-all duration-300 px-8 py-4"
             >
-              <a href="/pet-care">
+              <Link to="/pet-care">
                 Sổ tay chăm sóc thú cưng
                 <svg
                   className="w-5 h-5 ml-2"
@@ -67,7 +68,7 @@ const PetCareSection = () => {
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-              </a>
+              </Link>
             </Button>
           </div>
 

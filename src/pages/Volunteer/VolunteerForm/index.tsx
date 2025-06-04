@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import ContentHeader from "@/components/ContentHeader/ContentHeader";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 
 const formSchema = z.object({
@@ -73,15 +74,11 @@ export default function VolunteerPage() {
 
   return (
     <div className="min-h-screen pb-10">
-      {/* Breadcrumb */}
+      {/* Content Header with integrated breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
-
       {/* Main content */}
-      <div className="max-w-4xl mx-auto px-6">
-        <h1 className="text-2xl font-bold mb-6">
-          Đăng ký làm tình nguyện viên
-        </h1>
-
+      <div className="container mx-auto">
+        <ContentHeader title="Đăng ký làm tình nguyện viên" level="h1" />
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Personal Information */}
           <div className="mb-8">

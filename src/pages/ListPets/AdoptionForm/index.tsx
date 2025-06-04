@@ -2,6 +2,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { axiosClient } from "@/config/axios";
+import { API_ENDPOINT } from "@/constants/api";
+import { Pet } from "@/types/Pet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -37,6 +42,49 @@ const formSchema = z.object({
 });
 
 export default function AdoptionForm() {
+  const { slug } = useParams<{ slug: string }>(); // Change from 'id' to 'slug'
+  const navigate = useNavigate();
+  const [pet, setPet] = useState<Pet | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPetDetails = async () => {
+      if (!slug) return;
+
+      try {
+        setLoading(true);
+        // Fetch pet by slug - this is correct now as we're passing a slug
+        const response = await axiosClient.get(
+          `${API_ENDPOINT.PET.DETAIL.replace(":slug", slug)}`
+        );
+
+        // Process the response to extract pet data
+        let petData;
+        if (response.data && response.data.data) {
+          petData = response.data.data;
+        } else if (
+          response.data &&
+          typeof response.data === "object" &&
+          "petId" in response.data
+        ) {
+          petData = response.data;
+        } else {
+          throw new Error("Invalid pet data received");
+        }
+
+        setPet(petData);
+      } catch (err) {
+        console.error("Error fetching pet details:", err);
+        setError("Không thể tải thông tin thú cưng. Vui lòng thử lại sau.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPetDetails();
+  }, [slug]); // Change dependency from 'id' to 'slug'
+
   const {
     register,
     handleSubmit,
@@ -64,37 +112,90 @@ export default function AdoptionForm() {
     // Handle form submission
   };
 
-  // Define breadcrumb items for the Breadcrumb component
+  // Define breadcrumb items dynamically based on the pet
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Làm quen với các bé", path: "/pets" },
-    { label: "Danny", path: "/pets/danny" },
+    { label: pet?.petName || "Thú cưng", path: `/pets/${pet?.slug || slug}` },
     { label: "Thủ tục nhận nuôi" },
   ];
 
+  // If we're still loading or there's an error, show appropriate UI
+  if (loading) {
+    return (
+      <div className="container mx-auto">
+        <Breadcrumb
+          items={[
+            { label: "Trang chủ", path: "/" },
+            { label: "Làm quen với các bé", path: "/pets" },
+            { label: "Đang tải...", path: "#" },
+            { label: "Thủ tục nhận nuôi" },
+          ]}
+        />
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto">
+        <Breadcrumb
+          items={[
+            { label: "Trang chủ", path: "/" },
+            { label: "Làm quen với các bé", path: "/pets" },
+          ]}
+        />
+        <div className="text-center py-16">
+          <p className="text-red-500">{error}</p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => navigate("/pets")}
+          >
+            Quay lại danh sách thú cưng
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pb-10">
-      {/* Use Breadcrumb component */}
+      {/* Use dynamic Breadcrumb component */}
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="container mx-auto ">
         <ContentHeader title="Thủ tục nhận nuôi" level="h1" />
 
-        {/* Pet Profile */}
+        {/* Pet Profile - Updated to use dynamic pet data */}
         <div className="flex items-center gap-4 mb-8">
           <Avatar className="h-20 w-20 border-2 border-white">
             <AvatarImage
-              src="/placeholder.svg?height=80&width=80"
-              alt="Danny"
+              src={pet?.petImageUrls || "/placeholder.svg?height=80&width=80"}
+              alt={pet?.petName || "Thú cưng"}
             />
-            <AvatarFallback>DN</AvatarFallback>
+            <AvatarFallback>
+              {pet?.petName?.substring(0, 2) || "TC"}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <h2 className="text-xl font-bold">Danny</h2>
+            <h2 className="text-xl font-bold">{pet?.petName || "Thú cưng"}</h2>
             <div className="text-sm text-gray-600 space-y-1">
-              <p>Chó | Trưởng thành | Đực</p>
-              <p>Đã tiêm phòng | Thân thiện</p>
+              <p>
+                {pet?.categoryName || "Thú cưng"} |{" "}
+                {pet?.age && pet.age < 12
+                  ? "Chưa trưởng thành"
+                  : "Trưởng thành"}{" "}
+                | {pet?.gender || "Không rõ"}
+              </p>
+              <p>
+                {pet?.isVaccinated ? "Đã tiêm phòng" : "Chưa tiêm phòng"} |{" "}
+                {pet?.personality || "Chưa có thông tin"}
+              </p>
             </div>
           </div>
         </div>

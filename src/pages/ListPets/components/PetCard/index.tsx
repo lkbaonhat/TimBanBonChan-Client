@@ -1,25 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import Card from "@/components/Card/Card";
 import styles from "./pet-card.module.css";
+import { PetCardData } from "@/types/Pet";
 
 interface PetCardProps {
-  pet: Pet;
-}
-
-interface Pet {
-  id: number;
-  name: string;
-  gender: string;
-  location: string;
-  status: string;
-  imageUrl: string;
+  pet: PetCardData;
 }
 
 export function PetCard({ pet }: PetCardProps) {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate(`/pets/${pet.id}`);
+    console.log("pet slug:", pet.slug); // Debugging line
+
+    navigate(`/pets/${pet.slug}`); // Fix navigation path
   };
 
   return (
@@ -27,7 +21,7 @@ export function PetCard({ pet }: PetCardProps) {
       type="pet"
       image={pet.imageUrl}
       title={pet.name}
-      badge="Chó"
+      badge={pet.categoryName || "Thú cưng"}
       gender={pet.gender}
       location={pet.status}
       area={pet.location}

@@ -36,7 +36,7 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button asChild variant="blue" size="lg" shape="pill">
-                <Link to="/adopt">Nhận nuôi thú cưng</Link>
+                <Link to="/pets">Nhận nuôi thú cưng</Link>
               </Button>
               <Button asChild variant="pink" size="lg" shape="pill">
                 <Link to="/find-new-home">Tìm nhà mới cho bé</Link>

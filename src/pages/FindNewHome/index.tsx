@@ -166,7 +166,7 @@ export default function FindNewHome() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto">
         {/* Header and Filter Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />

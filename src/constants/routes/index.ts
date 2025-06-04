@@ -12,13 +12,17 @@ const ROUTES = {
     CLINIC_DETAIL: '/clinics/:id',
     PETCARE_CREATE: '/pet-care/create',
     LIST_PETS: "/pets",
-    PET_DETAIL: "/pets/:id",
-    ADOPTION_FORM: "/pets/:id/adoption-form",
+    PET_DETAIL: "/pets/:slug", // Change from :id to :slug to match navigation
+    ADOPTION_FORM: "/pets/:slug/adoption-form", // Change from :id to :slug to match the URL structure
     REGISTRATION_SUCCESS: "/registration-success",
     CONFIRM_EMAIL: "/confirm-email",
     FIND_NEW_HOME: "/find-new-home",
     FIND_NEW_HOME_DETAIL: "/find-new-home/:id",
-  }, STAFF: {
+    PROFILE: "/profile",
+    ADD_PET: "/profile/add-pet", // New route for adding a pet
+    UPDATE_PET: "/profile/pets/:id", // New route for updating pet info
+  },
+  STAFF: {
     HOME: '/staff',
     MANAGE_PETS: '/staff/manage-pets',
     ADD_PET: '/staff/manage-pets/new',

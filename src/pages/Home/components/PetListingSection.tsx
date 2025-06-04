@@ -1,88 +1,113 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Card from "@/components/Card/Card";
 import { Button } from "@/components/ui/button";
 import DotPagination from "@/components/Pagination/DotPagination";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosClient } from "@/config/axios";
+import { API_ENDPOINT } from "@/constants/api";
+import { Pet } from "@/types/Pet";
+
+// Remove the Pet interface definition
 
 const petCategories = [
-  { id: "dog", label: "Chó" },
-  { id: "cat", label: "Mèo" },
+  { id: 1, label: "Chó" },
+  { id: 2, label: "Mèo" },
   { id: "other", label: "Khác" },
 ];
 
-const pets = [
-  {
-    id: 1,
-    name: "Danny",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JFCjG2KbbkZoqphrmPABDKSrnZSwTn.png",
-    gender: "Đực",
-    location: "Trường thành",
-    area: "Đống Đa",
-    category: "dog",
-  },
-  {
-    id: 2,
-    name: "Diva",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JFCjG2KbbkZoqphrmPABDKSrnZSwTn.png",
-    gender: "Cái",
-    location: "Trường thành",
-    area: "Đống Đa",
-    category: "dog",
-  },
-  {
-    id: 3,
-    name: "Max",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JFCjG2KbbkZoqphrmPABDKSrnZSwTn.png",
-    gender: "Đực",
-    location: "Trường thành",
-    area: "Đống Đa",
-    category: "dog",
-  },
-  {
-    id: 4,
-    name: "Luna",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JFCjG2KbbkZoqphrmPABDKSrnZSwTn.png",
-    gender: "Cái",
-    location: "Trường thành",
-    area: "Cầu Giấy",
-    category: "cat",
-  },
-  {
-    id: 5,
-    name: "Milo",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JFCjG2KbbkZoqphrmPABDKSrnZSwTn.png",
-    gender: "Đực",
-    location: "Trường thành",
-    area: "Hai Bà Trưng",
-    category: "cat",
-  },
-  {
-    id: 6,
-    name: "Bunny",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JFCjG2KbbkZoqphrmPABDKSrnZSwTn.png",
-    gender: "Cái",
-    location: "Trường thành",
-    area: "Tây Hồ",
-    category: "other",
-  },
-];
-
 const PetListingSection = () => {
-  const [activeCategory, setActiveCategory] = useState("dog");
+  const [activeCategory, setActiveCategory] = useState<number | string>(1);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeDot, setActiveDot] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-  const filteredPets = pets.filter((pet) => pet.category === activeCategory);
+  // New state for API data
+  const [allPets, setAllPets] = useState<Pet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch pets from API
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Build parameters - only include category filter
+        const params: Record<string, any> = {};
+        if (typeof activeCategory === "number") {
+          params.categoryId = activeCategory;
+        }
+
+        const response = await axiosClient.get(API_ENDPOINT.PET.LIST, {
+          params,
+        });
+
+        console.log("API Response:", response.data);
+
+        // Extract pets from the response based on the actual structure
+        let pets: Pet[] = [];
+
+        // Handle nested response format: { success, data: { items: [] } }
+        if (response.data && response.data.success === true) {
+          if (response.data.data && Array.isArray(response.data.data.items)) {
+            // Standard format with items array
+            pets = response.data.data.items;
+            console.log(
+              `Found ${pets.length} pets in response.data.data.items`
+            );
+          } else if (response.data.data && Array.isArray(response.data.data)) {
+            // Alternative format with direct data array
+            pets = response.data.data;
+            console.log(`Found ${pets.length} pets in response.data.data`);
+          }
+        } else if (Array.isArray(response.data)) {
+          // Direct array response
+          pets = response.data;
+          console.log(`Found ${pets.length} pets in direct array`);
+        } else {
+          // No recognizable format, log and throw error
+          console.error("Unexpected response format:", response.data);
+          throw new Error("Invalid response format");
+        }
+
+        if (pets.length === 0) {
+          console.warn("No pets found in the response");
+        }
+
+        setAllPets(pets);
+      } catch (err: any) {
+        console.error("Error fetching pets:", err);
+        setError("Không thể tải danh sách thú cưng. Vui lòng thử lại sau.");
+        setAllPets([]); // Reset to empty array on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPets();
+  }, [activeCategory]);
+
+  // Filter pets based on active category
+  const filteredPets =
+    typeof activeCategory === "number"
+      ? allPets.filter((pet) => pet.categoryId === activeCategory)
+      : allPets.filter(
+          (pet) =>
+            !petCategories.some(
+              (c) => typeof c.id === "number" && c.id === pet.categoryId
+            )
+        );
+
   const totalPages = Math.ceil(filteredPets.length / 3);
+
+  const handleButtonClick = (slug: string) => {
+    navigate(`/pets/${slug}`);
+  };
 
   const handlePrevious = () => {
     if (currentPage > 0) {
@@ -101,23 +126,6 @@ const PetListingSection = () => {
   const handleDotClick = (index: number) => {
     setCurrentPage(index);
     setActiveDot(index);
-  };
-
-  const handleAdopt = (id: number) => {
-    console.log(`Adopting pet with id: ${id}`);
-    // Handle adoption logic
-  };
-
-  // Function to get category label
-  const getCategoryLabel = (categoryId: string) => {
-    switch (categoryId) {
-      case "dog":
-        return "Chó";
-      case "cat":
-        return "Mèo";
-      default:
-        return "Khác";
-    }
   };
 
   return (
@@ -144,7 +152,7 @@ const PetListingSection = () => {
                 }}
                 className={
                   activeCategory === category.id
-                    ? "bg-[#c5e2f0]  text-grey hover:text-grey hover:bg-[#bae2f7]  font-medium"
+                    ? "bg-[#c5e2f0] text-grey hover:text-grey hover:bg-[#bae2f7] font-medium"
                     : " "
                 }
               >
@@ -154,98 +162,121 @@ const PetListingSection = () => {
           </div>
         </div>
 
-        {/* Navigation Controls */}
-        <div className="flex justify-end mb-4">
-          <div className="flex space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              shape="pill"
-              onClick={handlePrevious}
-              disabled={currentPage === 0}
-              aria-label="Previous pets"
-              className={`rounded-full shadow-sm ${
-                currentPage === 0
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "text-gray-700 hover:bg-blue-50"
-              }`}
-            >
-              <ChevronLeft size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              shape="pill"
-              onClick={handleNext}
-              disabled={currentPage === totalPages - 1}
-              aria-label="Next pets"
-              className={`rounded-full shadow-sm ${
-                currentPage === totalPages - 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "text-gray-700 hover:bg-blue-50"
-              }`}
-            >
-              <ChevronRight size={20} />
-            </Button>
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
-        </div>
-
-        {/* Pet Cards Slider */}
-        <div className="relative">
-          <div className="overflow-hidden">
-            <div
-              ref={sliderRef}
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentPage * 100}%)` }}
-            >
-              {Array.from({ length: totalPages }).map((_, pageIndex) => (
-                <div key={pageIndex} className="w-full flex-shrink-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredPets
-                      .slice(pageIndex * 3, (pageIndex + 1) * 3)
-                      .map((pet) => (
-                        <div
-                          key={pet.id}
-                          className="transition-transform transform hover:scale-[0.99]"
-                        >
-                          <Card
-                            type="pet"
-                            image={pet.image}
-                            title={pet.name}
-                            badge={getCategoryLabel(pet.category)}
-                            gender={pet.gender}
-                            location={pet.location}
-                            area={pet.area}
-                            buttonText="Nhận nuôi ngay"
-                            onButtonClick={() => handleAdopt(pet.id)}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              ))}
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-500">{error}</p>
+          </div>
+        ) : filteredPets.length === 0 ? (
+          <div className="text-center py-8">
+            <p>Không có thú cưng nào trong danh mục này.</p>
+          </div>
+        ) : (
+          <>
+            {/* Navigation Controls */}
+            <div className="flex justify-end mb-4">
+              <div className="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  shape="pill"
+                  onClick={handlePrevious}
+                  disabled={currentPage === 0}
+                  aria-label="Previous pets"
+                  className={`rounded-full shadow-sm ${
+                    currentPage === 0
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-blue-50"
+                  }`}
+                >
+                  <ChevronLeft size={20} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  shape="pill"
+                  onClick={handleNext}
+                  disabled={currentPage === totalPages - 1}
+                  aria-label="Next pets"
+                  className={`rounded-full shadow-sm ${
+                    currentPage === totalPages - 1
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-blue-50"
+                  }`}
+                >
+                  <ChevronRight size={20} />
+                </Button>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Replace Dots Indicator with DotPagination component */}
-        <DotPagination
-          currentPage={activeDot}
-          totalPages={totalPages}
-          onPageChange={handleDotClick}
-          className="mt-8"
-        />
+            {/* Pet Cards Slider */}
+            <div className="relative">
+              <div className="overflow-hidden">
+                <div
+                  ref={sliderRef}
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentPage * 100}%)` }}
+                >
+                  {Array.from({ length: totalPages }).map((_, pageIndex) => (
+                    <div key={pageIndex} className="w-full flex-shrink-0">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredPets
+                          .slice(pageIndex * 3, (pageIndex + 1) * 3)
+                          .map((pet) => (
+                            <div
+                              key={pet.petId}
+                              className="transition-transform transform hover:scale-[0.99]"
+                            >
+                              <Card
+                                type="pet"
+                                image={pet.petImageUrls || ""}
+                                title={pet.petName}
+                                badge={pet.categoryName}
+                                gender={pet.gender}
+                                location={
+                                  pet.age < 12
+                                    ? "Chưa trưởng thành"
+                                    : "Trưởng thành"
+                                }
+                                area={pet.location || "Không xác định"}
+                                buttonText="Thông tin chi tiết"
+                                onButtonClick={() =>
+                                  handleButtonClick(pet.slug)
+                                }
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Dot Pagination */}
+            <DotPagination
+              currentPage={activeDot}
+              totalPages={totalPages}
+              onPageChange={handleDotClick}
+              className="mt-8"
+            />
+          </>
+        )}
 
         <div className="text-right mt-6">
           <Button
             asChild
             variant="link"
-            className="text-[#0053a3] font-medium  transition-colors"
+            className="text-[#0053a3] font-medium transition-colors"
           >
-            <a href="/pets" className="inline-none items-center ">
+            <Link to="/pets" className="inline-none items-center">
               Xem tất cả
               <ChevronRight size={16} className="ml-1" />
-            </a>
+            </Link>
           </Button>
         </div>
       </div>
