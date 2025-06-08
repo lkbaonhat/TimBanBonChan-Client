@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 //* Routes
 import AuthRoutes from "./AuthRoutes";
@@ -45,6 +45,7 @@ import VetClinicProfile from "@/pages/PetCare/ClinicDetail";
 const ProfilePage = lazy(() => import("@/pages/Profile"));
 import AddPet from "@/pages/Profile/AddPet";
 import UpdatePetInfo from "@/pages/Profile/UpdatePetInfo";
+import LoadingPage from "@/pages/Loading";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -52,7 +53,9 @@ const RouterComponent = () => {
     {
       element: <DefaultLayout />,
       children: [
-        { index: true, path: ROUTES.PUBLIC.HOME, element: <Home /> },
+        {
+          index: true, path: ROUTES.PUBLIC.HOME, element: <Home />
+        },
         { path: ROUTES.PUBLIC.COMMUNITY, element: <CommunityPage /> },
         { path: ROUTES.PUBLIC.VOLUNTEER, element: <VolunteerPage /> },
         { path: ROUTES.PUBLIC.PETCARE, element: <PetCare /> },
@@ -117,7 +120,11 @@ const RouterComponent = () => {
     // },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense fallback={<LoadingPage />}>
+      <RouterProvider router={router} />
+    </Suspense>
+  )
 };
 
 export default RouterComponent;
