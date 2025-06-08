@@ -155,9 +155,8 @@ const Header = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
-      }`}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
@@ -181,10 +180,9 @@ const Header = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -193,10 +191,9 @@ const Header = () => {
             <NavLink
               to="/community"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -205,10 +202,9 @@ const Header = () => {
             <NavLink
               to="/pets"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -217,10 +213,9 @@ const Header = () => {
             <NavLink
               to="/find-new-home"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -229,10 +224,9 @@ const Header = () => {
             <NavLink
               to="/pet-care"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -249,14 +243,6 @@ const Header = () => {
               className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
             >
               <Search size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Cart"
-              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
-            >
-              <ShoppingCart size={20} />
             </Button>
             <Button
               variant="ghost"

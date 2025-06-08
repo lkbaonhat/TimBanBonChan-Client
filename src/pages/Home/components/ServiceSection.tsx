@@ -1,27 +1,26 @@
-'use client';
-
+import { LOGO } from '@/constants/global';
 import { useState, useEffect } from 'react';
 
 const services = [
   {
-    icon: <img src='dogblue.png' />,
+    icon: <img src={LOGO.DOG} />,
     title: 'Bạn muốn nhận nuôi',
     description: 'Gặp gỡ và tìm hiểu quá trình hoàn thành thủ tục nhận nuôi',
   },
   {
-    icon: <img src='heartblue.png' />,
+    icon: <img src={LOGO.HEART} />,
     title: 'Bạn tìm chủ mới',
     description:
       'Tìm kiếm người nhận nuôi và tạm ngôi nhà mới an toàn cho bé yêu của bạn',
   },
   {
-    icon: <img src='commuteblue.png' />,
+    icon: <img src={LOGO.COMMUNICATE} />,
     title: 'Cần sự giúp đỡ',
     description:
       'Để lại phương thức liên lạc và chúng tôi sẽ tìm đến bạn hoặc bạn tìm đến chúng tôi',
   },
   {
-    icon: <img src='communityblue.png' />,
+    icon: <img src={LOGO.COMMUNITY} />,
     title: 'Khám phá cộng đồng',
     description:
       'Khám phá cộng đồng của chúng tôi, nơi bạn và mọi người có thể chia sẻ tình yêu và bé cưng nhà bạn',
@@ -62,11 +61,10 @@ const ServiceSection = () => {
             <div
               key={index}
               data-index={index}
-              className={`service-item flex flex-col items-center text-center p-8 rounded-2xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${
-                visibleItems.includes(index)
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-10 opacity-0'
-              }`}
+              className={`service-item flex flex-col items-center text-center p-8 rounded-2xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${visibleItems.includes(index)
+                ? 'translate-y-0 opacity-100'
+                : 'translate-y-10 opacity-0'
+                }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className='  rounded-full'>{service.icon}</div>
