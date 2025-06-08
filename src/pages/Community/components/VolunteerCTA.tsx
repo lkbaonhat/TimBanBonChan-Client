@@ -3,6 +3,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { BANNER } from "@/constants/global";
 
 const VolunteerCTA = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -54,7 +55,7 @@ const VolunteerCTA = () => {
           <div className="md:w-1/2 mb-8 md:mb-0">
             <img
               ref={imageRef}
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-d8MAHA7P4SruVD7jVmM1PSK7q78Z5P.png"
+              src={BANNER.VOLUNTEER_WITH_PUPPY}
               alt="Woman with dog"
               className="rounded-lg shadow-lg w-full max-w-md mx-auto opacity-0 transition-all duration-700"
             />

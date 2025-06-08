@@ -1,5 +1,6 @@
 "use client";
 
+import { LOGO } from "@/constants/global";
 import { useState, useEffect } from "react";
 
 const AboutUsSection = () => {
@@ -38,15 +39,14 @@ const AboutUsSection = () => {
 
           <div className="flex flex-col items-center">
             <div
-              className={`mb-5 transition-all duration-1000 transform ${
-                isVisible
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-10 opacity-0"
-              }`}
+              className={`mb-5 transition-all duration-1000 transform ${isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-10 opacity-0"
+                }`}
             >
               <div className="relative">
                 <img
-                  src="logo.png"
+                  src={LOGO.WITH_TITLE}
                   alt="Tìm Bạn Bốn Chân Logo"
                   className="w-80 h-50 mx-auto"
                 />
@@ -56,11 +56,10 @@ const AboutUsSection = () => {
             </div>
 
             <p
-              className={`text-lg text-center text-gray-600 leading-relaxed mb-8 transition-all duration-1000 delay-300 transform ${
-                isVisible
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-10 opacity-0"
-              }`}
+              className={`text-lg text-center text-gray-600 leading-relaxed mb-8 transition-all duration-1000 delay-300 transform ${isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-10 opacity-0"
+                }`}
             >
               Cộng đồng "Tìm Bạn Bốn Chân" đã được tạo ra để kết nối giữa người
               cho và người nhận nuôi cũng như các trạm cứu hộ, mở ra nhiều cơ
