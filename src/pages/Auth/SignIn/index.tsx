@@ -63,7 +63,6 @@ export default function SignInForm() {
         type: "SIGN_IN",
         payload: data,
         callback: (isSuccess: boolean) => {
-          console.log("zo ne");
           if (!isSuccess) {
             toast.error("Email hoặc mật khẩu không đúng.");
           } else {

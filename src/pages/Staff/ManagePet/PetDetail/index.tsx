@@ -12,7 +12,7 @@ import { DeletePetDialog } from '../PetInfoList/components/DeletePetDialog'
 import ROUTES from '@/constants/routes'
 import { petService } from '@/services/petService'
 
-export function PetDetailsPage() {
+export default function PetDetailsPage() {
     const { slug } = useParams<{ slug: string }>()
     const navigate = useNavigate()
     const [pet, setPet] = useState<any>(null)
