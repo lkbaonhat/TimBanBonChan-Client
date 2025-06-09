@@ -10,6 +10,11 @@ const authSlice = createSlice({
     },
     setUserInfo: (state, action: PayloadAction<any>) => {
       state.userInfo = action.payload;
+    },
+    logout: (state) => {
+      localStorage.removeItem('userToken')
+      state.userInfo = null
+      state.isAuthenticated = false
     }
   },
 });
