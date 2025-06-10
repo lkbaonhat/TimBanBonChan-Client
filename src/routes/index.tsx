@@ -65,7 +65,7 @@ const RouterComponent = () => {
     },
     //* AUTH routes *\
     {
-      element: <PublicRoute><></></PublicRoute>,
+      element: <PublicRoute />,
       children: [...AuthRoutes]
     },
     //**** PRIVATE routes ****

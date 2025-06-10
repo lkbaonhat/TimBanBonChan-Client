@@ -4,9 +4,12 @@ export const API_ENDPOINT = {
     SIGN_UP: "/auth/send-confirmation",
     CONFIRM_EMAIL: "/auth/confirm-email",
   },
+  USER: {
+    SELF_INFO: "/users"
+  },
   PET: {
     LIST: "/pets/filter",
-    DETAIL: "/pets/:slug", 
+    DETAIL: "/pets/:slug",
     ADOPTION_FORM: "/pets/:id/adoption-form",
     ADOPTION_APPLICATIONS: "/adoptionApplication",
   },

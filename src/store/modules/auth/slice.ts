@@ -13,13 +13,13 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       localStorage.removeItem('userToken')
-      state.userInfo = null
+      state.userInfo = {}
       state.isAuthenticated = false
     }
   },
 });
 
-export const { setIsAuthenticated, setUserInfo } = authSlice.actions;
+export const { setIsAuthenticated, setUserInfo, logout } = authSlice.actions;
 
 export { authSlice };
 export default authSlice.reducer;

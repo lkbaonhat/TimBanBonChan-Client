@@ -32,7 +32,7 @@ const signInSchema = z.object({
 // Define form data type from the schema
 type SignInFormData = z.infer<typeof signInSchema>;
 
-export default function SignInForm() {
+export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -4,8 +4,8 @@ import ROUTES from "@/constants/routes";
 import { lazy } from "react";
 
 //* Lazy load pages
-const SignIn = lazy(() => import("@/pages/Auth/SignIn"));
-const SignUp = lazy(() => import("@/pages/Auth/SignUp"));
+const SignIn = lazy(() => import("@pages/Auth/SignIn"));
+const SignUp = lazy(() => import("@pages/Auth/SignUp"));
 const ConfirmEmail = lazy(() => import("@pages/Auth/ConfirmEmail"));
 const RegistrationSuccess = lazy(
   () => import("@pages/Auth/RegistrationSuccess")
