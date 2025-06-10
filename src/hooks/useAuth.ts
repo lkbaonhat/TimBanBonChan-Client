@@ -1,14 +1,35 @@
+import { isTokenValid } from "@/lib/utils"
 import { selectorAuth } from "@/store/modules/auth/selector"
-import { useSelector } from "react-redux"
+import { useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
 
 export const useAuth = () => {
+    const dispatch = useDispatch()
     const isAuthenticated = useSelector(selectorAuth.isAuthenticated)
-    const userInfo = useSelector(selectorAuth.userInfo)
 
-    const hasRole = (roles: ('guest' | 'staff' | 'admin')[]) => {
-        if (!userInfo) return false;
-        return roles.includes(userInfo.role)
-    };
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
 
-    return { isAuthenticated, userInfo, hasRole }
+        if (token) {
+            try {
+                if (isTokenValid(token)) {
+                    dispatch({
+                        type: "FETCH_USER_LOGIN",
+                        payload: token
+                    })
+                } else {
+                    dispatch({
+                        type: "LOGOUT",
+                        callback: () => { }
+                    })
+                }
+            } catch (error) {
+                console.error("Invalid token:", error);
+                dispatch({
+                    type: "LOGOUT",
+                    callback: () => { }
+                });
+            }
+        }
+    }, [isAuthenticated])
 }
