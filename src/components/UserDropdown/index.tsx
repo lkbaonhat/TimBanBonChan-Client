@@ -70,11 +70,18 @@ const getRoleLabel = (role: string) => {
 function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(false);
-    const filteredMenuItems = menuItems.filter((item) => !item.roles || item.roles.includes(user.roles?.[0]))
+    const filteredMenuItems = menuItems.filter((item) => {
+        if (!item.roles || !user?.roles?.length) return true;
+        return item.roles.some(role => user.roles.includes(role))
+    });
 
     const handleItemClick = (href: string) => {
         navigate(href)
         setIsOpen(false)
+    }
+
+    if (!user || !user.roles?.length) {
+        return null;
     }
 
     return (
@@ -84,7 +91,7 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
                     <Avatar className="h-10 w-10 border-2 border-[#0052A3]/20">
                         <AvatarImage src={user.avatarUrl} alt={user.fullName} />
                         <AvatarFallback className="bg-gradient-to-br from-[#126ac2] to-[#5B7CCB] text-white font-semibold">
-                            {user.fullName.split(" ").pop()?.charAt(0).toUpperCase()}
+                            {user.fullName.split(" ").pop()?.charAt(0).toUpperCase() || user.fullName.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                     </Avatar>
                 </button>
@@ -96,14 +103,14 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
                         <Avatar className="h-10 w-10 border-2 border-[#0052A3]/20">
                             <AvatarImage src={user.avatarUrl} alt={user.fullName} />
                             <AvatarFallback className="bg-gradient-to-br from-[#126ac2] to-[#5B7CCB] text-white font-semibold">
-                                {user.fullName.split(" ").pop()?.charAt(0).toUpperCase()}
+                                {user.fullName.split(" ").pop()?.charAt(0).toUpperCase() || user.fullName.charAt(0).toUpperCase() || "U"}
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                                 <p>{user.fullName}</p>
-                                <Badge className={`text-xs px-2 py-0.5 ${getRoleBadgeColor(user.roles[0])}`}>
-                                    {getRoleLabel(user.roles[0])}
+                                <Badge className={`text-xs px-2 py-0.5 ${getRoleBadgeColor(user.roles?.[0] || '')}`}>
+                                    {getRoleLabel(user.roles?.[0] || '')}
                                 </Badge>
                             </div>
                             <p className="text-sm text-white/80 truncate">{user.email}</p>
@@ -115,16 +122,16 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
                 <div className="p-2">
                     {filteredMenuItems.map((item, index) => {
                         const Icon = item.icon
-                        const isStaffOnly = item.roles && item.roles[0]?.includes("Staff") && !item.roles[0]?.includes("Guest")
+                        const isStaffOnly = item.roles && item.roles?.[0]?.includes("Staff") && !item.roles?.[0]?.includes("Guest")
 
                         return (
                             <DropdownMenuItem
                                 key={index}
-                                className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-pink-50 rounded-lg transition-colors group"
+                                className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-blue-50 rounded-lg transition-colors duration-200 group"
                                 onClick={() => handleItemClick(item.href)}
                             >
-                                <Icon className={`h-4 w-4 ${isStaffOnly ? "text-[#5B7CCB]" : "text-[#0052A3]"} group-hover:scale-110`} />
-                                <span className="font-medium text-gray-700 group-hover:text-primary">{item.label}</span>
+                                <Icon className={`h-4 w-4 ${isStaffOnly ? "text-[#5B7CCB]" : "text-[#0052A3]"} transition-transform duration-200 group-hover:scale-110`} />
+                                <span className="font-medium text-gray-700 transition-colors duration-200 group-hover:text-[#0052A3]">{item.label}</span>
                                 {isStaffOnly && (
                                     <Badge variant="outline" className="ml-auto text-xs text-secondary border-secondary">
                                         Staff
@@ -138,11 +145,11 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
 
                     {/* Logout */}
                     <DropdownMenuItem
-                        className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-pink-50 rounded-lg transition-colors group text-red-600"
+                        className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-blue-50 rounded-lg text-red-600 transition-colors duration-200 group"
                         onClick={onClickLogout}
                     >
-                        <LogOut className="h-4 w-4 group-hover:scale-100 transition-transform text-red-600" />
-                        <span className="font-medium">Đăng xuất</span>
+                        <LogOut className="h-4 w-4 transition-transform duration-200 group-hover:scale-100 text-red-600" />
+                        <span className="font-medium transition-colors duration-200 group-hover:text-red-700">Đăng xuất</span>
                     </DropdownMenuItem>
                 </div>
             </DropdownMenuContent>
