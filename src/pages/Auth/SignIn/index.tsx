@@ -32,7 +32,7 @@ const signInSchema = z.object({
 // Define form data type from the schema
 type SignInFormData = z.infer<typeof signInSchema>;
 
-export default function SignInForm() {
+export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,9 +59,10 @@ export default function SignInForm() {
       setIsSubmitting(true);
       setError(null);
 
-      dispatch({ type: "SIGN_IN", payload: data,
+      dispatch({
+        type: "SIGN_IN",
+        payload: data,
         callback: (isSuccess: boolean) => {
-          console.log("zo ne")
           if (!isSuccess) {
             toast.error("Email hoặc mật khẩu không đúng.");
           } else {
@@ -69,7 +70,7 @@ export default function SignInForm() {
             navigate(ROUTES.PUBLIC.HOME);
           }
         },
-       });
+      });
     } catch (error: any) {
       console.error("Login error:", error);
       // Handle API error response

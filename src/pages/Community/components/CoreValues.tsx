@@ -1,5 +1,6 @@
 "use client";
 
+import { BANNER, LOGO } from "@/constants/global";
 import { Heart, Award, Share2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -35,19 +36,19 @@ const CoreValues = () => {
 
   const values = [
     {
-      icon: <img src="heartpink.png" className="w-8 h-auto" />,
+      icon: <img src={LOGO.HEART_PINK} className="w-8 h-auto" />,
       title: "Nhân ái",
       description:
         "Cộng đồng chúng tôi luôn đặt niềm yêu thương thú cưng lên trên hết",
     },
     {
-      icon: <img className="w-8 h-auto" src="commutepink.png" />,
+      icon: <img className="w-8 h-auto" src={LOGO.COMMUNICATE_PINK} />,
       title: "Chân thành",
       description:
         "Chúng tôi luôn sử dụng hết khả năng của mình để hoàn thành sứ mệnh của mình",
     },
     {
-      icon: <img className="w-8 h-auto " src="communitypink.png" />,
+      icon: <img className="w-8 h-auto " src={LOGO.COMMUNITY_PINK} />,
       title: "Lan tỏa",
       description:
         "Cộng đồng chúng tôi trao đi tình yêu và thực hiện trách nhiệm với cộng đồng",
@@ -79,7 +80,7 @@ const CoreValues = () => {
 
         <div className="flex justify-center">
           <img
-            src="5dogs.png"
+            src={BANNER.FIVE_DOG}
             alt="Different dog breeds"
             className="rounded-lg w-full max-w-3xl"
           />

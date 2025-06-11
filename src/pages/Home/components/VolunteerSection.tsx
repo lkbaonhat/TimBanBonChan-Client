@@ -1,7 +1,7 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { BANNER } from "@/constants/global";
 
 const VolunteerSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,17 +33,16 @@ const VolunteerSection = () => {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           <div
-            className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${
-              isVisible
+            className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${isVisible
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-10 opacity-0"
-            }`}
+              }`}
           >
             <div className="relative">
               <div className="absolute -top-6 -left-6 w-24 h-24 bg-pink-200 rounded-full opacity-70"></div>
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-200 rounded-full opacity-70"></div>
               <img
-                src="hugging.png"
+                src={BANNER.VOLUNTEER_WITH_PUPPY}
                 alt="Volunteer with puppy"
                 className="rounded-2xl max-w-full h-auto relative z-10"
               />
@@ -51,11 +50,10 @@ const VolunteerSection = () => {
           </div>
 
           <div
-            className={`md:w-1/2 md:pl-12 transition-all duration-1000 delay-300 transform ${
-              isVisible
+            className={`md:w-1/2 md:pl-12 transition-all duration-1000 delay-300 transform ${isVisible
                 ? "translate-x-0 opacity-100"
                 : "translate-x-10 opacity-0"
-            }`}
+              }`}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight text-right">
               Trở thành
@@ -70,7 +68,7 @@ const VolunteerSection = () => {
                 shape="pill"
                 className="hover:shadow-lg transition-all duration-300 px-8 py-4"
               >
-                <a href="/volunteer">Khám phá thêm</a>
+                <Link to="/volunteer">Khám phá thêm</Link>
               </Button>
               <Button
                 asChild
@@ -79,7 +77,7 @@ const VolunteerSection = () => {
                 shape="pill"
                 className="hover:shadow-lg transition-all duration-300 px-8 py-4"
               >
-                <a href="/volunteer/registration">Đăng ký ngay</a>
+                <Link to="/volunteer/registration">Đăng ký ngay</Link>
               </Button>
             </div>
           </div>

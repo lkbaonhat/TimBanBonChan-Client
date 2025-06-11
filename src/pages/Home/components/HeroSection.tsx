@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BANNER } from "@/constants/global";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,11 +18,10 @@ const HeroSection = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-10">
           {/* Text Content */}
           <div
-            className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${
-              isVisible
+            className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${isVisible
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-10 opacity-0"
-            }`}
+              }`}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               <span className="text-gray-900">CHIA SẺ </span>
@@ -36,7 +36,7 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button asChild variant="blue" size="lg" shape="pill">
-                <Link to="/adopt">Nhận nuôi thú cưng</Link>
+                <Link to="/pets">Nhận nuôi thú cưng</Link>
               </Button>
               <Button asChild variant="pink" size="lg" shape="pill">
                 <Link to="/find-new-home">Tìm nhà mới cho bé</Link>
@@ -46,15 +46,14 @@ const HeroSection = () => {
 
           {/* Hero Image */}
           <div
-            className={`md:w-1/2 transition-all duration-1000 transform ${
-              isVisible
+            className={`md:w-1/2 transition-all duration-1000 transform ${isVisible
                 ? "translate-x-0 opacity-100"
                 : "translate-x-10 opacity-0"
-            }`}
+              }`}
           >
             <div className="relative rounded-3xl overflow-hidden  transform hover:scale-102 transition-all duration-500">
               <img
-                src="highfive.png"
+                src={BANNER.HIGH_FIVE}
                 alt="Dog with owner at sunset"
                 className="w-full h-auto object-cover rounded-3xl"
               />

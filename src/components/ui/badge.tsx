@@ -20,7 +20,7 @@ const badgeVariants = cva(
         success:
           "border-transparent bg-green-500 text-white [a&]:hover:bg-green-600/90 focus-visible:ring-green-500/20 dark:focus-visible:ring-green-500/40",
         pending:
-          "border-yellow-400 bg-yellow-100 text-yellow-500 [a&]:hover:bg-yellow-600/90 focus-visible:ring-yellow-500/20 dark:focus-visible:ring-yellow-500/40",
+          "bg-amber-50 text-amber-700 border-amber-200 [a&]:hover:bg-yellow-600/90 focus-visible:ring-yellow-500/20 dark:focus-visible:ring-yellow-500/40",
       },
     },
     defaultVariants: {

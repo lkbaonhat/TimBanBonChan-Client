@@ -109,13 +109,8 @@ export default function Card({
         <img
           src={image || "/placeholder.svg"}
           alt={title}
-          className={`w-full ${
-            type === "pet" ? "h-100" : "h-100"
-          } object-cover`}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "https://via.placeholder.com/300x300?text=Image";
-          }}
+          className={`w-full ${type === "pet" ? "h-100" : "h-100"
+            } object-cover`}
         />
       </div>
 

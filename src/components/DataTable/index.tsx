@@ -15,13 +15,6 @@ import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } f
 
 import { Button } from "@/components/ui/button"
 import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import {
     Table,
     TableBody,
     TableCell,
@@ -40,11 +33,13 @@ export type Payment = {
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    meta?: any
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    meta,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,6 +64,7 @@ export function DataTable<TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
+        meta,
         state: {
             sorting,
             columnFilters,

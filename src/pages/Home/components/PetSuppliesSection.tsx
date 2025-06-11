@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { BANNER } from "@/constants/global";
 
 const PetSuppliesSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,17 +34,16 @@ const PetSuppliesSection = () => {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-center gap-12">
           <div
-            className={`md:w-2/5 mb-10 md:mb-0 transition-all duration-1000 transform ${
-              isVisible
-                ? "translate-x-0 opacity-100"
-                : "-translate-x-10 opacity-0"
-            }`}
+            className={`md:w-2/5 mb-10 md:mb-0 transition-all duration-1000 transform ${isVisible
+              ? "translate-x-0 opacity-100"
+              : "-translate-x-10 opacity-0"
+              }`}
           >
             <div className="relative ml-0">
               <div className="absolute -top-8 -left-8 w-20 h-20 bg-blue-300 rounded-full animate-pulse-slow"></div>
               <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-yellow-200 rounded-full animate-bounce-slow"></div>
               <img
-                src="cat&food.png"
+                src={BANNER.PET_TOYS_AND_FOOD}
                 alt="Pet toys and food"
                 className="rounded-2xl  max-w-full h-auto relative z-10 ml-0"
               />
@@ -51,11 +51,10 @@ const PetSuppliesSection = () => {
           </div>
 
           <div
-            className={`md:w-3/5 md:pl-16 transition-all duration-1000 delay-300 transform ${
-              isVisible
-                ? "translate-x-0 opacity-100"
-                : "translate-x-10 opacity-0"
-            }`}
+            className={`md:w-3/5 md:pl-16 transition-all duration-1000 delay-300 transform ${isVisible
+              ? "translate-x-0 opacity-100"
+              : "translate-x-10 opacity-0"
+              }`}
             style={{
               transitionDelay: "300ms",
               justifyContent: "center",

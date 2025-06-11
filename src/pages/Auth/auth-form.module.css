@@ -1,225 +1,225 @@
 .authContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.formCard {
+  height: auto;
+  width: 100%;
+  max-width: 677px;
+  border-radius: 16px;
+  padding: 4rem 3rem;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.logo {
+  width: 184px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 0 5rem;
+}
+
+.inputGroup {
+  width: 100%;
+}
+
+.input {
+  background-color: #c5e2f0;
+  border: none;
+  border-radius: 36px;
+  padding: 1.75rem 1rem;
+  font-size: 1.25rem;
+}
+
+.input::placeholder {
+  color: #6b7280;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 1.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.submitButton {
+  width: 100%;
+  background-color: #0066cc;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 1.75rem 0;
+  border-radius: 36px;
+  margin-top: 0.5rem;
+}
+
+.submitButton:hover {
+  background-color: #0055aa;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 2.5rem 0;
+}
+
+.separator {
+  flex: 1;
+  height: 1px;
+  background-color: black;
+}
+
+.orText {
+  padding: 0 6rem;
+  color: black;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.socialButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.socialButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0 32px;
+}
+
+.forgotPass {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.forgotPass:hover {
+  text-decoration: underline;
+}
+
+.footerText {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.link {
+  color: #0066cc;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
   .formCard {
-    height: auto;
-    width: 100%;
-    max-width: 677px;
-    border-radius: 16px;
-    padding: 4rem 3rem;
-    background-color: #ffffff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
   }
-  
-  .logoContainer {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2.5rem;
-  }
-  
-  .logo {
-    width: 184px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
+
   .form {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-    padding: 0 5rem;
+    padding: 0 0.5rem;
+    gap: 1.5rem;
   }
-  
-  .inputGroup {
-    width: 100%;
-  }
-  
+
   .input {
-    background-color: #C5E2F0;
-    border: none;
-    border-radius: 36px;
-    padding: 1.75rem 1rem;
+    padding: 1rem 0.75rem;
+    font-size: 1rem;
+  }
+
+  .submitButton {
+    padding: 1rem 0;
+    font-size: 1.125rem;
+  }
+
+  .orText {
+    padding: 0 1.5rem;
     font-size: 1.25rem;
   }
-  
-  .input::placeholder {
-    color: #6b7280;
-  }
-  
-  .eyeButton {
-    position: absolute;
-    right: 1.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6b7280;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .submitButton {
-    width: 100%;
-    background-color: #0066cc;
-    color: white;
-    font-size: 24px;
-    font-weight: 600;
-    padding: 1.75rem 0;
-    border-radius: 36px;
-    margin-top: 0.5rem;
-  }
-  
-  .submitButton:hover {
-    background-color: #0055aa;
-  }
-  
-  .divider {
-    display: flex;
-    align-items: center;
-    margin: 2.5rem 0;
-  }
-  
-  .separator {
-    flex: 1;
-    height: 1px;
-    background-color: black;
-  }
-  
-  .orText {
-    padding: 0 6rem;
-    color: black;
-    font-size: 2.5rem;
-    font-weight: 700;
-  }
-  
+
   .socialButtons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
   }
-  
+
   .socialButton {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin: 0 32px;
+    width: 36px;
+    height: 36px;
+    margin: 0 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formCard {
+    padding: 1.5rem 1rem;
+    width: 100%;
+    max-width: 95%;
+    border-radius: 10px;
   }
 
-  .forgotPass {
-    text-align: center;
+  .form {
+    padding: 0;
+    gap: 1.25rem;
+  }
+
+  .input {
+    padding: 0.875rem 0.5rem;
     font-size: 0.875rem;
-    color: #6b7280;
+    border-radius: 24px;
   }
 
-  .forgotPass:hover {
-    text-decoration: underline;
-  }
-  
-  .footerText {
-    text-align: center;
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-  
-  .link {
-    color: #0066cc;
-    font-weight: 500;
-    text-decoration: none;
-  }
-  
-  .link:hover {
-    text-decoration: underline;
+  .eyeButton {
+    right: 0.75rem;
   }
 
-  @media (max-width: 768px) {
-    .formCard {
-      padding: 2rem 1.5rem;
-      border-radius: 12px;
-    }
-    
-    .form {
-      padding: 0 0.5rem;
-      gap: 1.5rem;
-    }
-    
-    .input {
-      padding: 1rem 0.75rem;
-      font-size: 1rem;
-    }
-    
-    .submitButton {
-      padding: 1rem 0;
-      font-size: 1.125rem;
-    }
-    
-    .orText {
-      padding: 0 1.5rem;
-      font-size: 1.25rem;
-    }
-    
-    .socialButtons {
-      margin-bottom: 1.5rem;
-    }
-    
-    .socialButton {
-      width: 36px;
-      height: 36px;
-      margin: 0 12px;
-    }
+  .submitButton {
+    padding: 0.875rem 0;
+    font-size: 1rem;
+    border-radius: 24px;
   }
-  
-  @media (max-width: 480px) {
-    .formCard {
-      padding: 1.5rem 1rem;
-      width: 100%;
-      max-width: 95%;
-      border-radius: 10px;
-    }
-    
-    .form {
-      padding: 0;
-      gap: 1.25rem;
-    }
-    
-    .input {
-      padding: 0.875rem 0.5rem;
-      font-size: 0.875rem;
-      border-radius: 24px;
-    }
-    
-    .eyeButton {
-      right: 0.75rem;
-    }
-    
-    .submitButton {
-      padding: 0.875rem 0;
-      font-size: 1rem;
-      border-radius: 24px;
-    }
-    
-    .divider {
-      margin: 1.25rem 0;
-    }
-    
-    .orText {
-      padding: 0 1rem;
-      font-size: 1rem;
-    }
-    
-    .socialButton {
-      width: 32px;
-      height: 32px;
-      margin: 0 8px;
-    }
+
+  .divider {
+    margin: 1.25rem 0;
   }
+
+  .orText {
+    padding: 0 1rem;
+    font-size: 1rem;
+  }
+
+  .socialButton {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px;
+  }
+}
