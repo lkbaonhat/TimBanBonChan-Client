@@ -1,6 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store/store';
 import LoadingPage from '@/pages/Loading';
 import ROUTES from '@/constants/routes';
 import { ROLE } from '@/constants/global';
@@ -14,7 +13,7 @@ const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
     const userInfo = useSelector(selectorAuth.userInfo)
     const isAuthenticated = useSelector(selectorAuth.isAuthenticated)
 
-    if (userInfo === null) {
+    if (!Object.keys(userInfo).length || !isAuthenticated) {
         return <LoadingPage />;
     }
 

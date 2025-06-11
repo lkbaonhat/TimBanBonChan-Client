@@ -47,8 +47,6 @@ const PetListingSection = () => {
           params,
         });
 
-        console.log("API Response:", response.data);
-
         // Extract pets from the response based on the actual structure
         let pets: Pet[] = [];
 
