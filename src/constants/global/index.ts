@@ -48,8 +48,8 @@ const HTTP_STATUS = {
 };
 
 const ROLE = {
-  ADMIN: "admin",
-  STAFF: "staff",
+  ADMIN: "Admin",
+  STAFF: "Staff",
 };
 
 const WEB_SOCKET_STATE = {

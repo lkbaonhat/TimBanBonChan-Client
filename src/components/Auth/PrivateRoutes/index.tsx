@@ -17,7 +17,11 @@ const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
         return <LoadingPage />;
     }
 
-    if (!allowedRoles.includes(userInfo.role) && userInfo.role !== ROLE.ADMIN) {
+    const userRoles = Array.isArray(userInfo.roles) ? userInfo.roles : [userInfo.roles];
+
+    const hasPermission = userRoles.some(role => allowedRoles.includes(role) || role === ROLE.ADMIN);
+
+    if (!hasPermission) {
         return <Navigate to={ROUTES.PUBLIC.HOME} replace />;
     }
 

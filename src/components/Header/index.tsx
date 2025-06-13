@@ -137,14 +137,6 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Search"
-              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
-            >
-              <Search size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
               aria-label="Contact"
               className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
             >
@@ -162,6 +154,7 @@ const Header = () => {
             {isAuthenticated ?
               <UserDropDown
                 user={user}
+                onClickLogout={handleLogout}
               />
               : (
                 <Link
