@@ -26,8 +26,7 @@ function* signInSaga(
 }
 
 function* logoutSaga(action: { callback: (isSuccess: boolean) => void }): Generator {
-  localStorage.removeItem("accessToken");
-  yield put(authSlice.actions.setIsAuthenticated(false));
+  yield put(authSlice.actions.logout());
   action.callback(true);
 }
 

@@ -3,7 +3,7 @@ import SidebarLayout from "@/layouts/SidebarLayout";
 import { lazy } from "react";
 
 //Page component
-const StaffDashboard = lazy(() => import("@pages/Home"))
+const StaffDashboard = lazy(() => import("@pages/Staff/Dashboard"))
 const PetInfoList = lazy(() => import("@pages/Staff/ManagePet/PetInfoList"))
 const AddPetPage = lazy(() => import("@pages/Staff/ManagePet/AddPet"))
 const EditPetPage = lazy(() => import("@pages/Staff/ManagePet/EditPet"))

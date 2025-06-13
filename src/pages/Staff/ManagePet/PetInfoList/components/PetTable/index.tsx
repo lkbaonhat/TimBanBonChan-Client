@@ -62,6 +62,7 @@ const columns: ColumnDef<Pet>[] = [
         header: 'Thú cưng',
         cell: ({ row }) => {
             const pet = row.original
+            console.log(pet)
             return (
                 <div className='flex items-center gap-4'>
                     <Avatar className="w-16 h-16 rounded-xl object-cover border-2 border-gray-200">
