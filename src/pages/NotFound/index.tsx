@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import ROUTES from '@/constants/routes'
 import { Home, ArrowLeft, Search } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ROUTES } from '@/constants/routes'
 
 export default function NotFound() {
   const navigate = useNavigate()
@@ -89,26 +89,26 @@ export default function NotFound() {
               Có thể bạn đang tìm kiếm:
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <Link 
-                to="/pets" 
+              <Link
+                to="/pets"
                 className="text-[#0053A3] hover:text-[#004080] hover:underline transition-colors"
               >
                 Nhận nuôi thú cưng
               </Link>
-              <Link 
-                to="/find-new-home" 
+              <Link
+                to="/find-new-home"
                 className="text-[#0053A3] hover:text-[#004080] hover:underline transition-colors"
               >
                 Tìm nhà cho bé yêu
               </Link>
-              <Link 
-                to="/community" 
+              <Link
+                to="/community"
                 className="text-[#0053A3] hover:text-[#004080] hover:underline transition-colors"
               >
                 Cộng đồng
               </Link>
-              <Link 
-                to="/pet-care" 
+              <Link
+                to="/pet-care"
                 className="text-[#0053A3] hover:text-[#004080] hover:underline transition-colors"
               >
                 Sổ tay chăm sóc
