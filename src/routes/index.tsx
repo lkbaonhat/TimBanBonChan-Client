@@ -32,10 +32,15 @@ import UpdatePetInfo from "@/pages/Profile/UpdatePetInfo";
 import LoadingPage from "@/pages/Loading";
 import PersistToken from "@/components/Auth/PersistLogin";
 import { ROLE } from "@/constants/global";
+import NotFound from "@/pages/NotFound";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
     //* PUBLIC routes
+    {
+      path: '*',
+      element: <NotFound />
+    },
     {
       element: <DefaultLayout />,
       children: [

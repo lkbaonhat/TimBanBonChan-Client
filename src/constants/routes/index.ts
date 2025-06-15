@@ -26,7 +26,7 @@ const ROUTES = {
     HOME: '/staff',
     MANAGE_PETS: '/staff/manage-pets',
     ADD_PET: '/staff/manage-pets/new',
-    EDIT_PET: '/staff/manage-pets/:id/edit',
+    EDIT_PET: '/staff/manage-pets/:slug/edit',
     PET_DETAIL: '/staff/manage-pets/:slug',
     VERIFY_PETS: '/staff/verify-pets',
     VERIFY_PET_DETAIL: '/staff/verify-pets/:slug',

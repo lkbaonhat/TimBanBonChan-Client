@@ -19,7 +19,7 @@ export function CloudinaryUpload({ onImageUploaded, defaultImage }: CloudinaryUp
 
     // Initialize with defaultImage if provided
     useEffect(() => {
-        if (defaultImage && defaultImage.trim() !== "") {
+        if (defaultImage && defaultImage !== "") {
             setPreviewUrl(defaultImage)
         }
     }, [defaultImage])
