@@ -86,7 +86,7 @@ const ZeroSection = ({
           <div className="md:w-1/2">
             <img
               ref={imageRef}
-              src={"multipaws.png"}
+              src={imageSrc}
               alt="Pets illustration"
               className="rounded-lg transition-all duration-700" // Removed opacity-0
             />

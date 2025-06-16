@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import ROUTES from '@/constants/routes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useSelector } from 'react-redux';
+import { selectorAuth } from '@/store/modules/auth/selector';
 
 interface Volunteer {
     applicationId: string;
@@ -43,6 +45,7 @@ function VolunteerApplicationDetail() {
     const [loading, setLoading] = useState<boolean>(true);
     const [updating, setUpdating] = useState<boolean>(false);
     const navigate = useNavigate();
+    const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
 
     const fetchApplicationDetail = async () => {
         if (!id) return;
@@ -69,9 +72,10 @@ function VolunteerApplicationDetail() {
         try {
             const payload = {
                 applicationId: id,
-                adminUserId: id,
+                adminUserId: userInfo.userId,
+                applicationStatus: newStatus,
             }
-            await volunteerServices.updateVolunteerApplicationStatus(id, newStatus);
+            await volunteerServices.updateVolunteerApplicationStatus(id, payload);
 
             toast.success(`Đã ${newStatus === 'approved' ? 'duyệt' : 'từ chối'} đơn đăng ký thành công`);
         } catch (error) {
@@ -167,7 +171,7 @@ function VolunteerApplicationDetail() {
                 {application.applicationStatus.toLowerCase() === 'pending' && (
                     <div className='flex space-y-2 gap-2'>
                         <Button
-                            onClick={() => handleStatusUpdate('approved')}
+                            onClick={() => handleStatusUpdate('Approved')}
                             variant="success"
                             size="sm"
                             disabled={updating}
@@ -176,7 +180,7 @@ function VolunteerApplicationDetail() {
                             Duyệt
                         </Button>
                         <Button
-                            onClick={() => handleStatusUpdate('rejected')}
+                            onClick={() => handleStatusUpdate('Rejected')}
                             variant="destructive"
                             size='sm'
                             disabled={updating}

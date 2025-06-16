@@ -12,7 +12,7 @@ import VolunteerRoles from "./components/VolunteerRoles";
 const VolunteerPage = () => {
   // Add the pet illustration image
   const petIllustration =
-    "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-sW9TtLFsnCCyae6qgZYe14UKBOyUlP.png";
+    "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081484/cvierrvysd5zs3xcy22g.png";
 
   useEffect(() => {
     // Add scroll animation classes
@@ -58,7 +58,7 @@ const VolunteerPage = () => {
               subtitle="Mỗi thú cưng đều xứng đáng có một mái ấm. Hãy cùng chúng tôi thay đổi cuộc sống của các bé"
               buttonText="Đăng ký ngay"
               buttonLink="/volunteer/registration"
-              imageSrc="multipaws.png"
+              imageSrc={petIllustration}
             />
           </div>
 
