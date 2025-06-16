@@ -57,7 +57,7 @@ const RouterComponent = () => {
         { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
         { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
         { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
-        { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+
         { path: ROUTES.PUBLIC.FIND_NEW_HOME, element: <FindNewHome /> },
         {
           path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
@@ -87,6 +87,12 @@ const RouterComponent = () => {
           element: <PrivateRoute allowedRoles={[ROLE.STAFF]} />,
           children: [...StaffRoutes],
         },
+        {
+          element: <DefaultLayout />,
+          children: [
+            { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+          ]
+        }
       ],
     },
   ]);

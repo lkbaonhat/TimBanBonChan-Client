@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
+import { userService } from "@/services/userService";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Họ và tên là bắt buộc" }),
@@ -47,6 +49,7 @@ export default function AdoptionForm() {
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const fetchPetDetails = async () => {
@@ -107,9 +110,55 @@ export default function AdoptionForm() {
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    // Handle form submission
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true);
+    try {
+      // Prepare payload for API
+      const payload = {
+        fullName: data.fullName,
+        email: data.email,
+        phoneNumber: data.phone,
+        dateOfBirth: data.dateOfBirth,
+        address: data.address,
+        livingArrangement: data.livingArrangement,
+        hasOtherPets: data.hasOtherPets,
+        hasPreviousPets: data.hasPreviousPets,
+        previousExperience: data.previousExperience || '',
+        petCareKnowledge: data.petCareKnowledge || '',
+        additionalInfo: data.additionalInfo || '',
+        petId: pet?.id, // ID của thú cưng từ API
+        petSlug: slug, // slug từ URL params
+      }
+
+      console.log('Submitting adoption application:', payload)
+
+      // Call API
+      const response = await userService.createAdoptionApplication(payload)
+
+      if (response.data) {
+        toast.success('Đơn đăng ký nhận nuôi đã được gửi thành công!')
+
+        // Redirect to success page or pet detail page
+        navigate(`/pets/${slug}`, {
+          state: {
+            message: 'Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.'
+          }
+        })
+      }
+    } catch (error: any) {
+      console.error('Error submitting adoption application:', error)
+
+      // Handle different types of errors
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message)
+      } else if (error.message) {
+        toast.error(error.message)
+      } else {
+        toast.error('Có lỗi xảy ra khi gửi đơn đăng ký. Vui lòng thử lại sau.')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   };
 
   // Define breadcrumb items dynamically based on the pet
@@ -413,8 +462,9 @@ export default function AdoptionForm() {
               variant="blue"
               shape="default"
               animation="none"
+              disabled={isSubmitting}
             >
-              Hoàn tất và gửi đơn nhận nuôi
+              {isSubmitting ? "Đang gửi đơn..." : "Hoàn tất và gửi đơn nhận nuôi"}
             </Button>
           </div>
         </form>
