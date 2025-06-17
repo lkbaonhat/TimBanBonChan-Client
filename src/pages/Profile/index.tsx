@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +20,7 @@ import { Camera, Heart } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
+import ContentHeader from "@/components/ContentHeader/ContentHeader";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("personal-info");
@@ -53,16 +53,16 @@ export default function ProfilePage() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto py-6">
-        {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center gap-6 mb-10">
+      <div className="container mx-auto py-6 pb-20">
+        {/* Profile Header - Updated to match ProfileDetail style */}
+        <div className="relative flex items-center mb-10">
           <div className="relative">
-            <Avatar className="w-24 h-24 rounded-full  overflow-hidden">
+            <Avatar className="h-24 w-24 border-2 border-gray-100 rounded-full shadow-sm">
               <AvatarImage
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cWmsl3NJQaxCzyM5otgH7Sp2EPh3fT.png"
                 alt="Siriana Pham"
               />
-              <AvatarFallback className="bg-[#C5E2F0] text-[#0053A3] font-medium">
+              <AvatarFallback className="bg-gray-200 text-gray-700 font-medium">
                 SP
               </AvatarFallback>
             </Avatar>
@@ -74,16 +74,21 @@ export default function ProfilePage() {
               <Camera size={16} className="text-gray-600" />
             </Button>
           </div>
-          <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold">Siriana Pham</h1>
-            <p className="text-gray-600 text-sm">
-              Người nhận nuôi | Tình nguyện viên
-            </p>
+
+          <div className="ml-6 flex-1">
+            <h1 className="font-bold text-2xl md:text-3xl text-gray-800">
+              Siriana Pham
+            </h1>
+            <div className="flex gap-2">
+              <span className="text-gray-600 text-sm font-medium">
+                Người nhận nuôi | Tình nguyện viên
+              </span>
+            </div>
           </div>
 
-          {/* Adoption Readiness Toggle - Moved to right side */}
-          <div className="flex items-center ml-auto flex-col max-w-xs">
-            <div className="flex items-left  gap-2  px-4 py-2 rounded-full ">
+          {/* Adoption Readiness Toggle - Repositioned */}
+          <div className="flex flex-col items-start max-w-xs">
+            <div className="flex items-center gap-2 py-2">
               <Label
                 htmlFor="ready-to-adopt"
                 className="text-sm cursor-pointer order-1"
@@ -112,7 +117,7 @@ export default function ProfilePage() {
                 } order-2`}
               />
             </div>
-            <p className="text-xs text-gray-700">
+            <p className="text-xs text-gray-700 text-left">
               Nếu bạn sẵn sàng nhận nuôi thêm thú cưng và muốn chúng tôi liên hệ
               khi có bé phù hợp với bạn.
             </p>
@@ -157,48 +162,44 @@ export default function ProfilePage() {
           </DialogContent>
         </Dialog>
 
-        {/* Tabs */}
-        <Tabs
-          defaultValue="personal-info"
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <TabsList className="flex w-full  mb-8 bg-transparent">
-            <TabsTrigger
-              value="personal-info"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${
-                activeTab === "personal-info"
-                  ? "border-b-1 border-black text-black"
-                  : ""
-              }`}
-            >
-              Thông tin cá nhân
-            </TabsTrigger>
-            <TabsTrigger
-              value="my-pets"
-              className={` p-4 text-sm font-medium rounded-none border-0 ${
-                activeTab === "my-pets"
-                  ? "border-b-1 border-black text-black"
-                  : ""
-              }`}
-            >
-              Thú cưng của tôi
-            </TabsTrigger>
-            <TabsTrigger
-              value="pet-criteria"
-              className={` p-4 text-sm font-medium rounded-none border-0 ${
-                activeTab === "pet-criteria"
-                  ? "border-b-1 border-black text-black"
-                  : ""
-              }`}
-            >
-              Tiểu sử nuôi thú cưng
-            </TabsTrigger>
-          </TabsList>
+        {/* Tab Navigation - Updated to match ProfileDetail style */}
+        <div className="flex border-b border-gray-200 mb-8">
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "personal-info"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("personal-info")}
+          >
+            Thông tin cá nhân
+          </button>
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "my-pets"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("my-pets")}
+          >
+            Thú cưng của tôi
+          </button>
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "pet-criteria"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("pet-criteria")}
+          >
+            Tiểu sử nuôi thú cưng
+          </button>
+        </div>
 
-          {/* Personal Info Tab */}
-          <TabsContent value="personal-info" className="space-y-6">
+        {/* Tab Content */}
+        {activeTab === "personal-info" && (
+          <div className="space-y-6">
+            {/* Personal Info Tab Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label
@@ -335,125 +336,161 @@ export default function ProfilePage() {
                 />
               </div>
             </div>
-            <div className="flex justify-center mt-8">
-              <Button variant="blue" className="px-10 py-2" animation="none">
+            <div className="flex justify-center mt-20">
+              <Button
+                variant="blue"
+                className=" w-1/3"
+                animation="none"
+                shape={"pill"}
+                size="lg"
+              >
                 Lưu thay đổi
               </Button>
             </div>
-          </TabsContent>
+          </div>
+        )}
 
-          {/* My Pets Tab */}
-          <TabsContent value="my-pets">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Dog 1 */}
-              <Card
-                type="pet"
-                image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
-                title="Con Bơ"
-                badge="Chó"
-                gender="Cái"
-                location="1 tuổi"
-                className="h-full"
-                buttonText="Xem chi tiết"
-                onButtonClick={() =>
-                  navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "1")}`)
-                }
-              />
+        {activeTab === "my-pets" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Dog 1 */}
+            <Card
+              type="pet"
+              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
+              title="Con Bơ"
+              badge="Chó"
+              gender="Cái"
+              location="1 tuổi"
+              className="h-full"
+              buttonText="Xem chi tiết"
+              onButtonClick={() =>
+                navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "1")}`)
+              }
+            />
 
-              {/* Dog 2 */}
-              <Card
-                type="pet"
-                image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
-                title="Bi"
-                badge="Chó"
-                gender="Đực"
-                location="1 tuổi"
-                className="h-full"
-                buttonText="Xem chi tiết"
-                onButtonClick={() =>
-                  navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "2")}`)
-                }
-              />
+            {/* Dog 2 */}
+            <Card
+              type="pet"
+              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
+              title="Bi"
+              badge="Chó"
+              gender="Đực"
+              location="1 tuổi"
+              className="h-full"
+              buttonText="Xem chi tiết"
+              onButtonClick={() =>
+                navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "2")}`)
+              }
+            />
 
-              {/* Add New Pet Card */}
-              <Card
-                type="pet"
-                image="/placeholder.svg"
-                title="Thêm thú cưng mới"
-                buttonText="Thêm thú cưng mới"
-                onButtonClick={() => navigate(ROUTES.PUBLIC.ADD_PET)}
-                className="h-full"
-              />
-            </div>
-          </TabsContent>
-
-          {/* Pet Criteria Tab */}
-          <TabsContent value="pet-criteria">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-lg font-medium">Lịch sử nuôi thú cưng</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Cat 1 */}
-                  <Card
-                    type="pet"
-                    image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                    title="Hoàng tử Cát"
-                    badge="Mèo"
-                    gender="Đực"
-                    location="1 tuổi"
-                    className="h-full"
-                  />
-
-                  {/* Cat 2 */}
-                  <Card
-                    type="pet"
-                    image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                    title="Liu"
-                    badge="Mèo"
-                    gender="Đực"
-                    location="1 tuổi"
-                    className="h-full"
-                  />
-
-                  {/* Cat 3 */}
-                  <Card
-                    type="pet"
-                    image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                    title="Điều"
-                    badge="Mèo"
-                    gender="Đực"
-                    location="1 tuổi"
-                    className="h-full"
-                  />
+            {/* Add New Pet Card */}
+            <div
+              className="border-2 border-gray-400 rounded-xl overflow-hidden cursor-pointer h-full flex flex-col"
+              onClick={() => navigate(ROUTES.PUBLIC.ADD_PET)}
+            >
+              <div className=" flex-grow flex items-center justify-center p-8">
+                <div className="border-2 border-gray-400 w-16 h-16 rounded-full  flex items-center justify-center shadow-sm">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 5V19M5 12H19"
+                      stroke="#6B7280"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
 
-              <div className=" rounded-xl ">
-                <h2 className="text-lg font-medium mb-4">
-                  Kỹ năng nuôi thú cưng
-                </h2>
-                <div className="space-y-4">
+        {activeTab === "pet-criteria" && (
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <ContentHeader level="h2" title="Lịch sử nuôi thú cưng" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Cat 1 */}
+                <Card
+                  type="pet"
+                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
+                  title="Hoàng tử Cát"
+                  badge="Mèo"
+                  gender="Đực"
+                  location="1 tuổi"
+                  className="h-full"
+                />
+
+                {/* Cat 2 */}
+                <Card
+                  type="pet"
+                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
+                  title="Liu"
+                  badge="Mèo"
+                  gender="Đực"
+                  location="1 tuổi"
+                  className="h-full"
+                />
+
+                {/* Cat 3 */}
+                <Card
+                  type="pet"
+                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
+                  title="Điều"
+                  badge="Mèo"
+                  gender="Đực"
+                  location="1 tuổi"
+                  className="h-full"
+                />
+              </div>
+            </div>
+
+            <div className="rounded-xl">
+              <ContentHeader title="Kỹ năng nuôi thú cưng" level="h2" />
+
+              <div className="space-y-4 mt-6">
+                <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all">
                   <div>
-                    <h3 className="text-md font-medium mb-2">
+                    <h3 className="font-medium text-lg text-gray-800 mb-2">
                       Chăm sóc lông mao
                     </h3>
                     <p className="text-sm text-gray-600">
                       Tắm rửa, gỡ lông rụng
                     </p>
-                    <Separator className="my-4" />
                   </div>
+                  <Separator className="my-4" />
+                </div>
 
+                <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all">
                   <div>
-                    <h3 className="text-md font-medium mb-2">Đặt cún đi dạo</h3>
+                    <h3 className="font-medium text-lg text-gray-800 mb-2">
+                      Đặt cún đi dạo
+                    </h3>
                     <p className="text-sm text-gray-600">
                       Dắt chó đi dạo hàng ngày
                     </p>
                   </div>
                 </div>
+
+                <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all">
+                  <div>
+                    <h3 className="font-medium text-lg text-gray-800 mb-2">
+                      Huấn luyện cơ bản
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Dạy các lệnh cơ bản như ngồi, nằm, đứng yên, không sủa
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );

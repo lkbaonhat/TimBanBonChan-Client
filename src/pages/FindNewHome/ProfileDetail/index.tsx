@@ -159,57 +159,49 @@ export default function ProfileDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FFEDFA]">
+    <div className="min-h-screen">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto  py-6">
-        <div className="bg-white rounded-xl overflow-hidden shadow-md relative">
-          {/* Decorative circles to match home page style */}
-          <div className="absolute -top-6 -left-6 w-20 h-20 bg-[#C5E2F0] opacity-70 rounded-full z-0 hidden md:block"></div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#FF99C0] opacity-60 rounded-full z-0 hidden md:block"></div>
+      <div className="container mx-auto py-6">
+        <div className="rounded-xl overflow-hidden relative">
+          {/* Profile Header - Removed the colored background */}
+          <div className="relative    flex items-center">
+            <Avatar className="h-24 w-24 border-2 border-gray-100 rounded-full shadow-sm">
+              <AvatarImage src={userProfile.imageUrl} alt={userProfile.name} />
+              <AvatarFallback>
+                {userProfile.name.substring(0, 2)}
+              </AvatarFallback>
+            </Avatar>
 
-          {/* Profile Banner */}
-          <div className="h-48 bg-gradient-to-r from-[#C5E2F0] to-[#FF99C0]/40 relative">
-            <div className="absolute -bottom-16 left-8">
-              <Avatar className="h-32 w-32 border-4 border-white shadow-md">
-                <AvatarImage
-                  src={userProfile.imageUrl}
-                  alt={userProfile.name}
-                />
-                <AvatarFallback>
-                  {userProfile.name.substring(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-
-          {/* Profile Content */}
-          <div className="p-6 md:p-8 pt-20 relative z-10">
-            <div className="mb-6">
-              <ContentHeader
+            <div className="ml-6 flex-1">
+              <h2
                 title={userProfile.name}
-                level="h1"
-                className="text-[#0053A3]"
-              />
-              <div className="text-gray-600 mt-1 flex gap-2">
-                <span className="bg-[#FF99C0]/30 px-3 py-1 rounded-full text-[#FF99C0] text-sm font-medium">
+                className="font-bold text-2xl md:text-3xl text-gray-800"
+              >
+                {userProfile.name}
+              </h2>
+              <div className="flex gap-2">
+                <span className="text-gray-600 text-sm font-medium">
                   {userProfile.role}
                 </span>
                 {userProfile.secondaryRole && (
-                  <span className="bg-blue-100 px-3 py-1 rounded-full text-[#0053A3] text-sm font-medium">
-                    {userProfile.secondaryRole}
+                  <span className="text-gray-600 text-sm font-medium">
+                    | {userProfile.secondaryRole}
                   </span>
                 )}
               </div>
             </div>
+          </div>
 
+          {/* Profile Content - Adjusted top padding */}
+          <div className="pt-6 relative z-10">
             {/* Tab Navigation */}
             <div className="flex border-b border-gray-200 mb-8">
               <button
                 className={`py-4 px-6 text-base font-medium border-b-2 ${
                   activeTab === "personal"
-                    ? "border-[#FF99C0] text-[#FF99C0]"
+                    ? "border-gray-700 text-gray-700"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 } transition-colors`}
                 onClick={() => setActiveTab("personal")}
@@ -219,7 +211,7 @@ export default function ProfileDetail() {
               <button
                 className={`py-4 px-6 text-base font-medium border-b-2 ${
                   activeTab === "pets"
-                    ? "border-[#0053A3] text-[#0053A3]"
+                    ? "border-gray-700 text-gray-700]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 } transition-colors`}
                 onClick={() => setActiveTab("pets")}
@@ -229,7 +221,7 @@ export default function ProfileDetail() {
               <button
                 className={`py-4 px-6 text-base font-medium border-b-2 ${
                   activeTab === "history"
-                    ? "border-[#FF99C0] text-[#FF99C0]"
+                    ? "border-gray-700 text-gray-700]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 } transition-colors`}
                 onClick={() => setActiveTab("history")}
@@ -242,13 +234,7 @@ export default function ProfileDetail() {
             {activeTab === "personal" && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Personal Information */}
-                <div className="bg-pink-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
-                  <ContentHeader
-                    title="Thông tin cá nhân"
-                    level="h2"
-                    className="mb-6 text-[#FF99C0]"
-                  />
-
+                <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <div className="bg-[#FF99C0] p-2 rounded-full mr-4">
@@ -283,13 +269,7 @@ export default function ProfileDetail() {
                 </div>
 
                 {/* Job & Personal Details */}
-                <div className="bg-blue-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
-                  <ContentHeader
-                    title="Thông tin thêm"
-                    level="h2"
-                    className="mb-6 text-[#0053A3]"
-                  />
-
+                <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <div className="bg-[#0053A3] p-2 rounded-full mr-4">
@@ -316,13 +296,7 @@ export default function ProfileDetail() {
                 </div>
 
                 {/* Bio */}
-                <div className="bg-pink-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
-                  <ContentHeader
-                    title="Giới thiệu bản thân"
-                    level="h2"
-                    className="mb-6 text-[#FF99C0]"
-                  />
-
+                <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
                     <p className="text-gray-600 italic">"{userProfile.bio}"</p>
                   </div>
@@ -346,18 +320,12 @@ export default function ProfileDetail() {
             {/* Current Pets Tab */}
             {activeTab === "pets" && (
               <div>
-                <ContentHeader
-                  title="Thú cưng đang nuôi"
-                  level="h2"
-                  className="mb-8 text-[#0053A3]"
-                />
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {userProfile.currentPets.length > 0 ? (
                     userProfile.currentPets.map((pet) => (
                       <div
                         key={pet.id}
-                        className="transform transition-transform hover:scale-[0.98]"
+                        className="transform transition-transform "
                       >
                         <Card
                           type="pet"
@@ -385,18 +353,14 @@ export default function ProfileDetail() {
               <div className="space-y-12">
                 {/* Adoption History */}
                 <div>
-                  <ContentHeader
-                    title="Lịch sử nhận nuôi"
-                    level="h2"
-                    className="mb-8 text-[#FF99C0]"
-                  />
+                  <ContentHeader title="Lịch sử nhận nuôi" level="h2" />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {userProfile.adoptionHistory.length > 0 ? (
                       userProfile.adoptionHistory.map((history) => (
                         <div
                           key={history.id}
-                          className="transform transition-transform hover:scale-[0.98]"
+                          className="transform transition-transform "
                         >
                           <Card
                             type="pet"
@@ -422,13 +386,9 @@ export default function ProfileDetail() {
 
                 {/* Pet Care Skills */}
                 <div className="mt-12">
-                  <ContentHeader
-                    title="Kỹ năng nuôi thú cưng"
-                    level="h2"
-                    className="mb-8 text-[#0053A3]"
-                  />
+                  <ContentHeader title="Kỹ năng nuôi thú cưng" level="h2" />
 
-                  <div className="bg-blue-50 rounded-xl p-6 shadow-sm">
+                  <div className="rounded-xl ">
                     {userProfile.petCareSkills.length > 0 ? (
                       <div className="space-y-4">
                         {userProfile.petCareSkills.map((skill) => (
@@ -440,19 +400,8 @@ export default function ProfileDetail() {
                               <h4 className="font-medium text-[#0053A3]">
                                 {skill.name}
                               </h4>
-                              <div className="flex gap-1">
-                                {[...Array(5)].map((_, i) => (
-                                  <div
-                                    key={i}
-                                    className={`w-2 h-2 rounded-full ${
-                                      i < skill.level
-                                        ? "bg-[#0053A3]"
-                                        : "bg-gray-200"
-                                    }`}
-                                  />
-                                ))}
-                              </div>
                             </div>
+
                             <p className="text-sm text-gray-600">
                               {skill.description}
                             </p>

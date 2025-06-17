@@ -46,8 +46,10 @@ export default function PetProfile() {
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Tài khoản", path: ROUTES.PUBLIC.PROFILE },
-    { label: "Thú cưng của tôi", path: `${ROUTES.PUBLIC.PROFILE}?tab=my-pets` },
-    { label: "Chỉnh sửa thông tin thú cưng" },
+    {
+      label: "Chỉnh sửa thông tin thú cưng",
+      path: `${ROUTES.PUBLIC.PROFILE}?tab=my-pets`,
+    },
   ];
 
   return (
@@ -55,11 +57,11 @@ export default function PetProfile() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto py-12">
+      <div className="container mx-auto py-20">
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col md:flex-row gap-20">
+          <div className="flex flex-col md:flex-row gap-20  px-20">
             {/* Left side - Pet Photo */}
-            <div className="w-full md:w-2/5">
+            <div className="w-full md:w-1/2">
               <div className="relative h-full  ">
                 <img
                   src={petImage}
@@ -71,7 +73,7 @@ export default function PetProfile() {
             </div>
 
             {/* Right side - Form with 2x2 grid layout */}
-            <div className="max-w-[750px] md:w-3/5 flex flex-col justify-center items-center">
+            <div className="max-w-[750px] md:w-1/2 flex flex-col justify-center items-center">
               {/* Row 1 - Photo upload */}
               <div className="w-full mb-6 flex justify-end">
                 <label
@@ -146,7 +148,7 @@ export default function PetProfile() {
               </div>
 
               {/* Row 4 - Save Button */}
-              <div className="mt-6 w-full flex items-center justify-center">
+              <div className="mt-10 w-full flex items-center justify-center">
                 <Button
                   type="submit"
                   variant="blue"
