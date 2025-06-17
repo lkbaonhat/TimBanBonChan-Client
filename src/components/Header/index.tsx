@@ -27,7 +27,7 @@ const Header = () => {
   // Get authentication state from Redux
   const isAuthenticated = useSelector(selectorAuth.isAuthenticated);
 
-  const user = useSelector(selectorAuth.userInfo)
+  const user: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,7 +78,7 @@ const Header = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
                   ? "active"
                   : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
@@ -89,7 +89,7 @@ const Header = () => {
             <NavLink
               to="/community"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
                   ? "active"
                   : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
@@ -100,7 +100,7 @@ const Header = () => {
             <NavLink
               to="/pets"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
                   ? "active"
                   : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
@@ -111,7 +111,7 @@ const Header = () => {
             <NavLink
               to="/find-new-home"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
                   ? "active"
                   : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
@@ -122,13 +122,24 @@ const Header = () => {
             <NavLink
               to="/pet-care"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
                   ? "active"
                   : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
               Sổ tay chăm sóc
+            </NavLink>
+            <NavLink
+              to="/volunteer"
+              className={({ isActive }) =>
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                }`
+              }
+            >
+              Tình nguyện viên
             </NavLink>
           </nav>
 

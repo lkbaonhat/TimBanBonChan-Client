@@ -18,5 +18,6 @@ declare namespace IREDUX {
         isVerifiedAdopter?: boolean | null;
         adopterSince?: string | null;
         isReadyToAdopt?: boolean | null;
+        roles?: string[];
     }
 }

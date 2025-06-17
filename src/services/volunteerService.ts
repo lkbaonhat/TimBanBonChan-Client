@@ -8,6 +8,9 @@ export const volunteerServices = {
     getVolunteerApplicationById: (id: string) => {
         return axiosClient.get(`/volunteerApplication/${id}`);
     },
+    getMyVolunteerApplications: (userId: number) => {
+        return axiosClient.get(`/volunteerApplication/user/${userId}`);
+    },
     createVolunteerApplication: (applicationData: any) => {
         return axiosClient.post("/volunteer-applications", applicationData);
     },
