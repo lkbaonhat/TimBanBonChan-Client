@@ -1,5 +1,5 @@
 import ROUTES from "@/constants/routes";
-import { LayoutDashboard, LogOut, Settings, UserCircle } from "lucide-react";
+import { FileText, LayoutDashboard, LogOut, Settings, UserCircle } from "lucide-react";
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
@@ -42,6 +42,12 @@ const menuItems: MenuItem[] = [
         roles: ["Staff", "Guest"]
     },
     {
+        label: "Đơn đăng ký của tôi",
+        href: ROUTES.GUEST.MY_APPLICATION,
+        icon: FileText,
+        roles: ["Guest"]
+    },
+    {
         label: "Cài đặt",
         href: "/setting",
         icon: Settings,
@@ -60,7 +66,7 @@ const getRoleBadgeColor = (role: string) => {
 
 const getRoleLabel = (role: string) => {
     switch (role) {
-        case "staff":
+        case "Staff":
             return "Nhân viên"
         default:
             return "Người dùng"

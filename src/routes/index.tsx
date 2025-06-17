@@ -33,6 +33,7 @@ import LoadingPage from "@/pages/Loading";
 import PersistToken from "@/components/Auth/PersistLogin";
 import { ROLE } from "@/constants/global";
 import NotFound from "@/pages/NotFound";
+import MyVolunteerApplicationsPage from "@/pages/MyApplication";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -91,6 +92,7 @@ const RouterComponent = () => {
           element: <DefaultLayout />,
           children: [
             { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+            { path: ROUTES.GUEST.MY_APPLICATION, element: <MyVolunteerApplicationsPage /> },
           ]
         }
       ],
