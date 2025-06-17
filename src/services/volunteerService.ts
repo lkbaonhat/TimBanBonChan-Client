@@ -15,7 +15,7 @@ export const volunteerServices = {
         return axiosClient.put(`/volunteer-applications/${id}`, applicationData);
     },
     updateVolunteerApplicationStatus: (id: string, payload: any) => {
-        return axiosClient.put(`${API_ENDPOINT.VOLUNTEER.APPLICATIONS}/${id}/review`, payload);
+        return axiosClient.put(`${API_ENDPOINT.VOLUNTEER.APPLICATIONS}/${id}/review?adminUserId=${payload.adminUserId}&applicationStatus=${payload.applicationStatus}`);
     },
     deleteVolunteerApplication: (id: string) => {
         return axiosClient.delete(`/volunteer-applications/${id}`);

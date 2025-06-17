@@ -137,7 +137,6 @@ export default function PetsPage() {
           </Select>
         </div>
 
-
         <PetsTable
           pets={filteredPets}
         />

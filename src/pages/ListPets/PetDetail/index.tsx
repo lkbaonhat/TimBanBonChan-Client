@@ -92,13 +92,10 @@ export default function PetDetail() {
           healthStatus: petData.healthStatus || "Khỏe mạnh",
           weight: `${petData.weight} kg`,
           size: petData.size || "",
-          age: formatAge(petData.age),
+          age: petData.age,
           color: petData.color || "",
           personality: petData.personality || "",
-          foodAndToys: formatPreferences(
-            petData.foodPreferences,
-            petData.toyPreferences
-          ),
+          foodAndToys: petData.foodPreferences,
           suitableWith: petData.compatibleWith || "",
           notSuitableWith: petData.notCompatibleWith || "",
           location: petData.location || "",
@@ -308,9 +305,7 @@ export default function PetDetail() {
               </span>
               <span className={styles.tagSeparator}>|</span>
               <span className={styles.tag}>
-                {pet?.age && pet.age < 12
-                  ? "Chưa trưởng thành"
-                  : "Trưởng thành"}
+                {pet?.age}
               </span>
               <span className={styles.tagSeparator}>|</span>
               <span className={styles.tag}>
@@ -343,18 +338,8 @@ export default function PetDetail() {
               </div>
 
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Màu sắc</div>
-                <div className={styles.infoValue}>{petDetails.color}</div>
-              </div>
-
-              <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Kích thước</div>
                 <div className={styles.infoValue}>{petDetails.size}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Cân nặng</div>
-                <div className={styles.infoValue}>{petDetails.weight}</div>
               </div>
 
               <div className={styles.infoRow}>
@@ -397,16 +382,7 @@ export default function PetDetail() {
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Phù hợp với</div>
-                <div className={styles.infoValue}>
-                  {petDetails.suitableWith}
-                </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Không phù hợp với</div>
-                <div className={styles.infoValue}>
-                  {petDetails.notSuitableWith || "Không có"}
-                </div>
+                <div className={styles.infoValue} dangerouslySetInnerHTML={{ __html: petDetails.suitableWith }} />
               </div>
 
               <div className={styles.infoRow}>
@@ -421,11 +397,6 @@ export default function PetDetail() {
                 <div className={styles.infoValue}>
                   {petDetails.adoptionStatus}
                 </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Ngày đăng</div>
-                <div className={styles.infoValue}>{petDetails.createdDate}</div>
               </div>
             </div>
 

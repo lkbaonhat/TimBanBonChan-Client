@@ -8,25 +8,15 @@ import {
   Phone,
   Bell,
   User,
-  LogOut,
-  Settings,
-  UserCircle,
 } from "lucide-react";
 import { LOGO } from "@/constants/global";
 import ROUTES from "@/constants/routes";
 import { useSelector, useDispatch } from "react-redux";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import styles from "./header.module.scss";
 import { toast } from "sonner";
+import UserDropDown from "../UserDropdown";
+import { selectorAuth } from "@/store/modules/auth/selector";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -35,24 +25,9 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Get authentication state from Redux
-  const isAuthenticated = useSelector(
-    (state: any) => state.auth.isAuthenticated
-  );
+  const isAuthenticated = useSelector(selectorAuth.isAuthenticated);
 
-  // Get user data from localStorage if available
-  const getUserData = () => {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      try {
-        return JSON.parse(userData);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-      }
-    }
-    return null;
-  };
-
-  const userData = getUserData();
+  const user = useSelector(selectorAuth.userInfo)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,97 +55,19 @@ const Header = () => {
     });
   };
 
-  // Get user initials for avatar fallback
-  const getUserInitials = () => {
-    if (userData?.fullName) {
-      return userData.fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .toUpperCase()
-        .substring(0, 2);
-    }
-    return "U";
-  };
-
-  // Render auth button or user avatar based on authentication status
-  const renderAuthSection = () => {
-    if (isAuthenticated) {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="focus:outline-none" aria-label="User menu">
-              <Avatar className="h-10 w-10 cursor-pointer border-2 border-white hover:border-blue-200 transition-all">
-                <AvatarImage
-                  src={userData?.avatarUrl || "/placeholder.svg"}
-                  alt={userData?.fullName || "User"}
-                />
-                <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span className="font-medium">
-                  {userData?.fullName || "Người dùng"}
-                </span>
-                <span className="text-xs text-gray-500 truncate">
-                  {userData?.email || ""}
-                </span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate(ROUTES.PUBLIC.PROFILE)}>
-              <UserCircle className="mr-2 h-4 w-4" />
-              <span>Hồ sơ cá nhân</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/settings")}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Cài đặt</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Đăng xuất</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    }
-
-    return (
-      <Link
-        to={ROUTES.PUBLIC.SIGNIN}
-        aria-label="Account"
-        className="ml-2 px-4 py-2  flex items-center  bg-[#0053A3] text-white rounded-full hover:bg-[#004080] transition-colors text-center"
-      >
-        <User size={18} className="mr-2" />
-        <span>Đăng nhập</span>
-      </Link>
-    );
-  };
-
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
-      }`}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img
-              src={LOGO.WITH_TEXT || "/placeholder.svg"}
+              src={LOGO.WITH_TEXT}
               alt="Tìm Bạn Bốn Chân"
               className="h-24 w-auto"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "https://via.placeholder.com/120x50?text=Logo";
-              }}
             />
           </Link>
 
@@ -181,10 +78,9 @@ const Header = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -193,10 +89,9 @@ const Header = () => {
             <NavLink
               to="/community"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -205,10 +100,9 @@ const Header = () => {
             <NavLink
               to="/pets"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -217,10 +111,9 @@ const Header = () => {
             <NavLink
               to="/find-new-home"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -229,10 +122,9 @@ const Header = () => {
             <NavLink
               to="/pet-care"
               className={({ isActive }) =>
-                `px-4 py-2 rounded-full transition-all duration-200  ${
-                  isActive
-                    ? "active"
-                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-4 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -242,22 +134,6 @@ const Header = () => {
 
           {/* Action Icons */}
           <div className="hidden md:flex items-center space-x-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Search"
-              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
-            >
-              <Search size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Cart"
-              className="text-gray-700 hover:text-[#0053A3] hover:bg-blue-50"
-            >
-              <ShoppingCart size={20} />
-            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -274,7 +150,24 @@ const Header = () => {
             >
               <Bell size={20} />
             </Button>
-            {renderAuthSection()}
+            {/* DropdownMenu */}
+            {isAuthenticated ?
+              <UserDropDown
+                user={user}
+                onClickLogout={handleLogout}
+              />
+              : (
+                <Link
+                  to={ROUTES.PUBLIC.SIGNIN}
+                  aria-label="Account"
+                  className="ml-2 px-4 py-2  flex items-center  bg-[#0053A3] text-white rounded-full hover:bg-[#004080] transition-colors text-center"
+                >
+                  <User size={18} className="mr-2" />
+                  <span>Đăng nhập</span>
+                </Link>
+              )
+
+            }
           </div>
 
           {/* Mobile Menu Button */}
@@ -287,9 +180,11 @@ const Header = () => {
             >
               <Search size={20} />
             </Button>
-            {isAuthenticated && (
-              <div className="mr-2">{renderAuthSection()}</div>
-            )}
+            {/* {isAuthenticated && (
+              <UserDropDown
+                  
+              />
+            )} */}
             <Button
               variant="ghost"
               size="icon"

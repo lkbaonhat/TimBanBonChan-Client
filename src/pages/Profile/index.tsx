@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -21,6 +19,8 @@ import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
+import { useSelector } from "react-redux";
+import { selectorAuth } from "@/store/modules/auth/selector";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("personal-info");
@@ -28,6 +28,7 @@ export default function ProfilePage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingAdoptState, setPendingAdoptState] = useState(false);
   const navigate = useNavigate();
+  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
 
   // Handle switch toggle with confirmation
   const handleToggleAdoptionStatus = (newStatus: boolean) => {
@@ -54,16 +55,22 @@ export default function ProfilePage() {
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="container mx-auto py-6 pb-20">
-        {/* Profile Header - Updated to match ProfileDetail style */}
+        {/* Profile Header - Fixed structure */}
         <div className="relative flex items-center mb-10">
           <div className="relative">
             <Avatar className="h-24 w-24 border-2 border-gray-100 rounded-full shadow-sm">
               <AvatarImage
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cWmsl3NJQaxCzyM5otgH7Sp2EPh3fT.png"
-                alt="Siriana Pham"
+                src={userInfo?.profilePicture}
+                alt={userInfo?.fullName || "User"}
               />
-              <AvatarFallback className="bg-gray-200 text-gray-700 font-medium">
-                SP
+              <AvatarFallback className="bg-[#C5E2F0] text-[#0053A3] font-medium">
+                {userInfo?.fullName
+                  ?.split(" ")
+                  .pop()
+                  ?.charAt(0)
+                  .toUpperCase() ||
+                  userInfo?.fullName?.charAt(0).toUpperCase() ||
+                  "U"}
               </AvatarFallback>
             </Avatar>
             <Button
@@ -77,7 +84,7 @@ export default function ProfilePage() {
 
           <div className="ml-6 flex-1">
             <h1 className="font-bold text-2xl md:text-3xl text-gray-800">
-              Siriana Pham
+              {userInfo?.fullName || "User"}
             </h1>
             <div className="flex gap-2">
               <span className="text-gray-600 text-sm font-medium">
@@ -86,8 +93,8 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Adoption Readiness Toggle - Repositioned */}
-          <div className="flex flex-col items-start max-w-xs">
+          {/* Adoption Readiness Toggle - Fixed position */}
+          <div className="flex flex-col items-end max-w-xs">
             <div className="flex items-center gap-2 py-2">
               <Label
                 htmlFor="ready-to-adopt"
@@ -117,7 +124,7 @@ export default function ProfilePage() {
                 } order-2`}
               />
             </div>
-            <p className="text-xs text-gray-700 text-left">
+            <p className="text-xs text-gray-700 text-right">
               Nếu bạn sẵn sàng nhận nuôi thêm thú cưng và muốn chúng tôi liên hệ
               khi có bé phù hợp với bạn.
             </p>
@@ -162,7 +169,7 @@ export default function ProfilePage() {
           </DialogContent>
         </Dialog>
 
-        {/* Tab Navigation - Updated to match ProfileDetail style */}
+        {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-8">
           <button
             className={`py-4 px-6 text-base font-medium border-b-2 ${
@@ -195,6 +202,42 @@ export default function ProfilePage() {
             Tiểu sử nuôi thú cưng
           </button>
         </div>
+        {/* Tabs */}
+        {/* <Tabs
+          defaultValue="personal-info"
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
+          <TabsList className="flex w-full  mb-8 bg-transparent">
+            <TabsTrigger
+              value="personal-info"
+              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "personal-info"
+                ? "border-b-1 border-black text-black"
+                : ""
+                }`}
+            >
+              Thông tin cá nhân
+            </TabsTrigger>
+            <TabsTrigger
+              value="my-pets"
+              className={` p-4 text-sm font-medium rounded-none border-0 ${activeTab === "my-pets"
+                ? "border-b-1 border-black text-black"
+                : ""
+                }`}
+            >
+              Thú cưng của tôi
+            </TabsTrigger>
+            <TabsTrigger
+              value="pet-criteria"
+              className={` p-4 text-sm font-medium rounded-none border-0 ${activeTab === "pet-criteria"
+                ? "border-b-1 border-black text-black"
+                : ""
+                }`}
+            >
+              Tiểu sử nuôi thú cưng
+            </TabsTrigger>
+          </TabsList> */}
 
         {/* Tab Content */}
         {activeTab === "personal-info" && (
@@ -210,8 +253,8 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="fullname"
-                  defaultValue="Phạm Thị Phương Diệp"
-                  className="w-full rounded-md "
+                  defaultValue={userInfo?.fullName || ""}
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -223,7 +266,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="birthdate"
-                  defaultValue="09/04/2001"
+                  defaultValue={userInfo.birthDate || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -236,7 +279,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="email"
-                  defaultValue="sirianapham@gmail.com"
+                  defaultValue={userInfo.email || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -249,7 +292,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="occupation"
-                  defaultValue="Sinh viên"
+                  defaultValue={userInfo.occupation || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -263,7 +306,7 @@ export default function ProfilePage() {
                 <div className="relative">
                   <Input
                     id="gender"
-                    defaultValue="Nữ"
+                    defaultValue={userInfo.gender || ""}
                     className="w-full rounded-md  pr-10"
                     readOnly
                   />
@@ -296,7 +339,7 @@ export default function ProfilePage() {
                   className="w-full rounded-md "
                 />
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <Label
                   htmlFor="address"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -305,7 +348,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="address"
-                  defaultValue="58/01, Origami Vinhome GrandPark, Long Bình, Thủ Đức, TP.HCM"
+                  defaultValue={userInfo.address || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -318,7 +361,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="bio"
-                  defaultValue="Yêu màu hồng, ghét sự giả dối"
+                  defaultValue={userInfo.bio || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -331,7 +374,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="interests"
-                  defaultValue="Ô mai, đọc sách, nấu ăn"
+                  defaultValue={userInfo.hobby || ""}
                   className="w-full rounded-md "
                 />
               </div>

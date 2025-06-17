@@ -12,25 +12,12 @@ import { DeletePetDialog } from '../PetInfoList/components/DeletePetDialog'
 import ROUTES from '@/constants/routes'
 import { petService } from '@/services/petService'
 
-export function PetDetailsPage() {
+export default function PetDetailsPage() {
     const { slug } = useParams<{ slug: string }>()
     const navigate = useNavigate()
     const [pet, setPet] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('overview')
-
-    // Format age to display in months or years
-    const formatAge = (ageInMonths: number) => {
-        if (ageInMonths < 12) {
-            return `${ageInMonths} tháng`
-        } else {
-            const years = Math.floor(ageInMonths / 12)
-            const months = ageInMonths % 12
-            return months > 0
-                ? `${years} năm ${months} tháng`
-                : `${years} năm`
-        }
-    }
 
     // Get adoption status badge variant
     const getStatusBadgeVariant = (status: string) => {
@@ -199,7 +186,7 @@ export function PetDetailsPage() {
                                         <h2 className="text-2xl font-bold">{pet.petName}</h2>
                                         <p className="text-muted-foreground">{pet.breed}</p>
                                     </div>
-                                    <Button variant="outline" size="icon" className="rounded-full">
+                                    <Button variant="ghost" size="icon" className="rounded-full">
                                         <Heart className="h-5 w-5 text-rose-500" />
                                     </Button>
                                 </div>
@@ -218,7 +205,7 @@ export function PetDetailsPage() {
                                         <Calendar className="h-5 w-5 text-muted-foreground" />
                                         <div>
                                             <p className="text-sm text-muted-foreground">Tuổi</p>
-                                            <p className="font-medium">{formatAge(pet.age)}</p>
+                                            <p className="font-medium">{pet.age}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -305,10 +292,6 @@ export function PetDetailsPage() {
                                         <div>
                                             <p className="text-sm text-muted-foreground">Giới tính</p>
                                             <p className="font-medium">{pet.gender}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Màu sắc</p>
-                                            <p className="font-medium">{pet.color || 'Chưa cập nhật'}</p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-muted-foreground">Tình trạng sức khỏe</p>

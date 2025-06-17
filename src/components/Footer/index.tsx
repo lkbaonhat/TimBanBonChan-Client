@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
+import { BANNER, LOGO } from '@/constants/global';
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
         <div className='mb-8 md:mb-0'>
           <div className='w-48 h-48 relative'>
             <img
-              src='logowBackground.png'
+              src={LOGO.WITH_BG}
               alt='Tìm Bạn Bốn Chân Logo'
               className='object-contain w-full h-full absolute top-0 left-0'
             />
@@ -115,7 +116,7 @@ export default function Footer() {
         {/* Image Section */}
         <div className='hidden md:block absolute bottom-0 right-0'>
           <img
-            src='humanwdog.png'
+            src={BANNER.HUMAN_WITH_DOG}
             alt='Woman with dog'
             className='object-cover'
             style={{ width: '240px', height: '220px' }}

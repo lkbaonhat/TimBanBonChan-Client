@@ -6,6 +6,7 @@ import CoreValues from "./components/CoreValues";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import WhatWeDoSection from "../Home/components/WhatWeDoSection";
 import VolunteerSection from "../Home/components/VolunteerSection";
+import { BANNER } from "@/constants/global";
 
 const AboutUsPage = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -96,7 +97,7 @@ const AboutUsPage = () => {
               <div className="md:w-1/2">
                 <img
                   ref={imageRef}
-                  src="cattouchdog.png"
+                  src={BANNER.CAT_TOUCH_DOG}
                   alt="Dog and cat together"
                   className="rounded-lg opacity-0 transition-all duration-700"
                 />
