@@ -10,5 +10,14 @@ export const userService = {
     },
     createVolunteerApplication: (payload: any) => {
         return axiosClient.post('/volunteerApplication', payload);
+    },
+    getAllAdopterApplications: () => {
+        return axiosClient.get(`/AdopterApplications`);
+    },
+    getAdopterApplicationById: (applicationId: number) => {
+        return axiosClient.get(`/AdopterApplications/${applicationId}`)
+    },
+    getAllUser: () => {
+        return axiosClient.get(`/users`)
     }
 }    

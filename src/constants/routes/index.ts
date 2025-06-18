@@ -34,6 +34,7 @@ const ROUTES = {
     VERIFY_PETS: '/staff/verify-pets',
     VERIFY_PET_DETAIL: '/staff/verify-pets/:slug',
     VERIFY_USER: '/staff/verify-users',
+    VERIFY_USER_DETAIL: '/staff/verify-users/:id',
     MANAGE_VOLUNTEERS: '/staff/volunteers',
     VOLUNTEER_APPLICATIONS: '/staff/volunteers/applications',
     VOLUNTEER_APPLICATION_DETAIL: '/staff/volunteers/applications/:id',

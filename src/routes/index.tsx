@@ -57,8 +57,6 @@ const RouterComponent = () => {
         { path: ROUTES.PUBLIC.PETCARE_CREATE, element: <BlogCreate /> },
         { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
         { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
-
-
         { path: ROUTES.PUBLIC.FIND_NEW_HOME, element: <FindNewHome /> },
         {
           path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,

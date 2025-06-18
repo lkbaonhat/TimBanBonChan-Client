@@ -1,27 +1,26 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/DataTable'
-import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Eye, Check, X, MoreHorizontal } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Eye } from 'lucide-react'
+import { formatDate } from '@/utils/helper'
+import { Link } from 'react-router-dom'
 
 interface VerifyUser {
-    id: string
+    applicationId: string
     fullName: string
     email: string
-    phone: string
+    phoneNumber: string
     avatar?: string
     submittedAt: string
-    status: 'pending' | 'approved' | 'rejected'
-    documentType: string
+    applicationStatus: 'Pending' | 'Approved' | 'Rejected'
+    createdDate: string
     reason?: string
 }
 
 interface VerifyUserTableProps {
     searchTerm?: string
     statusFilter?: string
-    documentTypeFilter?: string
     userList: VerifyUser[]
 }
 
@@ -33,9 +32,9 @@ const columns: ColumnDef<VerifyUser>[] = [
             const user = row.original
             return (
                 <div className="flex items-center space-x-3">
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="w-14 h-14 rounded-xl">
                         <AvatarImage src={user.avatar} alt={user.fullName} />
-                        <AvatarFallback>
+                        <AvatarFallback className='w-14 h-14 rounded-xl object-cover border-2 border-gray-200'>
                             {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
@@ -51,26 +50,17 @@ const columns: ColumnDef<VerifyUser>[] = [
         accessorKey: 'phone',
         header: 'Số điện thoại',
         cell: ({ row }) => (
-            <span className="text-sm">{row.getValue('phone')}</span>
-        )
-    },
-    {
-        accessorKey: 'documentType',
-        header: 'Loại tài liệu',
-        cell: ({ row }) => (
-            <Badge variant="outline" className="text-xs">
-                {row.getValue('documentType')}
-            </Badge>
+            <span className="text-sm">{row.original.phoneNumber}</span>
         )
     },
     {
         accessorKey: 'submittedAt',
         header: 'Ngày gửi',
         cell: ({ row }) => {
-            const date = new Date(row.getValue('submittedAt'))
+            const date = row.original.createdDate
             return (
                 <span className="text-sm">
-                    {date.toLocaleDateString('vi-VN')}
+                    {formatDate(date)}
                 </span>
             )
         }
@@ -79,19 +69,21 @@ const columns: ColumnDef<VerifyUser>[] = [
         accessorKey: 'status',
         header: 'Trạng thái',
         cell: ({ row }) => {
-            const status = row.getValue('status') as string
-            const statusConfig = {
-                pending: { label: 'Chờ duyệt', variant: 'secondary' as const },
-                approved: { label: 'Đã duyệt', variant: 'success' as const },
-                rejected: { label: 'Từ chối', variant: 'destructive' as const }
-            }
+            const status = row.original.applicationStatus
+            const getStatusBadge = (status: string) => {
+                switch (status.toLowerCase()) {
+                    case 'pending':
+                        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Đang xử lý</Badge>;
+                    case 'available':
+                        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Có thể nhận nuôi</Badge>;
+                    case 'adopted':
+                        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Đã nhận nuôi</Badge>;
+                    default:
+                        return <Badge variant="outline">{status}</Badge>;
+                }
+            };
 
-            const config = statusConfig[status as keyof typeof statusConfig]
-            return (
-                <Badge variant={config.variant}>
-                    {config.label}
-                </Badge>
-            )
+            return getStatusBadge(status)
         }
     },
     {
@@ -101,54 +93,20 @@ const columns: ColumnDef<VerifyUser>[] = [
             const user = row.original
 
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <MoreHorizontal className="h-4 w-4 hover:cursor-pointer" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleViewDetails(user.id)}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            Xem chi tiết
-                        </DropdownMenuItem>
-                        {user.status === 'pending' && (
-                            <>
-                                <DropdownMenuItem onClick={() => handleApprove(user.id)}>
-                                    <Check className="mr-2 h-4 w-4 text-green-600" />
-                                    Duyệt
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleReject(user.id)}>
-                                    <X className="mr-2 h-4 w-4 text-red-600" />
-                                    Từ chối
-                                </DropdownMenuItem>
-                            </>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className='pl-4'>
+                    <Link to={`/staff/verify-users/${user.applicationId}`}>
+                        <Eye className="mr-2 h-4 w-4" />
+                    </Link>
+                </div>
+
             )
         }
     }
 ]
 
-// Handler functions
-const handleViewDetails = (userId: string) => {
-    console.log('View details for user:', userId)
-    // Implement view details logic here
-}
-
-const handleApprove = (userId: string) => {
-    console.log('Approve user:', userId)
-    // Implement approve logic here
-}
-
-const handleReject = (userId: string) => {
-    console.log('Reject user:', userId)
-    // Implement reject logic here
-}
-
 export default function VerifyUserTable({
     searchTerm = '',
     statusFilter = 'all',
-    documentTypeFilter = 'all',
     userList
 }: VerifyUserTableProps) {
     // Filter data based on props
@@ -157,12 +115,9 @@ export default function VerifyUserTable({
             user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase())
 
-        const matchesStatus = statusFilter === 'all' || user.status === statusFilter
+        const matchesStatus = statusFilter === 'all' || user.applicationStatus.toLowerCase() === statusFilter
 
-        const matchesDocumentType =
-            documentTypeFilter === 'all' || user.documentType === documentTypeFilter
-
-        return matchesSearch && matchesStatus && matchesDocumentType
+        return matchesSearch && matchesStatus
     })
 
     return (
