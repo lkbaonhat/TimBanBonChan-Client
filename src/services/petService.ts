@@ -33,5 +33,11 @@ export const petService = {
   verifyPet: (id: number, isApproved: boolean) => {
     // Giả định API để xác minh thú cưng
     return axiosClient.patch(`/pets/${id}/verify`, { isApproved });
+  },
+  getAdoptionPostDetail: (postId: string) => {
+    return axiosClient.get(`/adoptionPost/${postId}`)
+  },
+  getAllAdoptionPost: () => {
+    return axiosClient.get(API_ENDPOINT.PET.ADOPTION_POST)
   }
 };
