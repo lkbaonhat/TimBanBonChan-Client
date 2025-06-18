@@ -33,6 +33,7 @@ import LoadingPage from "@/pages/Loading";
 import PersistToken from "@/components/Auth/PersistLogin";
 import { ROLE } from "@/constants/global";
 import NotFound from "@/pages/NotFound";
+import MyVolunteerApplicationsPage from "@/pages/MyApplication";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -56,16 +57,14 @@ const RouterComponent = () => {
         { path: ROUTES.PUBLIC.PETCARE_CREATE, element: <BlogCreate /> },
         { path: ROUTES.PUBLIC.LIST_PETS, element: <ListPets /> },
         { path: ROUTES.PUBLIC.PET_DETAIL, element: <PetDetail /> },
-        { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
-        { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+
+
         { path: ROUTES.PUBLIC.FIND_NEW_HOME, element: <FindNewHome /> },
         {
           path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
           element: <ProfileDetail />,
         },
-        { path: ROUTES.PUBLIC.PROFILE, element: <ProfilePage /> },
-        { path: ROUTES.PUBLIC.ADD_PET, element: <AddPet /> },
-        { path: ROUTES.PUBLIC.UPDATE_PET, element: <UpdatePetInfo /> },
+
       ],
     },
     //* AUTH routes *\
@@ -87,6 +86,17 @@ const RouterComponent = () => {
           element: <PrivateRoute allowedRoles={[ROLE.STAFF]} />,
           children: [...StaffRoutes],
         },
+        {
+          element: <DefaultLayout />,
+          children: [
+            { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
+            { path: ROUTES.GUEST.MY_APPLICATION, element: <MyVolunteerApplicationsPage /> },
+            { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
+            { path: ROUTES.PUBLIC.PROFILE, element: <ProfilePage /> },
+            { path: ROUTES.PUBLIC.ADD_PET, element: <AddPet /> },
+            { path: ROUTES.PUBLIC.UPDATE_PET, element: <UpdatePetInfo /> },
+          ]
+        }
       ],
     },
   ]);

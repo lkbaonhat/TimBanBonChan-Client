@@ -19,8 +19,11 @@ const ROUTES = {
     FIND_NEW_HOME: "/find-new-home",
     FIND_NEW_HOME_DETAIL: "/find-new-home/:id",
     PROFILE: "/profile",
-    ADD_PET: "/profile/add-pet", // New route for adding a pet
-    UPDATE_PET: "/profile/pets/:id", // New route for updating pet info
+    ADD_PET: "/profile/add-pet",
+    UPDATE_PET: "/profile/pets/:id",
+  },
+  GUEST: {
+    MY_APPLICATION: '/my-applications'
   },
   STAFF: {
     HOME: '/staff',

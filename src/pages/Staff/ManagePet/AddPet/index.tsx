@@ -11,7 +11,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbS
 
 export default function AddPetPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const userInfo = useSelector(selectorAuth.userInfo)
+  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
   const navigate = useNavigate()
 
   const handleSubmit = async (values: PetFormValues) => {
@@ -28,19 +28,12 @@ export default function AddPetPage() {
       }
 
       const response = await petService.createPet(payload)
-      console.log("Pet created successfully:", response)
-
-      toast.success("🎉 Thú cưng đã được tạo thành công!")
+      if (response.status === 201) {
+        toast.success("🎉 Thú cưng đã được tạo thành công!")
+      }
 
       // Navigate to manage pets page
-      navigate(ROUTES.STAFF.MANAGE_PETS, {
-        state: {
-          notification: {
-            type: 'success',
-            message: 'Thú cưng mới đã được thêm vào danh sách!'
-          }
-        }
-      })
+      navigate(ROUTES.STAFF.MANAGE_PETS)
 
     } catch (error: any) {
       console.error("Failed to add pet:", error)

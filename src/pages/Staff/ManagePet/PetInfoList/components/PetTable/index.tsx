@@ -30,31 +30,18 @@ interface PetsTableProps {
     pets: Pet[]
 }
 
-const getStatusBadgeVariant = (status: string) => {
+const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-        case "available":
-            return "default"
-        case "pending":
-            return "secondary"
-        case "adopted":
-            return "outline"
+        case 'pending':
+            return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Đang xử lý</Badge>;
+        case 'available':
+            return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Có thể nhận nuôi</Badge>;
+        case 'adopted':
+            return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Đã nhận nuôi</Badge>;
         default:
-            return "secondary"
+            return <Badge variant="outline">{status}</Badge>;
     }
-}
-
-const getStatusDisplayText = (status: string) => {
-    switch (status.toLowerCase()) {
-        case "available":
-            return "Có sẵn"
-        case "pending":
-            return "Đang xử lý"
-        case "adopted":
-            return "Đã nhận nuôi"
-        default:
-            return status
-    }
-}
+};
 
 const columns: ColumnDef<Pet>[] = [
     {
@@ -62,19 +49,17 @@ const columns: ColumnDef<Pet>[] = [
         header: 'Thú cưng',
         cell: ({ row }) => {
             const pet = row.original
-            console.log(pet)
             return (
                 <div className='flex items-center gap-4'>
-                    <Avatar className="w-16 h-16 rounded-xl object-cover border-2 border-gray-200">
-                        <AvatarImage src={pet.petImageUrls || "/placeholder.svg"} alt={pet.petName} />
-                        <AvatarFallback className='w-16 h-16 rounded-xl object-cover border-2 border-gray-200'>{pet.petName}</AvatarFallback>
+                    <Avatar className="w-14 h-14 rounded-xl">
+                        <AvatarImage src={pet.petImageUrls || "/placeholder.svg"} alt={pet.petName} className="w-14 h-14 rounded-xl object-cover border-2 border-gray-200" />
+                        <AvatarFallback className='w-14 h-14 rounded-xl object-cover border-2 border-gray-200'>{pet.petName}</AvatarFallback>
                     </Avatar>
                     <div>
                         <h3 className="font-semibold text-gray-900">{pet.petName}</h3>
                         <p className="text-sm text-gray-600">{pet.breed}</p>
                     </div>
                 </div>
-
             )
         }
     },
@@ -98,9 +83,7 @@ const columns: ColumnDef<Pet>[] = [
         header: 'Trạng thái',
         cell: ({ row }) => {
             const pet = row.original
-            return <Badge variant={getStatusBadgeVariant(pet.adoptionStatus)}>
-                {getStatusDisplayText(pet.adoptionStatus)}
-            </Badge>
+            return getStatusBadge(pet.adoptionStatus)
         }
     },
     {
@@ -108,47 +91,32 @@ const columns: ColumnDef<Pet>[] = [
         header: 'Thao tác',
         cell: ({ row }) => {
             const pet = row.original
-            const handleDeletePet = (id: number) => {
-                console.log(id)
-            }
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <MoreHorizontal className="h-4 w-4 hover:cursor-pointer" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                            <Link to={`${ROUTES.STAFF.MANAGE_PETS}/${pet.slug}`}>
-                                <button className='flex w-full items-center px-2 py-1.5 text-sm'>
-                                    <Eye size={16} strokeWidth={1.5} />
-                                    <span className='ml-2'>Xem chi tiết</span>
-                                </button>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Link to={`${ROUTES.STAFF.MANAGE_PETS}/${pet.slug}/edit`}>
-                                <button className="flex w-full items-center px-2 py-1.5 text-sm">
-                                    <Pencil size={16} strokeWidth={1.5} />
-                                    <span className='ml-2'>Chỉnh sửa</span>
-                                </button>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive">
-                            <DeletePetDialog
-                                petId={pet.petId}
-                                petName={pet.petName}
-                                onPetDeleted={handleDeletePet}
-                                trigger={
-                                    <button className="flex w-full items-center px-2 py-1.5 text-sm">
-                                        <Trash2 size={16} strokeWidth={1.5} className='text-red-500' />
-                                        <span className='ml-2 text-red-500'>Xóa</span>
+                <>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <MoreHorizontal className="h-4 w-4 hover:cursor-pointer" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                                <Link to={`${ROUTES.STAFF.MANAGE_PETS}/${pet.slug}`}>
+                                    <button className='flex w-full items-center px-2 py-1.5 text-sm'>
+                                        <Eye size={16} strokeWidth={1.5} />
+                                        <span className='ml-2'>Xem chi tiết</span>
                                     </button>
-                                }
-                            />
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Link to={`${ROUTES.STAFF.MANAGE_PETS}/${pet.slug}/edit`}>
+                                    <button className="flex w-full items-center px-2 py-1.5 text-sm">
+                                        <Pencil size={16} strokeWidth={1.5} />
+                                        <span className='ml-2'>Chỉnh sửa</span>
+                                    </button>
+                                </Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>
             )
         }
     },

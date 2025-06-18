@@ -19,6 +19,8 @@ import { Camera, Heart } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
+import { useSelector } from "react-redux";
+import { selectorAuth } from "@/store/modules/auth/selector";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("personal-info");
@@ -26,6 +28,7 @@ export default function ProfilePage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingAdoptState, setPendingAdoptState] = useState(false);
   const navigate = useNavigate();
+  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
 
   // Handle switch toggle with confirmation
   const handleToggleAdoptionStatus = (newStatus: boolean) => {
@@ -57,11 +60,11 @@ export default function ProfilePage() {
           <div className="relative">
             <Avatar className="w-24 h-24 rounded-full  overflow-hidden">
               <AvatarImage
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cWmsl3NJQaxCzyM5otgH7Sp2EPh3fT.png"
-                alt="Siriana Pham"
+                src={userInfo.profilePicture}
+                alt={userInfo.fullName}
               />
               <AvatarFallback className="bg-[#C5E2F0] text-[#0053A3] font-medium">
-                SP
+                {userInfo.fullName?.split(" ").pop()?.charAt(0).toUpperCase() || userInfo.fullName?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
             <Button
@@ -73,7 +76,7 @@ export default function ProfilePage() {
             </Button>
           </div>
           <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold">Siriana Pham</h1>
+            <h1 className="text-2xl font-bold">{userInfo.fullName}</h1>
             <p className="text-gray-600 text-sm">
               Người nhận nuôi | Tình nguyện viên
             </p>
@@ -89,11 +92,10 @@ export default function ProfilePage() {
                 <span className="flex items-center gap-1">
                   <Heart
                     size={14}
-                    className={`${
-                      readyToAdopt
-                        ? "text-[#FF99C0] fill-[#FF99C0]"
-                        : "text-gray-400"
-                    }`}
+                    className={`${readyToAdopt
+                      ? "text-[#FF99C0] fill-[#FF99C0]"
+                      : "text-gray-400"
+                      }`}
                   />
                   <span className="text-gray-700">
                     {readyToAdopt
@@ -105,9 +107,8 @@ export default function ProfilePage() {
               <Switch
                 checked={readyToAdopt}
                 onCheckedChange={handleToggleAdoptionStatus}
-                className={`${
-                  readyToAdopt ? "bg-[#FF99C0]" : "bg-gray-300"
-                } order-2`}
+                className={`${readyToAdopt ? "bg-[#FF99C0]" : "bg-gray-300"
+                  } order-2`}
               />
             </div>
             <p className="text-xs text-gray-700">
@@ -165,31 +166,28 @@ export default function ProfilePage() {
           <TabsList className="flex w-full  mb-8 bg-transparent">
             <TabsTrigger
               value="personal-info"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${
-                activeTab === "personal-info"
-                  ? "border-b-1 border-black text-black"
-                  : ""
-              }`}
+              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "personal-info"
+                ? "border-b-1 border-black text-black"
+                : ""
+                }`}
             >
               Thông tin cá nhân
             </TabsTrigger>
             <TabsTrigger
               value="my-pets"
-              className={` p-4 text-sm font-medium rounded-none border-0 ${
-                activeTab === "my-pets"
-                  ? "border-b-1 border-black text-black"
-                  : ""
-              }`}
+              className={` p-4 text-sm font-medium rounded-none border-0 ${activeTab === "my-pets"
+                ? "border-b-1 border-black text-black"
+                : ""
+                }`}
             >
               Thú cưng của tôi
             </TabsTrigger>
             <TabsTrigger
               value="pet-criteria"
-              className={` p-4 text-sm font-medium rounded-none border-0 ${
-                activeTab === "pet-criteria"
-                  ? "border-b-1 border-black text-black"
-                  : ""
-              }`}
+              className={` p-4 text-sm font-medium rounded-none border-0 ${activeTab === "pet-criteria"
+                ? "border-b-1 border-black text-black"
+                : ""
+                }`}
             >
               Tiểu sử nuôi thú cưng
             </TabsTrigger>
@@ -207,7 +205,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="fullname"
-                  defaultValue="Phạm Thị Phương Diệp"
+                  defaultValue={userInfo.fullName || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -220,7 +218,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="birthdate"
-                  defaultValue="09/04/2001"
+                  defaultValue={userInfo.birthDate || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -233,7 +231,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="email"
-                  defaultValue="sirianapham@gmail.com"
+                  defaultValue={userInfo.email || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -246,7 +244,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="occupation"
-                  defaultValue="Sinh viên"
+                  defaultValue={userInfo.occupation || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -260,7 +258,7 @@ export default function ProfilePage() {
                 <div className="relative">
                   <Input
                     id="gender"
-                    defaultValue="Nữ"
+                    defaultValue={userInfo.gender || ""}
                     className="w-full rounded-md  pr-10"
                     readOnly
                   />
@@ -293,7 +291,7 @@ export default function ProfilePage() {
                   className="w-full rounded-md "
                 />
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <Label
                   htmlFor="address"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -302,7 +300,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="address"
-                  defaultValue="58/01, Origami Vinhome GrandPark, Long Bình, Thủ Đức, TP.HCM"
+                  defaultValue={userInfo.address || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -315,7 +313,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="bio"
-                  defaultValue="Yêu màu hồng, ghét sự giả dối"
+                  defaultValue={userInfo.bio || ""}
                   className="w-full rounded-md "
                 />
               </div>
@@ -328,7 +326,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="interests"
-                  defaultValue="Ô mai, đọc sách, nấu ăn"
+                  defaultValue={userInfo.hobby || ""}
                   className="w-full rounded-md "
                 />
               </div>

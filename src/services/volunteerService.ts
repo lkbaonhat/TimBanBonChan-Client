@@ -8,6 +8,9 @@ export const volunteerServices = {
     getVolunteerApplicationById: (id: string) => {
         return axiosClient.get(`/volunteerApplication/${id}`);
     },
+    getMyVolunteerApplications: (userId: number) => {
+        return axiosClient.get(`/volunteerApplication/user/${userId}`);
+    },
     createVolunteerApplication: (applicationData: any) => {
         return axiosClient.post("/volunteer-applications", applicationData);
     },
@@ -15,7 +18,7 @@ export const volunteerServices = {
         return axiosClient.put(`/volunteer-applications/${id}`, applicationData);
     },
     updateVolunteerApplicationStatus: (id: string, payload: any) => {
-        return axiosClient.put(`${API_ENDPOINT.VOLUNTEER.APPLICATIONS}/${id}/review`, payload);
+        return axiosClient.put(`${API_ENDPOINT.VOLUNTEER.APPLICATIONS}/${id}/review?adminUserId=${payload.adminUserId}&applicationStatus=${payload.applicationStatus}`);
     },
     deleteVolunteerApplication: (id: string) => {
         return axiosClient.delete(`/volunteer-applications/${id}`);

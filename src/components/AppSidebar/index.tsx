@@ -246,7 +246,7 @@ export function AppSidebar({ role = 'staff' }: AppSidebarProps) {
                         </CollapsibleTrigger>
                       </div>
                       <CollapsibleContent className="transition-all duration-300 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
-                        <div className="pl-6 mt-1 py-1">
+                        <div className="pl-6 mt-1 py-1" key={item.path}>
                           {item.subItems.map(subItem => (
                             <SidebarMenuSub>
                               <SidebarMenuSubItem>

@@ -65,25 +65,6 @@ export default function PetsPage() {
 
   return (
     <div>
-      {notification && (
-        <Alert
-          variant={notification.type === 'success' ? 'default' : 'destructive'}
-          className="mb-6"
-        >
-          {notification.type === 'success' ? (
-            <CheckCircle className="h-4 w-4" />
-          ) : (
-            <AlertCircle className="h-4 w-4" />
-          )}
-          <AlertTitle>
-            {notification.type === 'success' ? 'Thành công' : 'Lỗi'}
-          </AlertTitle>
-          <AlertDescription>
-            {notification.message}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Quản lý thú cưng</h1>
@@ -94,6 +75,7 @@ export default function PetsPage() {
 
         <div className="flex gap-2">
           <Button
+            variant='blue'
             className="flex items-center gap-2"
             onClick={() => navigate(ROUTES.STAFF.ADD_PET)}
           >
