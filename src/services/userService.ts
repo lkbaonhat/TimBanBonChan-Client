@@ -15,9 +15,12 @@ export const userService = {
         return axiosClient.get(`/AdopterApplications`);
     },
     getAdopterApplicationById: (applicationId: number) => {
-        return axiosClient.get(`/AdopterApplications/${applicationId}`)
+        return axiosClient.get(`/AdopterApplications/${applicationId}`);
     },
     getAllUser: () => {
-        return axiosClient.get(`/users`)
+        return axiosClient.get(`/users`);
+    },
+    updateAvatarProfile: (userId: number, payload: any) => {
+        return axiosClient.put(`/users/${userId}`, payload)
     }
 }    

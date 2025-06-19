@@ -21,14 +21,24 @@ import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
 import { useSelector } from "react-redux";
 import { selectorAuth } from "@/store/modules/auth/selector";
+import AvatarUploadDialog from "./AvatarUpload";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("personal-info");
   const [readyToAdopt, setReadyToAdopt] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [pendingAdoptState, setPendingAdoptState] = useState(false);
+  const [currentAvatar, setCurrentAvatar] = useState("");
   const navigate = useNavigate();
-  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
+  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+
+  // Initialize current avatar from userInfo
+  useState(() => {
+    if (userInfo.profilePicture) {
+      setCurrentAvatar(userInfo.profilePicture);
+    }
+  });
 
   // Handle switch toggle with confirmation
   const handleToggleAdoptionStatus = (newStatus: boolean) => {
@@ -42,6 +52,14 @@ export default function ProfilePage() {
       setReadyToAdopt(pendingAdoptState);
     }
     setShowConfirmDialog(false);
+  };
+
+  // Handle avatar update
+  const handleAvatarUpdate = (newAvatarUrl: string) => {
+    setCurrentAvatar(newAvatarUrl);
+    // Here you would typically also update the user info in your store/database
+    // dispatch(updateUserAvatar(newAvatarUrl));
+    console.log("New avatar URL:", newAvatarUrl);
   };
 
   const breadcrumbItems = [
@@ -58,9 +76,9 @@ export default function ProfilePage() {
         {/* Profile Header */}
         <div className="flex flex-col md:flex-row items-center gap-6 mb-10">
           <div className="relative">
-            <Avatar className="w-24 h-24 rounded-full  overflow-hidden">
+            <Avatar className="w-24 h-24 rounded-full overflow-hidden">
               <AvatarImage
-                src={userInfo.profilePicture}
+                src={currentAvatar || userInfo.profilePicture}
                 alt={userInfo.fullName}
               />
               <AvatarFallback className="bg-[#C5E2F0] text-[#0053A3] font-medium">
@@ -70,7 +88,8 @@ export default function ProfilePage() {
             <Button
               variant="outline"
               size="icon"
-              className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-1 bg-white border border-gray-200"
+              className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-1 bg-white border border-gray-200 hover:bg-gray-50"
+              onClick={() => setShowAvatarDialog(true)}
             >
               <Camera size={16} className="text-gray-600" />
             </Button>
@@ -84,7 +103,7 @@ export default function ProfilePage() {
 
           {/* Adoption Readiness Toggle - Moved to right side */}
           <div className="flex items-center ml-auto flex-col max-w-xs">
-            <div className="flex items-left  gap-2  px-4 py-2 rounded-full ">
+            <div className="flex items-left gap-2 px-4 py-2 rounded-full">
               <Label
                 htmlFor="ready-to-adopt"
                 className="text-sm cursor-pointer order-1"
@@ -117,6 +136,16 @@ export default function ProfilePage() {
             </p>
           </div>
         </div>
+
+        {/* Avatar Upload Dialog */}
+        <AvatarUploadDialog
+          open={showAvatarDialog}
+          onOpenChange={setShowAvatarDialog}
+          currentAvatar={currentAvatar || userInfo.profilePicture}
+          userName={userInfo.fullName}
+          userId={userInfo.userId || 0}
+          onAvatarUpdate={handleAvatarUpdate}
+        />
 
         {/* Confirmation Dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -156,14 +185,15 @@ export default function ProfilePage() {
           </DialogContent>
         </Dialog>
 
-        {/* Tabs */}
+        {/* Rest of your existing tabs content... */}
         <Tabs
           defaultValue="personal-info"
           value={activeTab}
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="flex w-full  mb-8 bg-transparent">
+          {/* Your existing tabs content remains the same */}
+          <TabsList className="flex w-full mb-8 bg-transparent">
             <TabsTrigger
               value="personal-info"
               className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "personal-info"
@@ -175,7 +205,7 @@ export default function ProfilePage() {
             </TabsTrigger>
             <TabsTrigger
               value="my-pets"
-              className={` p-4 text-sm font-medium rounded-none border-0 ${activeTab === "my-pets"
+              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "my-pets"
                 ? "border-b-1 border-black text-black"
                 : ""
                 }`}
@@ -184,7 +214,7 @@ export default function ProfilePage() {
             </TabsTrigger>
             <TabsTrigger
               value="pet-criteria"
-              className={` p-4 text-sm font-medium rounded-none border-0 ${activeTab === "pet-criteria"
+              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "pet-criteria"
                 ? "border-b-1 border-black text-black"
                 : ""
                 }`}
@@ -206,7 +236,7 @@ export default function ProfilePage() {
                 <Input
                   id="fullname"
                   defaultValue={userInfo.fullName || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -219,7 +249,7 @@ export default function ProfilePage() {
                 <Input
                   id="birthdate"
                   defaultValue={userInfo.birthDate || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -232,7 +262,7 @@ export default function ProfilePage() {
                 <Input
                   id="email"
                   defaultValue={userInfo.email || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -245,7 +275,7 @@ export default function ProfilePage() {
                 <Input
                   id="occupation"
                   defaultValue={userInfo.occupation || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -259,7 +289,7 @@ export default function ProfilePage() {
                   <Input
                     id="gender"
                     defaultValue={userInfo.gender || ""}
-                    className="w-full rounded-md  pr-10"
+                    className="w-full rounded-md pr-10"
                     readOnly
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -288,7 +318,7 @@ export default function ProfilePage() {
                 <Input
                   id="phone"
                   defaultValue="09.xxx.xxx"
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -301,7 +331,7 @@ export default function ProfilePage() {
                 <Input
                   id="address"
                   defaultValue={userInfo.address || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -314,7 +344,7 @@ export default function ProfilePage() {
                 <Input
                   id="bio"
                   defaultValue={userInfo.bio || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
               <div>
@@ -327,7 +357,7 @@ export default function ProfilePage() {
                 <Input
                   id="interests"
                   defaultValue={userInfo.hobby || ""}
-                  className="w-full rounded-md "
+                  className="w-full rounded-md"
                 />
               </div>
             </div>
@@ -424,7 +454,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className=" rounded-xl ">
+              <div className="rounded-xl">
                 <h2 className="text-lg font-medium mb-4">
                   Kỹ năng nuôi thú cưng
                 </h2>
