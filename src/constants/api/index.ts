@@ -12,6 +12,7 @@ export const API_ENDPOINT = {
     DETAIL: "/pets/:slug",
     ADOPTION_FORM: "/pets/:id/adoption-form",
     ADOPTION_APPLICATIONS: "/adoptionApplication",
+    ADOPTION_POST: "/adoptionPost"
   },
   VOLUNTEER: {
     LIST: "/volunteer",

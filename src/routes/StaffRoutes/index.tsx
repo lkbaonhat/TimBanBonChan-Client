@@ -1,5 +1,6 @@
 import ROUTES from "@/constants/routes";
 import SidebarLayout from "@/layouts/SidebarLayout";
+import ApplicationDetail from "@/pages/Staff/VerifyUser/VerifyUserDetail";
 import { lazy } from "react";
 
 //Page component
@@ -34,7 +35,8 @@ const StaffRoutes = [
             { path: ROUTES.STAFF.VOLUNTEER_APPLICATION_DETAIL, element: <VolunteerApplicationDetail /> },
             { path: ROUTES.STAFF.ADOPTIONS, element: <ManageAdoptions /> },
             { path: ROUTES.STAFF.ADOPTION_DETAIL, element: <AdoptionApplicationDetail /> },
-            { path: ROUTES.STAFF.VERIFY_USER, element: <VerifyUser /> }
+            { path: ROUTES.STAFF.VERIFY_USER, element: <VerifyUser /> },
+            { path: ROUTES.STAFF.VERIFY_USER_DETAIL, element: <ApplicationDetail/> }
         ],
     }
 ]

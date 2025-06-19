@@ -10,7 +10,7 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
-    const userInfo = useSelector(selectorAuth.userInfo)
+    const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
     const isAuthenticated = useSelector(selectorAuth.isAuthenticated)
 
     if (!Object.keys(userInfo).length || !isAuthenticated) {
@@ -19,7 +19,7 @@ const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
 
     const userRoles = Array.isArray(userInfo.roles) ? userInfo.roles : [userInfo.roles];
 
-    const hasPermission = userRoles.some(role => allowedRoles.includes(role) || role === ROLE.ADMIN);
+    const hasPermission = userRoles.some(role => role && (allowedRoles.includes(role) || role === ROLE.ADMIN));
 
     if (!hasPermission) {
         return <Navigate to={ROUTES.PUBLIC.HOME} replace />;

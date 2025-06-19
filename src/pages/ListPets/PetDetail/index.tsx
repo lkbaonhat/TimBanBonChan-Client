@@ -7,19 +7,75 @@ import ROUTES from "@/constants/routes";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { axiosClient } from "@/config/axios";
 import { API_ENDPOINT } from "@/constants/api";
-import { Pet } from "@/types/Pet";
+import { petService } from "@/services/petService";
 
-// Remove the Pet interface definition as it's now imported
+// Updated interfaces to match the adoption post API response
+interface Pet {
+  petId: number;
+  petName: string;
+  age: string;
+  ageUnit: string;
+  gender: string;
+  size: string;
+  color: string | null;
+  weight: number | null;
+  isVaccinated: boolean;
+  isNeutered: boolean;
+  isTrained: boolean;
+  healthStatus: string;
+  personality: string;
+  description: string;
+  adoptionStatus: string;
+  foodPreferences: string;
+  toyPreferences: string | null;
+  compatibleWith: string;
+  notCompatibleWith: string | null;
+  location: string;
+  purpose: string;
+  slug: string;
+  categoryName: string;
+  breedName: string;
+  imageUrls: string[];
+}
+
+interface AdoptionPost {
+  postId: number;
+  title: string;
+  content: string;
+  adoptionFee: number;
+  location: string;
+  city: string | null;
+  district: string | null;
+  postStatus: string;
+  isUrgent: boolean;
+  viewCount: number;
+  createdByUserId: number;
+  createdDate: string;
+  pet: Pet;
+}
+
+interface ApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: AdoptionPost;
+  detailErrors: any;
+}
 
 export default function PetDetail() {
   const navigate = useNavigate();
-  const { slug } = useParams();
+  const { postId } = useParams();
 
   // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // State for pet data
+  // State for pet data only
   const [pet, setPet] = useState<Pet | null>(null);
+  const [adoptionPost, setAdoptionPost] = useState<AdoptionPost | null>(null);
+
+  // Current user and time info
+  const currentUserLogin = "lkbaonhat";
+  const currentDateTime = "2025-06-18 14:22:51";
 
   // Formatted pet details for display
   const [petDetails, setPetDetails] = useState({
@@ -39,129 +95,108 @@ export default function PetDetail() {
     trainingStatus: "",
     categoryName: "",
     adoptionStatus: "",
-    createdDate: "",
   });
 
-  // Fetch pet data on component mount
+  // Fetch adoption post data on component mount
   useEffect(() => {
-    const fetchPetDetails = async () => {
-      if (!slug) return;
+    const fetchAdoptionPostDetails = async () => {
+      if (!postId) return;
 
       try {
         setLoading(true);
         setError(null);
-        console.log(`Fetching pet details for: ${slug}`);
 
-        // Replace :slug parameter instead of appending the slug
-        const endpoint = API_ENDPOINT.PET.DETAIL.replace(":slug", slug);
-        const response = await axiosClient.get(endpoint);
+        const response = await petService.getAdoptionPostDetail(postId);
 
-        console.log("Pet details full response:", response);
-        console.log("Pet details response data:", response.data);
-
-        // Handle the API response format with better validation
-        let petData;
-        if (response.data && response.data.data) {
-          // The API returns { statusCode, success, message, data: Pet, detailErrors }
-          console.log("Found nested data property:", response.data.data);
-          petData = response.data.data;
-        } else if (
-          response.data &&
-          typeof response.data === "object" &&
-          "petId" in response.data
-        ) {
-          // Direct pet object with expected properties
-          console.log("Found direct pet object");
-          petData = response.data;
-        } else {
-          // Handle unexpected response format
-          console.error("Unexpected response format:", response.data);
-          throw new Error("Invalid response format from server");
+        // Handle the API response format
+        if (!response.data.success) {
+          throw new Error(response.data.message || 'Failed to fetch adoption post details');
         }
 
-        // Verify we have valid pet data before updating state
-        if (!petData || !petData.petId) {
-          throw new Error("Invalid pet data received");
+        const postData = response.data.data;
+
+        // Verify we have valid post data
+        if (!postData || !postData.postId) {
+          throw new Error("Invalid adoption post data received");
         }
 
-        setPet(petData);
+        // Store both for navigation purposes
+        setAdoptionPost(postData);
+        setPet(postData.pet);
 
-        // Update the display details with all available pet information
+        console.log(`[${currentDateTime}] Pet data:`, {
+          petId: postData.pet.petId,
+          petName: postData.pet.petName,
+          slug: postData.pet.slug,
+          adoptionStatus: postData.pet.adoptionStatus
+        });
+
+        // Update the display details with pet information only
         setPetDetails({
-          breed: petData.breed || "",
-          healthStatus: petData.healthStatus || "Khỏe mạnh",
-          weight: `${petData.weight} kg`,
-          size: petData.size || "",
-          age: petData.age,
-          color: petData.color || "",
-          personality: petData.personality || "",
-          foodAndToys: petData.foodPreferences,
-          suitableWith: petData.compatibleWith || "",
-          notSuitableWith: petData.notCompatibleWith || "",
-          location: petData.location || "",
-          vaccinationStatus: petData.isVaccinated
-            ? "Đã tiêm vắc-xin"
-            : "Chưa tiêm vắc-xin",
-          neuterStatus: petData.isNeutered ? "Đã triệt sản" : "Chưa triệt sản",
-          trainingStatus: petData.isTrained
-            ? "Đã huấn luyện"
-            : "Chưa huấn luyện",
-          categoryName: petData.categoryName || "",
-          adoptionStatus: formatAdoptionStatus(petData.adoptionStatus),
-          createdDate: formatDate(petData.createdDate),
-        });
-      } catch (err: any) {
-        console.error("Error fetching pet details:", err);
-        console.error("Error details:", {
-          message: err.message,
-          status: err.response?.status,
-          data: err.response?.data,
-          url: err.config?.url,
-          method: err.config?.method,
+          breed: postData.pet.breedName || "Không xác định",
+          healthStatus: postData.pet.healthStatus || "Khỏe mạnh",
+          weight: postData.pet.weight ? `${postData.pet.weight} kg` : "Không xác định",
+          size: postData.pet.size || "Không xác định",
+          age: postData.pet.age,
+          color: postData.pet.color || "Không xác định",
+          personality: postData.pet.personality || "Không có thông tin",
+          foodAndToys: postData.pet.foodPreferences,
+          suitableWith: postData.pet.compatibleWith || "Không có thông tin",
+          notSuitableWith: postData.pet.notCompatibleWith || "Không có thông tin",
+          location: postData.pet.location || "Không xác định",
+          vaccinationStatus: postData.pet.isVaccinated ? "Đã tiêm vắc-xin" : "Chưa tiêm vắc-xin",
+          neuterStatus: postData.pet.isNeutered ? "Đã triệt sản" : "Chưa triệt sản",
+          trainingStatus: postData.pet.isTrained ? "Đã huấn luyện" : "Chưa huấn luyện",
+          categoryName: postData.pet.categoryName || "Không xác định",
+          adoptionStatus: formatAdoptionStatus(postData.pet.adoptionStatus),
         });
 
-        setError(
-          "Không thể tải thông tin chi tiết của thú cưng. Vui lòng thử lại sau."
-        );
+      } catch (err: any) {
+        console.error(`[${currentDateTime}] Error fetching adoption post details:`, err);
+
+        if (err.response) {
+          const status = err.response.status;
+          if (status === 404) {
+            setError("Không tìm thấy thông tin thú cưng này.");
+          } else if (status === 403) {
+            setError("Bạn không có quyền xem thông tin này.");
+          } else {
+            setError("Lỗi server. Vui lòng thử lại sau.");
+          }
+        } else if (err.request) {
+          setError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+        } else {
+          setError("Không thể tải thông tin chi tiết. Vui lòng thử lại sau.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPetDetails();
-  }, [slug]);
+    fetchAdoptionPostDetails();
+  }, [postId]);
 
-  // Format age string
-  const formatAge = (ageInMonths: number | undefined): string => {
-    if (!ageInMonths) return "Không xác định";
+  // Format age string with unit
+  const formatAge = (age: string, ageUnit: string): string => {
+    if (!age) return "Không xác định";
 
-    if (ageInMonths < 12) {
-      return `${ageInMonths} tháng`;
-    } else {
-      const years = Math.floor(ageInMonths / 12);
-      const months = ageInMonths % 12;
+    const ageNum = parseInt(age) || 0;
 
-      if (months === 0) {
-        return `${years} năm`;
-      } else {
-        return `${years} năm ${months} tháng`;
-      }
-    }
-  };
-
-  // Format date string
-  const formatDate = (dateString: string | undefined): string => {
-    if (!dateString) return "Không xác định";
-
-    try {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat("vi-VN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(date);
-    } catch (error) {
-      return dateString;
+    switch (ageUnit?.toLowerCase()) {
+      case 'months':
+      case 'tháng':
+        if (ageNum < 12) {
+          return `${ageNum} tháng tuổi`;
+        } else {
+          const years = Math.floor(ageNum / 12);
+          const months = ageNum % 12;
+          return months === 0 ? `${years} năm tuổi` : `${years} năm ${months} tháng tuổi`;
+        }
+      case 'years':
+      case 'năm':
+        return `${ageNum} năm tuổi`;
+      default:
+        return age; // Return as-is if it's descriptive like "Trưởng thành"
     }
   };
 
@@ -181,15 +216,6 @@ export default function PetDetail() {
     }
   };
 
-  // Format health status string
-  const formatHealthStatus = (pet: Pet): string => {
-    let status = pet.healthStatus || "Khỏe mạnh";
-    if (pet.isVaccinated) status += ", tiêm vắc xin đầy đủ";
-    if (pet.isNeutered) status += ", đã triệt sản";
-    if (pet.isTrained) status += ", đã được huấn luyện";
-    return status;
-  };
-
   // Format food and toy preferences
   const formatPreferences = (
     food: string | null,
@@ -205,6 +231,23 @@ export default function PetDetail() {
     return result;
   };
 
+  // Handle adoption form navigation - Updated to use pet slug
+  const handleAdoptionFormClick = () => {
+    if (pet && pet.slug) {
+      const adoptionUrl = `/pets/${postId}/adoption-form`;
+
+      navigate(adoptionUrl);
+    } else {
+
+      // Fallback: show error message or use postId
+      if (adoptionPost) {
+        const fallbackUrl = `/adoption-form/${adoptionPost.postId}`;
+        console.log(`[${currentDateTime}] Using fallback URL: ${fallbackUrl}`);
+        navigate(fallbackUrl);
+      }
+    }
+  };
+
   // Define breadcrumb items
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
@@ -214,10 +257,14 @@ export default function PetDetail() {
 
   if (loading && !pet) {
     return (
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <Breadcrumb items={breadcrumbItems} />
         <div className="flex justify-center items-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải thông tin thú cưng...</p>
+            <p className="text-xs text-gray-500 mt-2">User: {currentUserLogin} | {currentDateTime}</p>
+          </div>
         </div>
       </div>
     );
@@ -225,28 +272,41 @@ export default function PetDetail() {
 
   if (error && !pet) {
     return (
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <Breadcrumb items={breadcrumbItems} />
         <div className="flex flex-col items-center justify-center h-96 p-4">
           <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
           <h2 className="text-2xl font-bold text-red-500 mb-2">
             Đã xảy ra lỗi
           </h2>
-          <p className="text-center">{error}</p>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={() => navigate("/pets")}
-          >
-            Quay lại danh sách thú cưng
-          </Button>
+          <p className="text-center mb-4">{error}</p>
+          <p className="text-xs text-gray-500 mb-4">User: {currentUserLogin} | {currentDateTime}</p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/pets")}
+            >
+              Quay lại danh sách
+            </Button>
+            <Button
+              variant="blue"
+              onClick={() => window.location.reload()}
+            >
+              Thử lại
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Get main image from pet images
+  const mainImage = pet?.imageUrls && pet.imageUrls.length > 0
+    ? pet.imageUrls[0]
+    : "/placeholder.svg?height=400&width=600";
+
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto px-4">
       <Breadcrumb items={breadcrumbItems} />
       <div className={styles.container}>
         {error && (
@@ -257,19 +317,32 @@ export default function PetDetail() {
 
         <div className={styles.content}>
           <div className={styles.imageContainer}>
-            {pet?.petImageUrls ? (
-              <div className="relative w-full h-0 pb-[75%] overflow-hidden rounded-lg">
-                <img
-                  src={pet.petImageUrls}
-                  alt={`${pet.petName} - ${pet.breed}`}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="relative w-full h-0 pb-[75%] bg-gray-200 rounded-lg">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-gray-500">Chưa có hình ảnh</span>
-                </div>
+            <div className="relative w-full h-0 pb-[75%] overflow-hidden rounded-lg">
+              <img
+                src={mainImage}
+                alt={`${pet?.petName} - ${pet?.breedName}`}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg?height=400&width=600";
+                }}
+              />
+            </div>
+
+            {/* Additional images if available */}
+            {pet?.imageUrls && pet.imageUrls.length > 1 && (
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                {pet.imageUrls.slice(1, 4).map((imageUrl, index) => (
+                  <div key={index} className="relative w-full h-0 pb-[75%] overflow-hidden rounded">
+                    <img
+                      src={imageUrl}
+                      alt={`${pet.petName} - ảnh ${index + 2}`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg?height=200&width=200";
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -301,11 +374,11 @@ export default function PetDetail() {
 
             <div className={styles.petTags}>
               <span className={styles.tag}>
-                {pet?.categoryName || "Không xác định"}
+                {petDetails.categoryName}
               </span>
               <span className={styles.tagSeparator}>|</span>
               <span className={styles.tag}>
-                {pet?.age}
+                {petDetails.age}
               </span>
               <span className={styles.tagSeparator}>|</span>
               <span className={styles.tag}>
@@ -338,12 +411,27 @@ export default function PetDetail() {
               </div>
 
               <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>Giới tính</div>
+                <div className={styles.infoValue}>{pet?.gender || "Không xác định"}</div>
+              </div>
+
+              <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Kích thước</div>
                 <div className={styles.infoValue}>{petDetails.size}</div>
               </div>
 
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Tình trạng Sức khỏe</div>
+                <div className={styles.infoLabel}>Cân nặng</div>
+                <div className={styles.infoValue}>{petDetails.weight}</div>
+              </div>
+
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>Màu lông</div>
+                <div className={styles.infoValue}>{petDetails.color}</div>
+              </div>
+
+              <div className={styles.infoRow}>
+                <div className={styles.infoLabel}>Tình trạng sức khỏe</div>
                 <div className={styles.infoValue}>
                   {petDetails.healthStatus}
                 </div>
@@ -352,21 +440,27 @@ export default function PetDetail() {
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Tiêm vắc-xin</div>
                 <div className={styles.infoValue}>
-                  {petDetails.vaccinationStatus}
+                  <span className={pet?.isVaccinated ? 'text-green-600' : 'text-red-600'}>
+                    {petDetails.vaccinationStatus}
+                  </span>
                 </div>
               </div>
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Triệt sản</div>
                 <div className={styles.infoValue}>
-                  {petDetails.neuterStatus}
+                  <span className={pet?.isNeutered ? 'text-green-600' : 'text-red-600'}>
+                    {petDetails.neuterStatus}
+                  </span>
                 </div>
               </div>
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Huấn luyện</div>
                 <div className={styles.infoValue}>
-                  {petDetails.trainingStatus}
+                  <span className={pet?.isTrained ? 'text-green-600' : 'text-red-600'}>
+                    {petDetails.trainingStatus}
+                  </span>
                 </div>
               </div>
 
@@ -376,7 +470,7 @@ export default function PetDetail() {
               </div>
 
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Thức ăn và đồ chơi</div>
+                <div className={styles.infoLabel}>Sở thích ăn uống & chơi</div>
                 <div className={styles.infoValue}>{petDetails.foodAndToys}</div>
               </div>
 
@@ -388,14 +482,20 @@ export default function PetDetail() {
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Địa chỉ</div>
                 <div className={styles.infoValue}>
-                  {petDetails.location || "Không có thông tin"}
+                  {petDetails.location}
                 </div>
               </div>
 
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Trạng thái</div>
+                <div className={styles.infoLabel}>Trạng thái nhận nuôi</div>
                 <div className={styles.infoValue}>
-                  {petDetails.adoptionStatus}
+                  <span className={
+                    pet?.adoptionStatus === "Available"
+                      ? 'text-green-600 font-semibold'
+                      : 'text-yellow-600 font-semibold'
+                  }>
+                    {petDetails.adoptionStatus}
+                  </span>
                 </div>
               </div>
             </div>
@@ -413,21 +513,13 @@ export default function PetDetail() {
                 variant="pink"
                 shape="default"
                 animation="none"
-                onClick={() => {
-                  if (pet?.slug) {
-                    // Use slug instead of ID for navigation
-                    console.log(
-                      `Navigating to adoption form for pet: ${pet.petName} (${pet.slug})`
-                    );
-                    const adoptionUrl = `/pets/${pet.slug}/adoption-form`;
-                    console.log(`Navigation URL: ${adoptionUrl}`);
-                    navigate(adoptionUrl);
-                  } else {
-                    console.error("Cannot navigate: Pet slug is undefined");
-                  }
-                }}
+                onClick={handleAdoptionFormClick}
+                disabled={pet?.adoptionStatus !== "Available"}
               >
-                Đăng ký thủ tục nhận nuôi
+                {pet?.adoptionStatus === "Available"
+                  ? "Đăng ký thủ tục nhận nuôi"
+                  : "Không thể nhận nuôi"
+                }
               </Button>
             </div>
           </div>

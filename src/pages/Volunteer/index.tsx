@@ -40,7 +40,6 @@ const VolunteerPage = () => {
 
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
-    { label: "Cộng đồng", path: "/community" },
     { label: "Tình nguyện viên" },
   ];
 

@@ -6,19 +6,99 @@ import Pagination from "@/components/Pagination/Pagination";
 import styles from "./pet-gallery.module.css";
 import { axiosClient } from "@/config/axios";
 import { API_ENDPOINT } from "@/constants/api";
-import { Pet, PetCardData } from "@/types/Pet";
+import { petService } from "@/services/petService";
+
+// Updated interfaces to match your API response
+interface Pet {
+  petId: number;
+  petName: string;
+  age: string;
+  ageUnit: string;
+  gender: string;
+  size: string;
+  color: string | null;
+  weight: number | null;
+  isVaccinated: boolean;
+  isNeutered: boolean;
+  isTrained: boolean;
+  healthStatus: string;
+  personality: string;
+  description: string;
+  adoptionStatus: string;
+  foodPreferences: string;
+  toyPreferences: string | null;
+  compatibleWith: string;
+  notCompatibleWith: string | null;
+  location: string;
+  purpose: string;
+  slug: string;
+  categoryName: string;
+  breedName: string;
+  imageUrls: string[];
+}
+
+interface AdoptionPost {
+  postId: number;
+  title: string;
+  content: string;
+  adoptionFee: number;
+  location: string;
+  city: string | null;
+  district: string | null;
+  postStatus: string;
+  isUrgent: boolean;
+  viewCount: number;
+  createdByUserId: number;
+  createdDate: string;
+  pet: Pet;
+}
+
+interface ApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    items: AdoptionPost[];
+    totalCount: number;
+    pageNumber: number;
+    pageSize: number;
+  };
+  detailErrors: any;
+}
+
+// Updated PetCardData interface to include postId
+export interface PetCardData {
+  id: number;
+  name: string;
+  gender: string;
+  location: string;
+  status: string;
+  imageUrl: string;
+  categoryName: string;
+  slug: string;
+  postId: number; // Added postId for navigation
+  adoptionFee?: number;
+  isUrgent?: boolean;
+  age?: string;
+  ageUnit?: string;
+  breedName?: string;
+}
 
 export default function PetGallery() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [petType, setPetType] = useState("all");
+  const [petCategory, setPetCategory] = useState("all");
   const [age, setAge] = useState("all");
   const [gender, setGender] = useState("all");
+  const [location, setLocation] = useState("all");
   const [pageSize] = useState(6);
 
-  // Add state for pets data
-  const [allPets, setAllPets] = useState<Pet[]>([]);
-  const [filteredPets, setFilteredPets] = useState<Pet[]>([]);
-  const [displayPets, setDisplayPets] = useState<Pet[]>([]);
+  // Current user info
+  const currentUserLogin = "lkbaonhat";
+
+  // State for adoption posts data
+  const [allPosts, setAllPosts] = useState<AdoptionPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<AdoptionPost[]>([]);
+  const [displayPosts, setDisplayPosts] = useState<AdoptionPost[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,25 +106,26 @@ export default function PetGallery() {
   // Define filter configurations
   const filterConfigs: FilterConfig[] = [
     {
-      id: "petType",
-      placeholder: "Loại",
-      value: petType,
-      onChange: setPetType,
+      id: "petCategory",
+      placeholder: "Loại thú cưng",
+      value: petCategory,
+      onChange: setPetCategory,
       options: [
         { id: "all", label: "Tất cả", value: "all" },
-        { id: "1", label: "Chó", value: "1" },
-        { id: "2", label: "Mèo", value: "2" },
+        { id: "Chó", label: "Chó", value: "Chó" },
+        { id: "Mèo", label: "Mèo", value: "Mèo" },
+        { id: "Chim", label: "Chim", value: "Chim" },
       ],
     },
     {
       id: "age",
-      placeholder: "Tuổi",
+      placeholder: "Độ tuổi",
       value: age,
       onChange: setAge,
       options: [
         { id: "all", label: "Tất cả", value: "all" },
-        { id: "puppy", label: "< 12 tháng", value: "puppy" },
-        { id: "adult", label: "≥ 12 tháng", value: "adult" },
+        { id: "young", label: "Còn nhỏ (< 1 năm)", value: "young" },
+        { id: "adult", label: "Trưởng thành (≥ 1 năm)", value: "adult" },
       ],
     },
     {
@@ -54,260 +135,209 @@ export default function PetGallery() {
       onChange: setGender,
       options: [
         { id: "all", label: "Tất cả", value: "all" },
-        { id: "male", label: "Đực", value: "Đực" },
-        { id: "female", label: "Cái", value: "Cái" },
+        { id: "Male", label: "Đực", value: "Male" },
+        { id: "Female", label: "Cái", value: "Female" },
+        { id: "Đực", label: "Đực", value: "Đực" },
+        { id: "Cái", label: "Cái", value: "Cái" },
+        { id: "Unknown", label: "Không rõ", value: "Unknown" },
+      ],
+    },
+    {
+      id: "location",
+      placeholder: "Địa điểm",
+      value: location,
+      onChange: setLocation,
+      options: [
+        { id: "all", label: "Tất cả", value: "all" },
+        { id: "TP. HCM", label: "TP. HCM", value: "TP. HCM" },
+        { id: "Hà Nội", label: "Hà Nội", value: "Hà Nội" },
+        { id: "Đà Nẵng", label: "Đà Nẵng", value: "Đà Nẵng" },
       ],
     },
   ];
 
-  // Function to fetch all pets from the API
+  // Function to check if pet is young based on age and unit
+  const isYoungPet = (age: string, ageUnit: string): boolean => {
+    const ageNum = parseInt(age) || 0;
+
+    switch (ageUnit.toLowerCase()) {
+      case 'months':
+      case 'tháng':
+        return ageNum < 12;
+      case 'years':
+      case 'năm':
+        return ageNum < 1;
+      default:
+        // If age is descriptive like "Trưởng thành", treat as adult
+        return age.toLowerCase().includes('nhỏ') || age.toLowerCase().includes('con');
+    }
+  };
+
+  // Function to filter posts based on current filter settings
+  const filterPosts = (posts: AdoptionPost[]) => {
+    return posts.filter(post => {
+      const pet = post.pet;
+
+      // Category filter
+      if (petCategory !== "all" && pet.categoryName !== petCategory) {
+        return false;
+      }
+
+      // Age filter
+      if (age !== "all") {
+        const isPetYoung = isYoungPet(pet.age, pet.ageUnit);
+        if (age === "young" && !isPetYoung) return false;
+        if (age === "adult" && isPetYoung) return false;
+      }
+
+      // Gender filter
+      if (gender !== "all" && pet.gender !== gender) {
+        return false;
+      }
+
+      // Location filter
+      if (location !== "all") {
+        const postLocation = post.city || post.location || "";
+        if (!postLocation.includes(location)) {
+          return false;
+        }
+      }
+
+      // Only show available pets
+      if (post.postStatus !== "Available" && post.postStatus !== "Pending") {
+        return false;
+      }
+
+      return true;
+    });
+  };
+
+  // Function to fetch adoption posts from the API
   useEffect(() => {
-    const fetchPets = async () => {
+    const fetchAdoptionPosts = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Log the environment variable to check the base URL
-        console.log("Base URL:", import.meta.env.VITE_API_BASE_URL);
-        console.log("Endpoint being used:", API_ENDPOINT.PET.LIST);
+        // Make the API call
+        const response = await petService.getAllAdoptionPost();
 
-        // Build filter params - only include filters, no pagination
-        const params: Record<string, any> = {};
-
-        // Only add filter params if they're not "all"
-        if (petType !== "all") {
-          params.categoryId = parseInt(petType);
+        if (!response.data.success) {
+          throw new Error(response.data.message || 'Failed to fetch adoption posts');
         }
 
-        if (age === "puppy") {
-          params.ageMax = 11;
-        } else if (age === "adult") {
-          params.ageMin = 12;
-        }
+        const posts = response.data.data.items;
 
-        if (gender !== "all") {
-          params.gender = gender;
-        }
+        // Update state with all fetched posts
+        setAllPosts(posts);
 
-        console.log("Request params:", params);
+        // Apply current filters
+        const filtered = filterPosts(posts);
+        setFilteredPosts(filtered);
 
-        // Make the API call without pagination params
-        const response = await axiosClient.get(API_ENDPOINT.PET.LIST, {
-          params,
-        });
+        // Calculate total pages based on filtered results
+        setTotalPages(Math.max(1, Math.ceil(filtered.length / pageSize)));
 
-        console.log("Full API response:", response);
+        // Reset to first page when data changes
+        setCurrentPage(1);
 
-        // Extract pets from the response format
-        let pets: Pet[] = [];
-        let totalItems = 0;
-
-        // Handle the specific response format from your API
-        if (response.data && response.data.success) {
-          // The API returns { statusCode, success, message, data: { items: Pet[], totalCount, pageNumber, pageSize }, detailErrors }
-          if (response.data.data && Array.isArray(response.data.data.items)) {
-            pets = response.data.data.items;
-            totalItems = response.data.data.totalCount || pets.length;
-            console.log(
-              `Found ${pets.length} pets in response.data.data.items`
-            );
-          } else {
-            console.error(
-              "Response data.data.items is not an array:",
-              response.data
-            );
-            throw new Error("Invalid response format");
-          }
-        } else if (
-          response.data &&
-          response.data.data &&
-          Array.isArray(response.data.data)
-        ) {
-          // Legacy format: { statusCode, success, message, data: Pet[], detailErrors }
-          pets = response.data.data;
-          totalItems = pets.length;
-          console.log(`Found ${pets.length} pets in response.data.data`);
-        } else if (Array.isArray(response.data)) {
-          // Direct array response
-          pets = response.data;
-          totalItems = pets.length;
-        } else if (
-          response.data &&
-          response.data.content &&
-          Array.isArray(response.data.content)
-        ) {
-          // Paginated response format
-          pets = response.data.content;
-          totalItems = response.data.totalElements || pets.length;
-        } else {
-          // Enhanced error handling for unexpected formats
-          console.error("Unexpected response format:", response.data);
-
-          // Try to extract pets using a more flexible approach
-          try {
-            // Log entire response structure for debugging
-            console.log(
-              "Response structure:",
-              JSON.stringify(response, null, 2)
-            );
-
-            // Try to find arrays in the response at various levels
-            const findPetsArray = (obj: any): Pet[] | null => {
-              // If the object itself is an array, return it
-              if (Array.isArray(obj)) {
-                return obj.length > 0 && obj[0].petId ? obj : null;
-              }
-
-              // Look for array properties that might contain pets
-              for (const key in obj) {
-                if (typeof obj[key] === "object" && obj[key] !== null) {
-                  // Check if this property is an array that looks like pets
-                  if (
-                    Array.isArray(obj[key]) &&
-                    obj[key].length > 0 &&
-                    obj[key][0].petId
-                  ) {
-                    return obj[key];
-                  }
-
-                  // Recursively check nested objects
-                  const result = findPetsArray(obj[key]);
-                  if (result) return result;
-                }
-              }
-              return null;
-            };
-
-            const foundPets = findPetsArray(response.data);
-            if (foundPets && foundPets.length > 0) {
-              console.log(
-                "Found pets using flexible search:",
-                foundPets.length
-              );
-              pets = foundPets;
-              totalItems = foundPets.length;
-            } else {
-              // If all else fails, create fake data as a fallback for UI testing
-              console.warn("Creating fallback pets data for UI");
-              pets = [];
-              totalItems = 0;
-              throw new Error("Could not extract pets data from response");
-            }
-          } catch (parseError) {
-            console.error("Error parsing response:", parseError);
-            throw new Error("Invalid response format: " + parseError.message);
-          }
-        }
-
-        // Update state with all fetched pets
-        setAllPets(pets);
-        setFilteredPets(pets);
-
-        // Calculate total pages based on the total count and page size
-        setTotalPages(Math.max(1, Math.ceil(totalItems / pageSize)));
-
-        // Update display pets for current page
-        updateDisplayPets(pets, currentPage, pageSize);
       } catch (err: any) {
-        console.error("Error fetching pets:", err);
-        // Add more detailed error logging
-        if (err.request) {
-          console.error("Request was made but no response received");
-        }
-
-        if (err.config) {
-          console.error("Request details:", {
-            url: err.config?.url,
-            baseURL: err.config?.baseURL,
-            method: err.config?.method,
-            params: JSON.stringify(err.config?.params),
-            fullUrl: `${err.config?.baseURL}${err.config?.url}`,
-          });
-        }
+        console.error("Error fetching adoption posts:", err);
 
         if (err.response) {
           console.error("Response status:", err.response.status);
           console.error("Response data:", err.response.data);
 
-          // If we received some data, try to use it even if format is unexpected
-          if (err.response.data && typeof err.response.data === "object") {
-            try {
-              const emergencyExtract = (obj: any): Pet[] => {
-                // Deep scan the object for arrays that could be pets
-                const scan = (o: any, path: string = ""): Pet[] | null => {
-                  if (
-                    Array.isArray(o) &&
-                    o.length > 0 &&
-                    (o[0].petId || o[0].petName)
-                  ) {
-                    console.log(`Found potential pets array at ${path}`);
-                    return o;
-                  }
-
-                  if (typeof o === "object" && o !== null) {
-                    for (const key in o) {
-                      const result = scan(o[key], `${path}.${key}`);
-                      if (result) return result;
-                    }
-                  }
-                  return null;
-                };
-
-                return scan(obj) || [];
-              };
-
-              const rescuedPets = emergencyExtract(err.response.data);
-              if (rescuedPets.length > 0) {
-                console.log(
-                  "Rescued pets from error response:",
-                  rescuedPets.length
-                );
-                setAllPets(rescuedPets);
-                setFilteredPets(rescuedPets);
-                setDisplayPets(rescuedPets.slice(0, pageSize));
-                setTotalPages(
-                  Math.max(1, Math.ceil(rescuedPets.length / pageSize))
-                );
-                return; // Exit early since we recovered
-              }
-            } catch (rescueError) {
-              console.error("Failed emergency data extraction:", rescueError);
-            }
+          if (err.response.status === 404) {
+            setError("Không tìm thấy bài đăng nhận nuôi nào.");
+          } else if (err.response.status === 403) {
+            setError("Bạn không có quyền truy cập danh sách này.");
+          } else if (err.response.status === 401) {
+            setError("Bạn cần đăng nhập để xem danh sách này.");
+          } else {
+            setError("Lỗi server. Vui lòng thử lại sau.");
           }
+        } else if (err.request) {
+          setError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+        } else {
+          setError(err.message || "Đã xảy ra lỗi không xác định.");
         }
 
-        // If we reach here, all recovery attempts failed
-        setError("Không thể tải danh sách thú cưng. Vui lòng thử lại sau.");
-        setAllPets([]);
-        setFilteredPets([]);
-        setDisplayPets([]);
+        setAllPosts([]);
+        setFilteredPosts([]);
+        setDisplayPosts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPets();
-  }, [petType, age, gender]); // Remove currentPage and pageSize from dependencies
+    fetchAdoptionPosts();
+  }, []); // Only fetch once on component mount
 
-  // Function to update displayed pets based on current page
-  const updateDisplayPets = (pets: Pet[], page: number, size: number) => {
-    const startIndex = (page - 1) * size;
-    const endIndex = Math.min(startIndex + size, pets.length);
-    setDisplayPets(pets.slice(startIndex, endIndex));
-  };
+  // Apply filters when filter values change
+  useEffect(() => {
+    const filtered = filterPosts(allPosts);
+    setFilteredPosts(filtered);
+    setTotalPages(Math.max(1, Math.ceil(filtered.length / pageSize)));
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [petCategory, age, gender, location, allPosts, pageSize]);
+
+  // Update display posts when page or filtered posts change
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, filteredPosts.length);
+    setDisplayPosts(filteredPosts.slice(startIndex, endIndex));
+  }, [currentPage, filteredPosts, pageSize]);
 
   // Handler for page changes
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Update displayed pets when page changes
-    updateDisplayPets(filteredPets, page, pageSize);
     window.scrollTo(0, 0);
   };
 
-  // Update display pets when currentPage changes
-  useEffect(() => {
-    updateDisplayPets(filteredPets, currentPage, pageSize);
-  }, [currentPage, filteredPets, pageSize]);
+  // Convert AdoptionPost to PetCardData
+  const convertToPetCardData = (post: AdoptionPost): PetCardData => {
+    const pet = post.pet;
+
+    // Get the main image
+    const imageUrl = pet.imageUrls && pet.imageUrls.length > 0
+      ? pet.imageUrls[0]
+      : "/placeholder.svg?height=200&width=200";
+
+    // Format location
+    const displayLocation = post.city
+      ? `${post.district ? post.district + ', ' : ''}${post.city}`
+      : post.location || pet.location || "Không xác định";
+
+    // Format status based on adoption status and urgency
+    let status = pet.adoptionStatus === "Available" ? "Có thể nhận nuôi" : pet.adoptionStatus;
+    if (post.isUrgent) {
+      status = "🚨 Cần gấp - " + status;
+    }
+
+    return {
+      id: pet.petId,
+      name: pet.petName,
+      gender: pet.gender,
+      location: displayLocation,
+      status: status,
+      imageUrl: imageUrl,
+      categoryName: pet.categoryName,
+      slug: pet.slug,
+      postId: post.postId, // Added postId for navigation
+      adoptionFee: post.adoptionFee,
+      isUrgent: post.isUrgent,
+      age: pet.age,
+      ageUnit: pet.ageUnit,
+      breedName: pet.breedName,
+    };
+  };
+
+  // Retry function
+  const handleRetry = () => {
+    setError(null);
+    window.location.reload();
+  };
 
   return (
     <div className={styles.container}>
@@ -316,42 +346,70 @@ export default function PetGallery() {
         <Filter filters={filterConfigs} />
       </div>
 
+      {/* Stats display */}
+      <div className="mb-4 text-sm text-gray-600">
+        Hiển thị {displayPosts.length} trong tổng số {filteredPosts.length} bài đăng
+        {filteredPosts.length !== allPosts.length && (
+          <span className="text-blue-600 ml-1">
+            (đã lọc từ {allPosts.length} bài đăng)
+          </span>
+        )}
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải danh sách thú cưng...</p>
+          </div>
         </div>
       ) : error ? (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p>{error}</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="font-medium">{error}</p>
+              <p className="text-sm mt-1">Thời gian: {new Date().toLocaleString('vi-VN')}</p>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="ml-4 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
+            >
+              Thử lại
+            </button>
+          </div>
         </div>
-      ) : filteredPets.length === 0 ? (
+      ) : filteredPosts.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-lg text-gray-600">
-            Không tìm thấy thú cưng nào phù hợp với bộ lọc.
+          <div className="text-gray-500 text-xl mb-4">🐾 Không tìm thấy kết quả</div>
+          <p className="text-lg text-gray-600 mb-2">
+            Không tìm thấy thú cưng nào phù hợp với bộ lọc hiện tại.
           </p>
-          <p className="mt-2">Vui lòng thử với các tiêu chí khác.</p>
+          <p className="mt-2 text-gray-500">Vui lòng thử với các tiêu chí khác.</p>
+          <button
+            onClick={() => {
+              setPetCategory("all");
+              setAge("all");
+              setGender("all");
+              setLocation("all");
+            }}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Xóa tất cả bộ lọc
+          </button>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {displayPets.map((pet) => (
-              <PetCard
-                key={pet.petId}
-                pet={{
-                  id: pet.petId,
-                  name: pet.petName,
-                  gender: pet.gender,
-                  location: pet.location || "Không xác định",
-                  status: pet.age < 12 ? "Chưa trưởng thành" : "Trưởng thành",
-                  imageUrl: pet.petImageUrls || "",
-                  categoryName: pet.categoryName,
-                  slug: pet.slug,
-                }}
-              />
+            {displayPosts.map((post) => (
+              <div key={post.postId} className="relative">
+                <PetCard
+                  pet={convertToPetCardData(post)}
+                />
+              </div>
             ))}
           </div>
 
-          {filteredPets.length > pageSize && (
+          {filteredPosts.length > pageSize && (
             <div className="mt-8">
               <Pagination
                 currentPage={currentPage}

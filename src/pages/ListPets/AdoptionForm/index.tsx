@@ -1,163 +1,244 @@
-"use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { axiosClient } from "@/config/axios";
-import { API_ENDPOINT } from "@/constants/api";
-import { Pet } from "@/types/Pet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
 import { userService } from "@/services/userService";
 import { toast } from "sonner";
+import { petService } from "@/services/petService";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useSelector } from "react-redux";
+import { selectorAuth } from "@/store/modules/auth/selector";
 
+// Updated form schema to match API fields
 const formSchema = z.object({
-  fullName: z.string().min(2, { message: "Họ và tên là bắt buộc" }),
-  dateOfBirth: z.string(),
-  email: z.string().email({ message: "Email không hợp lệ" }),
-  phone: z.string(),
-  address: z.string(),
-  livingArrangement: z.string(),
-  hasOtherPets: z.enum(["Có", "Không"]),
-  hasPreviousPets: z.enum(["Rồi", "Chưa"]),
-  previousExperience: z.string().optional(),
-  petCareKnowledge: z.string().optional(),
-  additionalInfo: z.string().optional(),
+  livingConditions: z.string().min(10, {
+    message: "Vui lòng mô tả chi tiết điều kiện sống (ít nhất 10 ký tự)",
+  }),
+  experienceWithPets: z.string().min(10, {
+    message: "Vui lòng mô tả kinh nghiệm nuôi thú cưng (ít nhất 10 ký tự)",
+  }),
+  reasonForAdoption: z.string().min(10, {
+    message: "Vui lòng chia sẻ lý do nhận nuôi (ít nhất 10 ký tự)",
+  }),
+  otherPets: z
+    .string()
+    .min(1, { message: "Vui lòng chọn có hay không có thú cưng khác" }),
+  workSchedule: z.string().min(10, {
+    message:
+      "Vui lòng mô tả lịch làm việc và thời gian chăm sóc (ít nhất 10 ký tự)",
+  }),
+  familyMembers: z.string().min(10, {
+    message: "Vui lòng mô tả thành viên gia đình (ít nhất 10 ký tự)",
+  }),
   termsAgreed: z.boolean().refine((val) => val === true, {
     message: "Bạn phải đồng ý với điều khoản",
   }),
 });
 
+// Form data type
+type FormData = z.infer<typeof formSchema>;
+
+// Updated Pet interface to match API response
+interface Pet {
+  petId: number;
+  petName: string;
+  age: string;
+  ageUnit: string;
+  gender: string;
+  size: string;
+  color: string | null;
+  weight: number | null;
+  isVaccinated: boolean;
+  isNeutered: boolean;
+  isTrained: boolean;
+  healthStatus: string;
+  personality: string;
+  description: string;
+  adoptionStatus: string;
+  foodPreferences: string;
+  toyPreferences: string | null;
+  compatibleWith: string;
+  notCompatibleWith: string | null;
+  location: string;
+  purpose: string;
+  slug: string;
+  categoryName: string;
+  breedName: string;
+  imageUrls: string[];
+}
+
+interface AdoptionPost {
+  postId: number;
+  title: string;
+  content: string;
+  adoptionFee: number;
+  location: string;
+  city: string | null;
+  district: string | null;
+  postStatus: string;
+  isUrgent: boolean;
+  viewCount: number;
+  createdByUserId: number;
+  createdDate: string;
+  pet: Pet;
+}
+
 export default function AdoptionForm() {
-  const { slug } = useParams<{ slug: string }>(); // Change from 'id' to 'slug'
+  const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
+  const [adoptionPost, setAdoptionPost] = useState<AdoptionPost | null>(null);
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+
+  // Current user and time context
+  const currentUserLogin = "lkbaonhat";
+  const currentDateTime = "2025-06-18 15:12:41";
 
   useEffect(() => {
     const fetchPetDetails = async () => {
-      if (!slug) return;
+      if (!postId) {
+        setError("Không tìm thấy ID bài đăng.");
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
-        // Fetch pet by slug - this is correct now as we're passing a slug
-        const response = await axiosClient.get(
-          `${API_ENDPOINT.PET.DETAIL.replace(":slug", slug)}`
-        );
+        setError(null);
+
+        // Fetch adoption post by postId
+        const response = await petService.getAdoptionPostDetail(postId);
 
         // Process the response to extract pet data
-        let petData;
+        let postData;
         if (response.data && response.data.data) {
-          petData = response.data.data;
+          postData = response.data.data;
         } else if (
           response.data &&
           typeof response.data === "object" &&
-          "petId" in response.data
+          "postId" in response.data
         ) {
-          petData = response.data;
+          postData = response.data;
         } else {
-          throw new Error("Invalid pet data received");
+          throw new Error("Invalid adoption post data received");
         }
 
-        setPet(petData);
-      } catch (err) {
-        console.error("Error fetching pet details:", err);
-        setError("Không thể tải thông tin thú cưng. Vui lòng thử lại sau.");
+        setAdoptionPost(postData);
+        setPet(postData.pet);
+      } catch (err: any) {
+        console.error(`[${currentDateTime}] Error fetching pet details:`, err);
+
+        if (err.response?.status === 404) {
+          setError("Không tìm thấy bài đăng nhận nuôi này.");
+        } else if (err.response?.status === 403) {
+          setError("Bạn không có quyền truy cập bài đăng này.");
+        } else {
+          setError("Không thể tải thông tin thú cưng. Vui lòng thử lại sau.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchPetDetails();
-  }, [slug]); // Change dependency from 'id' to 'slug'
+  }, [postId]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
-      dateOfBirth: "",
-      email: "",
-      phone: "",
-      address: "",
-      livingArrangement: "Chung cư",
-      hasOtherPets: "Không",
-      hasPreviousPets: "Chưa",
-      previousExperience: "",
-      petCareKnowledge: "",
-      additionalInfo: "",
+      livingConditions: "",
+      experienceWithPets: "",
+      reasonForAdoption: "",
+      otherPets: "Không",
+      workSchedule: "",
+      familyMembers: "",
       termsAgreed: false,
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormData) => {
+    if (!adoptionPost) {
+      toast.error("Không tìm thấy thông tin bài đăng.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // Prepare payload for API
+      // Prepare payload exactly matching API specification
       const payload = {
-        fullName: data.fullName,
-        email: data.email,
-        phoneNumber: data.phone,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address,
-        livingArrangement: data.livingArrangement,
-        hasOtherPets: data.hasOtherPets,
-        hasPreviousPets: data.hasPreviousPets,
-        previousExperience: data.previousExperience || '',
-        petCareKnowledge: data.petCareKnowledge || '',
-        additionalInfo: data.additionalInfo || '',
-        petId: pet?.id, // ID của thú cưng từ API
-        petSlug: slug, // slug từ URL params
-      }
+        postId: adoptionPost.postId,
+        applicantUserId: userInfo.userId, // This should be set by backend based on auth token
+        applicationStatus: "Pending", // Default status for new applications
+        livingConditions: data.livingConditions,
+        experienceWithPets: data.experienceWithPets,
+        reasonForAdoption: data.reasonForAdoption,
+        otherPets: data.otherPets,
+        workSchedule: data.workSchedule,
+        familyMembers: data.familyMembers,
+      };
 
-      console.log('Submitting adoption application:', payload)
+      // Call adoption application API
+      const response = await userService.createAdoptionApplication(payload);
 
-      // Call API
-      const response = await userService.createAdoptionApplication(payload)
+      if (response.data && response.data.success) {
+        toast.success("Đơn đăng ký nhận nuôi đã được gửi thành công!");
 
-      if (response.data) {
-        toast.success('Đơn đăng ký nhận nuôi đã được gửi thành công!')
-
-        // Redirect to success page or pet detail page
-        navigate(`/pets/${slug}`, {
+        // Redirect back to pet detail page with success message
+        navigate(`/pets/${adoptionPost.postId}`, {
           state: {
-            message: 'Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.'
-          }
-        })
+            message:
+              "Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.",
+            applicationId: response.data.data?.applicationId,
+          },
+        });
+      } else {
+        throw new Error(
+          response.data?.message || "Failed to submit application"
+        );
       }
     } catch (error: any) {
-      console.error('Error submitting adoption application:', error)
+      console.error(
+        `[${currentDateTime}] Error submitting adoption application:`,
+        error
+      );
 
       // Handle different types of errors
       if (error.response?.data?.message) {
-        toast.error(error.response.data.message)
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 400) {
+        toast.error("Thông tin gửi không hợp lệ. Vui lòng kiểm tra lại.");
+      } else if (error.response?.status === 401) {
+        toast.error("Bạn cần đăng nhập để gửi đơn đăng ký.");
+        navigate("/login");
+      } else if (error.response?.status === 409) {
+        toast.error("Bạn đã gửi đơn đăng ký cho thú cưng này rồi.");
       } else if (error.message) {
-        toast.error(error.message)
+        toast.error(error.message);
       } else {
-        toast.error('Có lỗi xảy ra khi gửi đơn đăng ký. Vui lòng thử lại sau.')
+        toast.error("Có lỗi xảy ra khi gửi đơn đăng ký. Vui lòng thử lại sau.");
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   };
 
@@ -165,14 +246,14 @@ export default function AdoptionForm() {
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Làm quen với các bé", path: "/pets" },
-    { label: pet?.petName || "Thú cưng", path: `/pets/${pet?.slug || slug}` },
+    { label: pet?.petName || "Thú cưng", path: `/pets/${postId}` },
     { label: "Thủ tục nhận nuôi" },
   ];
 
-  // If we're still loading or there's an error, show appropriate UI
+  // Loading state
   if (loading) {
     return (
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <Breadcrumb
           items={[
             { label: "Trang chủ", path: "/" },
@@ -182,15 +263,22 @@ export default function AdoptionForm() {
           ]}
         />
         <div className="flex justify-center items-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Đang tải thông tin thú cưng...</p>
+            <p className="text-xs text-gray-500 mt-2">
+              User: {currentUserLogin} | {currentDateTime}
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <Breadcrumb
           items={[
             { label: "Trang chủ", path: "/" },
@@ -198,35 +286,40 @@ export default function AdoptionForm() {
           ]}
         />
         <div className="text-center py-16">
-          <p className="text-red-500">{error}</p>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={() => navigate("/pets")}
-          >
-            Quay lại danh sách thú cưng
-          </Button>
+          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-xs text-gray-500 mb-4">
+            User: {currentUserLogin} | {currentDateTime}
+          </p>
+          <div className="flex gap-2 justify-center">
+            <Button variant="outline" onClick={() => navigate("/pets")}>
+              Quay lại danh sách thú cưng
+            </Button>
+            <Button variant="blue" onClick={() => window.location.reload()}>
+              Thử lại
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Get pet image
+  const petImage =
+    pet?.imageUrls && pet.imageUrls.length > 0
+      ? pet.imageUrls[0]
+      : "/placeholder.svg?height=80&width=80";
+
   return (
     <div className="min-h-screen pb-10">
-      {/* Use dynamic Breadcrumb component */}
       <Breadcrumb items={breadcrumbItems} />
 
-      {/* Main content */}
-      <div className="container mx-auto ">
+      <div className="container mx-auto">
         <ContentHeader title="Thủ tục nhận nuôi" level="h1" />
 
-        {/* Pet Profile - Updated to use dynamic pet data */}
-        <div className="flex items-center gap-4 mb-8">
+        {/* Pet Profile */}
+        <div className="flex items-center gap-4 mb-8 p-4 rounded-lg">
           <Avatar className="h-20 w-20 border-2 border-white">
-            <AvatarImage
-              src={pet?.petImageUrls || "/placeholder.svg?height=80&width=80"}
-              alt={pet?.petName || "Thú cưng"}
-            />
+            <AvatarImage src={petImage} alt={pet?.petName || "Thú cưng"} />
             <AvatarFallback>
               {pet?.petName?.substring(0, 2) || "TC"}
             </AvatarFallback>
@@ -236,238 +329,257 @@ export default function AdoptionForm() {
             <div className="text-sm text-gray-600 space-y-1">
               <p>
                 {pet?.categoryName || "Thú cưng"} |{" "}
-                {pet?.age && pet.age < 12
-                  ? "Chưa trưởng thành"
-                  : "Trưởng thành"}{" "}
-                | {pet?.gender || "Không rõ"}
+                {pet?.breedName || "Không rõ giống"} |{" "}
+                {pet?.gender || "Không rõ"}
               </p>
               <p>
                 {pet?.isVaccinated ? "Đã tiêm phòng" : "Chưa tiêm phòng"} |{" "}
                 {pet?.personality || "Chưa có thông tin"}
               </p>
+              <p className="text-blue-600 font-medium">
+                Mã bài đăng: #{adoptionPost?.postId}
+              </p>
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Adopter Information */}
-          <div className="mb-8">
-            <ContentHeader title="Thông tin người nhận nuôi" level="h2" />
-            <p className="text-sm text-gray-500 mb-4">
-              Sử dụng thông tin tài khoản của bạn
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Họ và tên</Label>
-                <Input
-                  id="fullName"
-                  placeholder="Vd: Nguyễn Văn A"
-                  {...register("fullName")}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Living Conditions */}
+            <div>
+              <ContentHeader title="Điều kiện sống" level="h2" />
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="livingConditions"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Mô tả điều kiện sống hiện tại của bạn *
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Ví dụ: Nhà riêng 2 tầng có sân vườn rộng 100m2, khu vực an toàn, ít xe cộ qua lại..."
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Vui lòng mô tả chi tiết về nơi ở, không gian sống, và
+                        môi trường xung quanh.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="dateOfBirth">Ngày tháng năm sinh</Label>
-                <Input
-                  id="dateOfBirth"
-                  placeholder="26/04/2000"
-                  {...register("dateOfBirth")}
+                <FormField
+                  control={form.control}
+                  name="familyMembers"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thành viên trong gia đình *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Ví dụ: Gia đình 4 người gồm vợ chồng và 2 con nhỏ (5 và 8 tuổi). Tất cả đều yêu thích động vật. Bà ngoại 65 tuổi cũng sống cùng và rất thích chó mèo..."
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Mô tả về số lượng thành viên, độ tuổi, và thái độ của họ
+                        với thú cưng.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Vd: nguyenvana@gmail.com"
-                  {...register("email")}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Số điện thoại</Label>
-                <Input
-                  id="phone"
-                  placeholder="Vd: 09x xxx xxxx"
-                  {...register("phone")}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* New Home Information */}
-          <div className="mb-8">
-            <ContentHeader title="Thông tin nhà mới của bé" level="h2" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="address">Địa chỉ</Label>
-                <Input
-                  id="address"
-                  placeholder="Vd: Số 02, Đường Thái Phiên, Bình Hòa, Nhà Trang"
-                  {...register("address")}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="livingArrangement">Loại nhà</Label>
-                <Select defaultValue="Chung cư">
-                  <SelectTrigger id="livingArrangement" size="sm">
-                    <SelectValue placeholder="Chọn loại nhà" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Chung cư">Chung cư</SelectItem>
-                    <SelectItem value="Nhà riêng">Nhà riêng</SelectItem>
-                    <SelectItem value="Biệt thự">Biệt thự</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Label className="mb-2 block">
-                Nhà bạn hiện tại có sẵn vật/thú cưng nào không?
-              </Label>
-              <RadioGroup defaultValue="Không" className="flex gap-6">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    value="Có"
-                    id="hasPets-yes"
-                    {...register("hasOtherPets")}
-                  />
-                  <Label htmlFor="hasPets-yes">Có</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    value="Không"
-                    id="hasPets-no"
-                    {...register("hasOtherPets")}
-                  />
-                  <Label htmlFor="hasPets-no">Không</Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
-
-          {/* Pet Care Experience */}
-          <div className="mb-8">
-            <ContentHeader title="Kinh nghiệm nuôi thú cưng" level="h2" />
-
-            <div className="mb-4">
-              <Label className="mb-2 block">
-                Bạn từng nuôi thú cưng trước đây chưa?
-              </Label>
-              <RadioGroup defaultValue="Chưa" className="flex gap-6">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    value="Rồi"
-                    id="experience-yes"
-                    {...register("hasPreviousPets")}
-                  />
-                  <Label htmlFor="experience-yes">Rồi</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem
-                    value="Chưa"
-                    id="experience-no"
-                    {...register("hasPreviousPets")}
-                  />
-                  <Label htmlFor="experience-no">Chưa</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="space-y-2">
-                <Label htmlFor="previousExperience">
-                  Bạn có đang nuôi thú cưng không?
-                </Label>
-                <Textarea
-                  id="previousExperience"
-                  placeholder="Nếu có, bạn vui lòng mô tả (có ai giúp chăm mình không...)"
-                  className="min-h-[100px]"
-                  {...register("previousExperience")}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="petCareKnowledge">
-                  Bạn đã chuẩn bị hay có kiến thức gì về việc giúp nuôi chúa?
-                </Label>
-                <Textarea
-                  id="petCareKnowledge"
-                  placeholder="Nếu có, bạn vui lòng mô tả (có ai giúp chăm mình không...)"
-                  className="min-h-[100px]"
-                  {...register("petCareKnowledge")}
+                <FormField
+                  control={form.control}
+                  name="workSchedule"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Lịch làm việc và thời gian chăm sóc thú cưng *
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Ví dụ: Làm việc 8h-17h từ thứ 2-6, làm việc tại nhà 2-3 ngày/tuần. Cuối tuần hoàn toàn rảnh. Có thể dành 3-4 giờ/ngày để chăm sóc và vui chơi với thú cưng..."
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Mô tả lịch làm việc của bạn và thời gian có thể dành cho
+                        việc chăm sóc thú cưng.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
             </div>
 
-            <div className="space-y-2 mb-6">
-              <Label htmlFor="additionalInfo">
-                Bạn có thể chia sẻ lý do bạn muốn nuôi bé không?
-              </Label>
-              <Textarea
-                id="additionalInfo"
-                placeholder="Nếu có, bạn vui lòng mô tả (có ai giúp chăm mình không...)"
-                className="min-h-[100px]"
-                {...register("additionalInfo")}
+            {/* Pet Experience and Other Pets */}
+            <div>
+              <ContentHeader
+                title="Kinh nghiệm và thú cưng hiện tại"
+                level="h2"
+              />
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="experienceWithPets"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kinh nghiệm nuôi thú cưng của bạn *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Ví dụ: Đã nuôi chó 5 năm từ khi còn con. Có kinh nghiệm chăm sóc chó bị ốm, biết cách huấn luyện cơ bản, đã từng cứu chữa và nuôi dưỡng chó mèo bị bỏ rơi..."
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Chia sẻ về kinh nghiệm nuôi dưỡng, chăm sóc, và huấn
+                        luyện thú cưng.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="otherPets"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>
+                        Hiện tại bạn có nuôi thú cưng khác không? *
+                      </FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex gap-6"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Có" id="other-pets-yes" />
+                            <Label htmlFor="other-pets-yes">Có</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Không" id="other-pets-no" />
+                            <Label htmlFor="other-pets-no">Không</Label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormDescription>
+                        Thông tin này giúp chúng tôi hiểu về môi trường sống
+                        hiện tại.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="reasonForAdoption"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Lý do bạn muốn nhận nuôi thú cưng này *
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Ví dụ: Muốn có bạn đồng hành cho con trai 8 tuổi, giúp bé học cách yêu thương và chăm sóc động vật. Gia đình đã chuẩn bị đầy đủ không gian và kinh phí để chăm sóc..."
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Chia sẻ động lực và mục đích của bạn khi muốn nhận nuôi
+                        thú cưng này.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Commitment */}
+            <div>
+              <ContentHeader title="Cam kết chăm sóc" level="h2" />
+              <div className="py-6  rounded-lg mb-4">
+                <p className="text-sm mb-3 font-medium">
+                  Khi gửi đơn này, tôi cam kết:
+                </p>
+                <ol className="list-decimal pl-6 space-y-2 text-sm">
+                  <li>
+                    Chăm sóc thú cưng đúng cách, đảm bảo dinh dưỡng và chăm sóc
+                    y tế
+                  </li>
+                  <li>
+                    Tạo môi trường sống an toàn và yêu thương cho thú cưng
+                  </li>
+                  <li>
+                    Không bỏ rơi hoặc chuyển nhượng thú cưng cho người khác mà
+                    không thông báo
+                  </li>
+                  <li>
+                    Chấp nhận việc tổ chức/người gửi thăm kiểm tra tình hình
+                    chăm sóc
+                  </li>
+                  <li>
+                    Thông báo ngay nếu có vấn đề về sức khỏe hoặc hành vi của
+                    thú cưng
+                  </li>
+                </ol>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="termsAgreed"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-sm">
+                        Tôi xác nhận đã đọc và đồng ý với tất cả điều khoản nhận
+                        nuôi *
+                      </FormLabel>
+                      <FormDescription>
+                        Bạn cần đồng ý với các điều khoản trên để tiếp tục.
+                      </FormDescription>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div className="rounded-md  mb-4">
-              <p className="text-sm mb-2">
-                Khi đến nay được gửi đi, cũng đồng là gửi thêm vào đi cùng bạn
-                có thể nuôi, những vấn đề buộc khi đến sẽ có nhà.
-              </p>
+            {/* Submit Button */}
+            <div className="flex justify-center pt-6">
+              <Button
+                type="submit"
+                variant="blue"
+                size="lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? "Đang gửi đơn..."
+                  : "Hoàn tất và gửi đơn nhận nuôi"}
+              </Button>
             </div>
-          </div>
-
-          {/* Commitment */}
-          <div className="mb-8">
-            <ContentHeader title="Cam kết chăm sóc thú cưng" level="h2" />
-
-            <div className="p-6 rounded-lg  mb-4">
-              <p className="text-sm mb-3">Khi quá đơn này tôi cam kết:</p>
-              <ol className="list-decimal pl-6 space-y-2 text-sm">
-                <li>Chăm sóc đúng cách, đảm bảo dinh dưỡng và khỏe đời y tế</li>
-                <li>
-                  Tạo môi trường thoáng an toàn và yêu thương cho thú cưng
-                </li>
-                <li>
-                  Không để bé hoặc đau thú cưng cho người khác mà không thông
-                  báo
-                </li>
-                <li>
-                  Chấp nhận và học các quy tắc thăm kiểm tra từ tổ chức trạm cứu
-                  hộ
-                </li>
-              </ol>
-            </div>
-
-            <div className="flex items-start space-x-2">
-              <Checkbox id="termsAgreed" {...register("termsAgreed")} />
-              <Label htmlFor="termsAgreed" className="text-sm">
-                Tôi xác nhận đã đọc và đồng ý với tất cả điều khoản nhận nuôi
-              </Label>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <Button
-              type="submit"
-              variant="blue"
-              shape="default"
-              animation="none"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Đang gửi đơn..." : "Hoàn tất và gửi đơn nhận nuôi"}
-            </Button>
-          </div>
-        </form>
+          </form>
+        </Form>
       </div>
     </div>
   );

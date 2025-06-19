@@ -39,11 +39,11 @@ const columns: ColumnDef<VerifyPet>[] = [
             const pet = row.original
             return (
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 rounded-xl">
+                    <Avatar className="h-14 w-14 rounded-xl">
                         <AvatarImage
                             src={pet.petImageUrls || "/placeholder.svg"}
                             alt={pet.petName}
-                            className="w-12 h-12 rounded-xl object-cover border-2 border-gray-200"
+                            className="w-14 h-14 rounded-xl object-cover border-2 border-gray-200"
                         />
                         <AvatarFallback className="w-12 h-12 rounded-xl object-cover border-2 border-gray-200">
                             {pet.petName.charAt(0)}
