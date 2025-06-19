@@ -22,16 +22,17 @@ import ROUTES from "@/constants/routes";
 import { useSelector } from "react-redux";
 import { selectorAuth } from "@/store/modules/auth/selector";
 import AvatarUploadDialog from "./AvatarUpload";
+import { userService } from "@/services/userService";
 
 export default function ProfilePage() {
+  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
   const [activeTab, setActiveTab] = useState("personal-info");
-  const [readyToAdopt, setReadyToAdopt] = useState(true);
+  const [readyToAdopt, setReadyToAdopt] = useState(userInfo.isReadyToAdopt);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [pendingAdoptState, setPendingAdoptState] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState("");
   const navigate = useNavigate();
-  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
 
   // Initialize current avatar from userInfo
   useState(() => {
@@ -41,9 +42,16 @@ export default function ProfilePage() {
   });
 
   // Handle switch toggle with confirmation
-  const handleToggleAdoptionStatus = (newStatus: boolean) => {
+  const handleToggleAdoptionStatus = async (newStatus: boolean) => {
     setPendingAdoptState(newStatus);
     setShowConfirmDialog(true);
+    const payload = {
+      userId: userInfo.userId,
+      isReadyToAdopt: newStatus
+    }
+    if (userInfo.userId) {
+      await userService.updateAvatarProfile(userInfo.userId, payload)
+    }
   };
 
   // Handle confirmation dialog result
