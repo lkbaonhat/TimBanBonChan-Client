@@ -21,6 +21,7 @@ const ROUTES = {
     PROFILE: "/profile",
     ADD_PET: "/profile/add-pet", // New route for adding a pet
     UPDATE_PET: "/profile/pets/:id", // New route for updating pet info
+    VERIFY_ADOPTER: "/verify-adopter", // New route for adopter verification
   },
   STAFF: {
     HOME: '/staff',

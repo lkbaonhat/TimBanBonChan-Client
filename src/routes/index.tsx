@@ -7,7 +7,7 @@ import StaffRoutes from "./StaffRoutes";
 import PrivateRoute from "@/components/Auth/PrivateRoutes";
 import PublicRoute from "@/components/Auth/PublicRoutes";
 //* Layouts
-const DefaultLayout = lazy(() => import("@layouts/DefaultLayout"))
+const DefaultLayout = lazy(() => import("@layouts/DefaultLayout"));
 const Home = lazy(() => import("@pages/Home"));
 const VolunteerPage = lazy(() => import("@pages/Volunteer"));
 const VolunteerForm = lazy(
@@ -23,6 +23,9 @@ const ListPets = lazy(() => import("@pages/ListPets"));
 const PetDetail = lazy(() => import("@/pages/ListPets/PetDetail"));
 const AdoptionForm = lazy(() => import("@/pages/ListPets/AdoptionForm"));
 const ListClinics = lazy(() => import("@/pages/PetCare/ListClinics"));
+const AdopterVerificationForm = lazy(
+  () => import("@/pages/Profile/VerifyAdopterForm/index")
+);
 import FindNewHome from "@/pages/FindNewHome";
 import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
 import VetClinicProfile from "@/pages/PetCare/ClinicDetail";
@@ -38,14 +41,16 @@ const RouterComponent = () => {
   const router = createBrowserRouter([
     //* PUBLIC routes
     {
-      path: '*',
-      element: <NotFound />
+      path: "*",
+      element: <NotFound />,
     },
     {
       element: <DefaultLayout />,
       children: [
         {
-          index: true, path: ROUTES.PUBLIC.HOME, element: <Home />
+          index: true,
+          path: ROUTES.PUBLIC.HOME,
+          element: <Home />,
         },
         { path: ROUTES.PUBLIC.COMMUNITY, element: <CommunityPage /> },
         { path: ROUTES.PUBLIC.VOLUNTEER, element: <VolunteerPage /> },
@@ -71,7 +76,7 @@ const RouterComponent = () => {
     //* AUTH routes *\
     {
       element: <PublicRoute />,
-      children: [...AuthRoutes]
+      children: [...AuthRoutes],
     },
     //**** PRIVATE routes ****
     {
@@ -91,8 +96,12 @@ const RouterComponent = () => {
           element: <DefaultLayout />,
           children: [
             { path: ROUTES.PUBLIC.VOLUNTEER_FORM, element: <VolunteerForm /> },
-          ]
-        }
+            {
+              path: ROUTES.PUBLIC.VERIFY_ADOPTER,
+              element: <AdopterVerificationForm />,
+            },
+          ],
+        },
       ],
     },
   ]);
@@ -101,7 +110,7 @@ const RouterComponent = () => {
     <Suspense fallback={<LoadingPage />}>
       <RouterProvider router={router} />
     </Suspense>
-  )
+  );
 };
 
 export default RouterComponent;
