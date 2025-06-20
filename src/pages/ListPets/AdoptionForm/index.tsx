@@ -28,12 +28,25 @@ import { selectorAuth } from "@/store/modules/auth/selector";
 
 // Updated form schema to match API fields
 const formSchema = z.object({
-  livingConditions: z.string().min(10, { message: "Vui lòng mô tả chi tiết điều kiện sống (ít nhất 10 ký tự)" }),
-  experienceWithPets: z.string().min(10, { message: "Vui lòng mô tả kinh nghiệm nuôi thú cưng (ít nhất 10 ký tự)" }),
-  reasonForAdoption: z.string().min(10, { message: "Vui lòng chia sẻ lý do nhận nuôi (ít nhất 10 ký tự)" }),
-  otherPets: z.string().min(1, { message: "Vui lòng chọn có hay không có thú cưng khác" }),
-  workSchedule: z.string().min(10, { message: "Vui lòng mô tả lịch làm việc và thời gian chăm sóc (ít nhất 10 ký tự)" }),
-  familyMembers: z.string().min(10, { message: "Vui lòng mô tả thành viên gia đình (ít nhất 10 ký tự)" }),
+  livingConditions: z.string().min(10, {
+    message: "Vui lòng mô tả chi tiết điều kiện sống (ít nhất 10 ký tự)",
+  }),
+  experienceWithPets: z.string().min(10, {
+    message: "Vui lòng mô tả kinh nghiệm nuôi thú cưng (ít nhất 10 ký tự)",
+  }),
+  reasonForAdoption: z.string().min(10, {
+    message: "Vui lòng chia sẻ lý do nhận nuôi (ít nhất 10 ký tự)",
+  }),
+  otherPets: z
+    .string()
+    .min(1, { message: "Vui lòng chọn có hay không có thú cưng khác" }),
+  workSchedule: z.string().min(10, {
+    message:
+      "Vui lòng mô tả lịch làm việc và thời gian chăm sóc (ít nhất 10 ký tự)",
+  }),
+  familyMembers: z.string().min(10, {
+    message: "Vui lòng mô tả thành viên gia đình (ít nhất 10 ký tự)",
+  }),
   termsAgreed: z.boolean().refine((val) => val === true, {
     message: "Bạn phải đồng ý với điều khoản",
   }),
@@ -120,7 +133,11 @@ export default function AdoptionForm() {
         let postData;
         if (response.data && response.data.data) {
           postData = response.data.data;
-        } else if (response.data && typeof response.data === "object" && "postId" in response.data) {
+        } else if (
+          response.data &&
+          typeof response.data === "object" &&
+          "postId" in response.data
+        ) {
           postData = response.data;
         } else {
           throw new Error("Invalid adoption post data received");
@@ -128,7 +145,6 @@ export default function AdoptionForm() {
 
         setAdoptionPost(postData);
         setPet(postData.pet);
-
       } catch (err: any) {
         console.error(`[${currentDateTime}] Error fetching pet details:`, err);
 
@@ -161,7 +177,6 @@ export default function AdoptionForm() {
   });
 
   const onSubmit = async (data: FormData) => {
-
     if (!adoptionPost) {
       toast.error("Không tìm thấy thông tin bài đăng.");
       return;
@@ -169,7 +184,6 @@ export default function AdoptionForm() {
 
     setIsSubmitting(true);
     try {
-
       // Prepare payload exactly matching API specification
       const payload = {
         postId: adoptionPost.postId,
@@ -187,35 +201,41 @@ export default function AdoptionForm() {
       const response = await userService.createAdoptionApplication(payload);
 
       if (response.data && response.data.success) {
-        toast.success('Đơn đăng ký nhận nuôi đã được gửi thành công!');
+        toast.success("Đơn đăng ký nhận nuôi đã được gửi thành công!");
 
         // Redirect back to pet detail page with success message
         navigate(`/pets/${adoptionPost.postId}`, {
           state: {
-            message: 'Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.',
-            applicationId: response.data.data?.applicationId
-          }
+            message:
+              "Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.",
+            applicationId: response.data.data?.applicationId,
+          },
         });
       } else {
-        throw new Error(response.data?.message || 'Failed to submit application');
+        throw new Error(
+          response.data?.message || "Failed to submit application"
+        );
       }
     } catch (error: any) {
-      console.error(`[${currentDateTime}] Error submitting adoption application:`, error);
+      console.error(
+        `[${currentDateTime}] Error submitting adoption application:`,
+        error
+      );
 
       // Handle different types of errors
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else if (error.response?.status === 400) {
-        toast.error('Thông tin gửi không hợp lệ. Vui lòng kiểm tra lại.');
+        toast.error("Thông tin gửi không hợp lệ. Vui lòng kiểm tra lại.");
       } else if (error.response?.status === 401) {
-        toast.error('Bạn cần đăng nhập để gửi đơn đăng ký.');
-        navigate('/login');
+        toast.error("Bạn cần đăng nhập để gửi đơn đăng ký.");
+        navigate("/login");
       } else if (error.response?.status === 409) {
-        toast.error('Bạn đã gửi đơn đăng ký cho thú cưng này rồi.');
+        toast.error("Bạn đã gửi đơn đăng ký cho thú cưng này rồi.");
       } else if (error.message) {
         toast.error(error.message);
       } else {
-        toast.error('Có lỗi xảy ra khi gửi đơn đăng ký. Vui lòng thử lại sau.');
+        toast.error("Có lỗi xảy ra khi gửi đơn đăng ký. Vui lòng thử lại sau.");
       }
     } finally {
       setIsSubmitting(false);
@@ -246,7 +266,9 @@ export default function AdoptionForm() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-gray-600">Đang tải thông tin thú cưng...</p>
-            <p className="text-xs text-gray-500 mt-2">User: {currentUserLogin} | {currentDateTime}</p>
+            <p className="text-xs text-gray-500 mt-2">
+              User: {currentUserLogin} | {currentDateTime}
+            </p>
           </div>
         </div>
       </div>
@@ -265,18 +287,14 @@ export default function AdoptionForm() {
         />
         <div className="text-center py-16">
           <p className="text-red-500 mb-4">{error}</p>
-          <p className="text-xs text-gray-500 mb-4">User: {currentUserLogin} | {currentDateTime}</p>
+          <p className="text-xs text-gray-500 mb-4">
+            User: {currentUserLogin} | {currentDateTime}
+          </p>
           <div className="flex gap-2 justify-center">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/pets")}
-            >
+            <Button variant="outline" onClick={() => navigate("/pets")}>
               Quay lại danh sách thú cưng
             </Button>
-            <Button
-              variant="blue"
-              onClick={() => window.location.reload()}
-            >
+            <Button variant="blue" onClick={() => window.location.reload()}>
               Thử lại
             </Button>
           </div>
@@ -286,24 +304,22 @@ export default function AdoptionForm() {
   }
 
   // Get pet image
-  const petImage = pet?.imageUrls && pet.imageUrls.length > 0
-    ? pet.imageUrls[0]
-    : "/placeholder.svg?height=80&width=80";
+  const petImage =
+    pet?.imageUrls && pet.imageUrls.length > 0
+      ? pet.imageUrls[0]
+      : "/placeholder.svg?height=80&width=80";
 
   return (
     <div className="min-h-screen pb-10">
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <ContentHeader title="Thủ tục nhận nuôi" level="h1" />
 
         {/* Pet Profile */}
-        <div className="flex items-center gap-4 mb-8 p-4 bg-blue-50 rounded-lg">
+        <div className="flex items-center gap-4 mb-8 p-4 rounded-lg">
           <Avatar className="h-20 w-20 border-2 border-white">
-            <AvatarImage
-              src={petImage}
-              alt={pet?.petName || "Thú cưng"}
-            />
+            <AvatarImage src={petImage} alt={pet?.petName || "Thú cưng"} />
             <AvatarFallback>
               {pet?.petName?.substring(0, 2) || "TC"}
             </AvatarFallback>
@@ -312,10 +328,13 @@ export default function AdoptionForm() {
             <h2 className="text-xl font-bold">{pet?.petName || "Thú cưng"}</h2>
             <div className="text-sm text-gray-600 space-y-1">
               <p>
-                {pet?.categoryName || "Thú cưng"} | {pet?.breedName || "Không rõ giống"} | {pet?.gender || "Không rõ"}
+                {pet?.categoryName || "Thú cưng"} |{" "}
+                {pet?.breedName || "Không rõ giống"} |{" "}
+                {pet?.gender || "Không rõ"}
               </p>
               <p>
-                {pet?.isVaccinated ? "Đã tiêm phòng" : "Chưa tiêm phòng"} | {pet?.personality || "Chưa có thông tin"}
+                {pet?.isVaccinated ? "Đã tiêm phòng" : "Chưa tiêm phòng"} |{" "}
+                {pet?.personality || "Chưa có thông tin"}
               </p>
               <p className="text-blue-600 font-medium">
                 Mã bài đăng: #{adoptionPost?.postId}
@@ -335,7 +354,9 @@ export default function AdoptionForm() {
                   name="livingConditions"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mô tả điều kiện sống hiện tại của bạn *</FormLabel>
+                      <FormLabel>
+                        Mô tả điều kiện sống hiện tại của bạn *
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Ví dụ: Nhà riêng 2 tầng có sân vườn rộng 100m2, khu vực an toàn, ít xe cộ qua lại..."
@@ -344,7 +365,8 @@ export default function AdoptionForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Vui lòng mô tả chi tiết về nơi ở, không gian sống, và môi trường xung quanh.
+                        Vui lòng mô tả chi tiết về nơi ở, không gian sống, và
+                        môi trường xung quanh.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -365,7 +387,8 @@ export default function AdoptionForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Mô tả về số lượng thành viên, độ tuổi, và thái độ của họ với thú cưng.
+                        Mô tả về số lượng thành viên, độ tuổi, và thái độ của họ
+                        với thú cưng.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -377,7 +400,9 @@ export default function AdoptionForm() {
                   name="workSchedule"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Lịch làm việc và thời gian chăm sóc thú cưng *</FormLabel>
+                      <FormLabel>
+                        Lịch làm việc và thời gian chăm sóc thú cưng *
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Ví dụ: Làm việc 8h-17h từ thứ 2-6, làm việc tại nhà 2-3 ngày/tuần. Cuối tuần hoàn toàn rảnh. Có thể dành 3-4 giờ/ngày để chăm sóc và vui chơi với thú cưng..."
@@ -386,7 +411,8 @@ export default function AdoptionForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Mô tả lịch làm việc của bạn và thời gian có thể dành cho việc chăm sóc thú cưng.
+                        Mô tả lịch làm việc của bạn và thời gian có thể dành cho
+                        việc chăm sóc thú cưng.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -397,7 +423,10 @@ export default function AdoptionForm() {
 
             {/* Pet Experience and Other Pets */}
             <div>
-              <ContentHeader title="Kinh nghiệm và thú cưng hiện tại" level="h2" />
+              <ContentHeader
+                title="Kinh nghiệm và thú cưng hiện tại"
+                level="h2"
+              />
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -413,7 +442,8 @@ export default function AdoptionForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Chia sẻ về kinh nghiệm nuôi dưỡng, chăm sóc, và huấn luyện thú cưng.
+                        Chia sẻ về kinh nghiệm nuôi dưỡng, chăm sóc, và huấn
+                        luyện thú cưng.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -425,7 +455,9 @@ export default function AdoptionForm() {
                   name="otherPets"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>Hiện tại bạn có nuôi thú cưng khác không? *</FormLabel>
+                      <FormLabel>
+                        Hiện tại bạn có nuôi thú cưng khác không? *
+                      </FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -443,7 +475,8 @@ export default function AdoptionForm() {
                         </RadioGroup>
                       </FormControl>
                       <FormDescription>
-                        Thông tin này giúp chúng tôi hiểu về môi trường sống hiện tại.
+                        Thông tin này giúp chúng tôi hiểu về môi trường sống
+                        hiện tại.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -455,7 +488,9 @@ export default function AdoptionForm() {
                   name="reasonForAdoption"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Lý do bạn muốn nhận nuôi thú cưng này *</FormLabel>
+                      <FormLabel>
+                        Lý do bạn muốn nhận nuôi thú cưng này *
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Ví dụ: Muốn có bạn đồng hành cho con trai 8 tuổi, giúp bé học cách yêu thương và chăm sóc động vật. Gia đình đã chuẩn bị đầy đủ không gian và kinh phí để chăm sóc..."
@@ -464,7 +499,8 @@ export default function AdoptionForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Chia sẻ động lực và mục đích của bạn khi muốn nhận nuôi thú cưng này.
+                        Chia sẻ động lực và mục đích của bạn khi muốn nhận nuôi
+                        thú cưng này.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -476,14 +512,30 @@ export default function AdoptionForm() {
             {/* Commitment */}
             <div>
               <ContentHeader title="Cam kết chăm sóc" level="h2" />
-              <div className="p-6 bg-yellow-50 rounded-lg mb-4">
-                <p className="text-sm mb-3 font-medium">Khi gửi đơn này, tôi cam kết:</p>
+              <div className="py-6  rounded-lg mb-4">
+                <p className="text-sm mb-3 font-medium">
+                  Khi gửi đơn này, tôi cam kết:
+                </p>
                 <ol className="list-decimal pl-6 space-y-2 text-sm">
-                  <li>Chăm sóc thú cưng đúng cách, đảm bảo dinh dưỡng và chăm sóc y tế</li>
-                  <li>Tạo môi trường sống an toàn và yêu thương cho thú cưng</li>
-                  <li>Không bỏ rơi hoặc chuyển nhượng thú cưng cho người khác mà không thông báo</li>
-                  <li>Chấp nhận việc tổ chức/người gửi thăm kiểm tra tình hình chăm sóc</li>
-                  <li>Thông báo ngay nếu có vấn đề về sức khỏe hoặc hành vi của thú cưng</li>
+                  <li>
+                    Chăm sóc thú cưng đúng cách, đảm bảo dinh dưỡng và chăm sóc
+                    y tế
+                  </li>
+                  <li>
+                    Tạo môi trường sống an toàn và yêu thương cho thú cưng
+                  </li>
+                  <li>
+                    Không bỏ rơi hoặc chuyển nhượng thú cưng cho người khác mà
+                    không thông báo
+                  </li>
+                  <li>
+                    Chấp nhận việc tổ chức/người gửi thăm kiểm tra tình hình
+                    chăm sóc
+                  </li>
+                  <li>
+                    Thông báo ngay nếu có vấn đề về sức khỏe hoặc hành vi của
+                    thú cưng
+                  </li>
                 </ol>
               </div>
 
@@ -500,7 +552,8 @@ export default function AdoptionForm() {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel className="text-sm">
-                        Tôi xác nhận đã đọc và đồng ý với tất cả điều khoản nhận nuôi *
+                        Tôi xác nhận đã đọc và đồng ý với tất cả điều khoản nhận
+                        nuôi *
                       </FormLabel>
                       <FormDescription>
                         Bạn cần đồng ý với các điều khoản trên để tiếp tục.
@@ -520,7 +573,9 @@ export default function AdoptionForm() {
                 size="lg"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Đang gửi đơn..." : "Hoàn tất và gửi đơn nhận nuôi"}
+                {isSubmitting
+                  ? "Đang gửi đơn..."
+                  : "Hoàn tất và gửi đơn nhận nuôi"}
               </Button>
             </div>
           </form>

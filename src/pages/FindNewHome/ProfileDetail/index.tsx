@@ -118,10 +118,10 @@ export default function ProfileDetail() {
   const getRoleDisplay = (role: string): string => {
     const roleMap: { [key: string]: string } = {
       "Pet Foster": "Người nuôi dưỡng",
-      "Volunteer": "Tình nguyện viên",
-      "Guest": "Khách",
-      "Staff": "Nhân viên",
-      "Admin": "Quản trị viên"
+      Volunteer: "Tình nguyện viên",
+      Guest: "Khách",
+      Staff: "Nhân viên",
+      Admin: "Quản trị viên",
     };
     return roleMap[role] || role;
   };
@@ -134,7 +134,10 @@ export default function ProfileDetail() {
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
 
@@ -145,7 +148,7 @@ export default function ProfileDetail() {
   const formatDate = (dateString: string): string => {
     if (!dateString) return "Chưa cập nhật";
     const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
+    return date.toLocaleDateString("vi-VN");
   };
 
   // Mock data for pets and adoption history (since API might not provide this)
@@ -212,7 +215,7 @@ export default function ProfileDetail() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!id) {
-        setError('ID người dùng không hợp lệ');
+        setError("ID người dùng không hợp lệ");
         setLoading(false);
         return;
       }
@@ -223,23 +226,30 @@ export default function ProfileDetail() {
 
         let response: AxiosResponse<ApiResponse>;
 
-        if (id) { // Assuming current user ID is 6 based on your data
+        if (id) {
+          // Assuming current user ID is 6 based on your data
           response = await userService.getSelfInfo(id);
         } else {
           // For other users, you might need a different API call
           // This is a placeholder - replace with actual API call
-          throw new Error('Cannot fetch other users profile yet - API method needed');
+          throw new Error(
+            "Cannot fetch other users profile yet - API method needed"
+          );
         }
 
         const apiResponse = response.data;
 
         if (!apiResponse.success) {
-          throw new Error(apiResponse.message || 'Failed to fetch user profile');
+          throw new Error(
+            apiResponse.message || "Failed to fetch user profile"
+          );
         }
 
         const userData = apiResponse.data;
         const primaryRole = getPrimaryRole(userData.roles);
-        const secondaryRoles = userData.roles.filter(role => role !== primaryRole);
+        const secondaryRoles = userData.roles.filter(
+          (role) => role !== primaryRole
+        );
         const isCurrentUser = userData.username === currentUserLogin;
 
         // Transform API data to match our component's expected structure
@@ -249,15 +259,21 @@ export default function ProfileDetail() {
           fullName: userData.fullName || userData.username,
           username: userData.username,
           role: getRoleDisplay(primaryRole),
-          secondaryRole: secondaryRoles.length > 0 ? getRoleDisplay(secondaryRoles[0]) : undefined,
-          birthDate: userData.dateOfBirth ? formatDate(userData.dateOfBirth) : "Chưa cập nhật",
+          secondaryRole:
+            secondaryRoles.length > 0
+              ? getRoleDisplay(secondaryRoles[0])
+              : undefined,
+          birthDate: userData.dateOfBirth
+            ? formatDate(userData.dateOfBirth)
+            : "Chưa cập nhật",
           email: userData.email,
           phone: userData.phoneNumber || "Chưa cập nhật",
           address: userData.address || userData.city || "Chưa cập nhật",
           occupation: userData.occupation || "Chưa cập nhật",
           bio: userData.bio || "Chưa có thông tin giới thiệu",
           interests: userData.interests || "Chưa cập nhật sở thích",
-          imageUrl: userData.profilePicture || "/placeholder.svg?height=200&width=200",
+          imageUrl:
+            userData.profilePicture || "/placeholder.svg?height=200&width=200",
           isVerified: userData.isVerified,
           roles: userData.roles,
           currentPets: mockCurrentPets, // Use mock data for now
@@ -267,9 +283,8 @@ export default function ProfileDetail() {
         };
 
         setUserProfile(transformedProfile);
-
       } catch (err: any) {
-        console.error('Error fetching user profile:', err);
+        console.error("Error fetching user profile:", err);
 
         // Handle different types of axios errors
         if (err.response) {
@@ -277,20 +292,22 @@ export default function ProfileDetail() {
           const data = err.response.data;
 
           if (status === 401) {
-            setError('Bạn cần đăng nhập để xem thông tin này.');
+            setError("Bạn cần đăng nhập để xem thông tin này.");
           } else if (status === 403) {
-            setError('Bạn không có quyền truy cập thông tin này.');
+            setError("Bạn không có quyền truy cập thông tin này.");
           } else if (status === 404) {
-            setError('Không tìm thấy thông tin người dùng.');
+            setError("Không tìm thấy thông tin người dùng.");
           } else if (status >= 500) {
-            setError('Lỗi server. Vui lòng thử lại sau.');
+            setError("Lỗi server. Vui lòng thử lại sau.");
           } else {
             setError(data?.message || `Lỗi HTTP ${status}`);
           }
         } else if (err.request) {
-          setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+          setError(
+            "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+          );
         } else {
-          setError(err.message || 'Đã xảy ra lỗi không xác định.');
+          setError(err.message || "Đã xảy ra lỗi không xác định.");
         }
       } finally {
         setLoading(false);
@@ -323,18 +340,22 @@ export default function ProfileDetail() {
       if (id) {
         response = await userService.getSelfInfo(id);
       } else {
-        throw new Error('Cannot fetch other users profile yet - API method needed');
+        throw new Error(
+          "Cannot fetch other users profile yet - API method needed"
+        );
       }
 
       const apiResponse = response.data;
 
       if (!apiResponse.success) {
-        throw new Error(apiResponse.message || 'Failed to fetch user profile');
+        throw new Error(apiResponse.message || "Failed to fetch user profile");
       }
 
       const userData = apiResponse.data;
       const primaryRole = getPrimaryRole(userData.roles);
-      const secondaryRoles = userData.roles.filter(role => role !== primaryRole);
+      const secondaryRoles = userData.roles.filter(
+        (role) => role !== primaryRole
+      );
       const isCurrentUser = userData.username === currentUserLogin;
 
       const transformedProfile: UserProfile = {
@@ -343,15 +364,21 @@ export default function ProfileDetail() {
         fullName: userData.fullName || userData.username,
         username: userData.username,
         role: getRoleDisplay(primaryRole),
-        secondaryRole: secondaryRoles.length > 0 ? getRoleDisplay(secondaryRoles[0]) : undefined,
-        birthDate: userData.dateOfBirth ? formatDate(userData.dateOfBirth) : "Chưa cập nhật",
+        secondaryRole:
+          secondaryRoles.length > 0
+            ? getRoleDisplay(secondaryRoles[0])
+            : undefined,
+        birthDate: userData.dateOfBirth
+          ? formatDate(userData.dateOfBirth)
+          : "Chưa cập nhật",
         email: userData.email,
         phone: userData.phoneNumber || "Chưa cập nhật",
         address: userData.address || userData.city || "Chưa cập nhật",
         occupation: userData.occupation || "Chưa cập nhật",
         bio: userData.bio || "Chưa có thông tin giới thiệu",
         interests: userData.interests || "Chưa cập nhật sở thích",
-        imageUrl: userData.profilePicture || "/placeholder.svg?height=200&width=200",
+        imageUrl:
+          userData.profilePicture || "/placeholder.svg?height=200&width=200",
         isVerified: userData.isVerified,
         roles: userData.roles,
         currentPets: mockCurrentPets,
@@ -361,10 +388,9 @@ export default function ProfileDetail() {
       };
 
       setUserProfile(transformedProfile);
-
     } catch (err: any) {
-      console.error('Retry error:', err);
-      setError(err.message || 'Thử lại không thành công');
+      console.error("Retry error:", err);
+      setError(err.message || "Thử lại không thành công");
     } finally {
       setLoading(false);
     }
@@ -385,7 +411,9 @@ export default function ProfileDetail() {
           <div className="flex justify-center items-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#FF99C0] mx-auto mb-4"></div>
-              <p className="text-gray-600">Đang tải thông tin người dùng (ID: {id})...</p>
+              <p className="text-gray-600">
+                Đang tải thông tin người dùng (ID: {id})...
+              </p>
             </div>
           </div>
         </div>
@@ -422,8 +450,12 @@ export default function ProfileDetail() {
         <Breadcrumb items={breadcrumbItems} />
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col justify-center items-center h-64">
-            <div className="text-gray-500 text-xl mb-4">👤 Không tìm thấy thông tin</div>
-            <p className="text-gray-600">Không tìm thấy thông tin người dùng với ID: {id}</p>
+            <div className="text-gray-500 text-xl mb-4">
+              👤 Không tìm thấy thông tin
+            </div>
+            <p className="text-gray-600">
+              Không tìm thấy thông tin người dùng với ID: {id}
+            </p>
           </div>
         </div>
       </div>
@@ -431,7 +463,7 @@ export default function ProfileDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFEDFA]">
+    <div className="min-h-screen">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
@@ -477,7 +509,9 @@ export default function ProfileDetail() {
                 className="text-[#0053A3]"
               />
               <div className="text-gray-600">
-                <p className="text-sm text-gray-500 mb-2">@{userProfile.username}</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  @{userProfile.username}
+                </p>
                 <div className="flex gap-2 flex-wrap">
                   <span className="bg-[#FF99C0]/30 px-3 py-1 rounded-full text-[#FF99C0] text-sm font-medium">
                     {userProfile.role}
@@ -490,32 +524,38 @@ export default function ProfileDetail() {
                 </div>
               </div>
             </div>
+          </div>
 
+          {/* Profile Content - Adjusted top padding */}
+          <div className="pt-6 relative z-10">
             {/* Tab Navigation */}
             <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
               <button
-                className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${activeTab === "personal"
-                  ? "border-[#FF99C0] text-[#FF99C0]"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-                  } transition-colors`}
+                className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${
+                  activeTab === "personal"
+                    ? "border-[#FF99C0] text-[#FF99C0]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                } transition-colors`}
                 onClick={() => setActiveTab("personal")}
               >
                 Thông tin cá nhân
               </button>
               <button
-                className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${activeTab === "pets"
-                  ? "border-[#0053A3] text-[#0053A3]"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-                  } transition-colors`}
+                className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${
+                  activeTab === "pets"
+                    ? "border-[#0053A3] text-[#0053A3]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                } transition-colors`}
                 onClick={() => setActiveTab("pets")}
               >
                 Thú cưng đang nuôi
               </button>
               <button
-                className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${activeTab === "history"
-                  ? "border-[#FF99C0] text-[#FF99C0]"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-                  } transition-colors`}
+                className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${
+                  activeTab === "history"
+                    ? "border-[#FF99C0] text-[#FF99C0]"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                } transition-colors`}
                 onClick={() => setActiveTab("history")}
               >
                 Tiểu sử nhận nuôi
@@ -526,13 +566,7 @@ export default function ProfileDetail() {
             {activeTab === "personal" && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Personal Information */}
-                <div className="bg-pink-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
-                  <ContentHeader
-                    title="Thông tin liên hệ"
-                    level="h2"
-                    className="mb-6 text-[#FF99C0]"
-                  />
-
+                <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <div className="bg-[#FF99C0] p-2 rounded-full mr-4">
@@ -577,13 +611,7 @@ export default function ProfileDetail() {
                 </div>
 
                 {/* Job & Personal Details */}
-                <div className="bg-blue-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
-                  <ContentHeader
-                    title="Thông tin thêm"
-                    level="h2"
-                    className="mb-6 text-[#0053A3]"
-                  />
-
+                <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <div className="bg-[#0053A3] p-2 rounded-full mr-4">
@@ -610,13 +638,7 @@ export default function ProfileDetail() {
                 </div>
 
                 {/* Bio */}
-                <div className="bg-pink-50 rounded-xl p-6 shadow-sm transform transition-transform hover:scale-[1.01]">
-                  <ContentHeader
-                    title="Giới thiệu bản thân"
-                    level="h2"
-                    className="mb-6 text-[#FF99C0]"
-                  />
-
+                <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
                     <p className="text-gray-600 italic">"{userProfile.bio}"</p>
                   </div>
@@ -634,9 +656,8 @@ export default function ProfileDetail() {
                       {userProfile.isCurrentUser
                         ? "Đây là hồ sơ của bạn"
                         : isContacting
-                          ? "Đang liên hệ..."
-                          : "Liên hệ ngay"
-                      }
+                        ? "Đang liên hệ..."
+                        : "Liên hệ ngay"}
                     </Button>
                   </div>
                 </div>
@@ -646,18 +667,12 @@ export default function ProfileDetail() {
             {/* Current Pets Tab */}
             {activeTab === "pets" && (
               <div>
-                <ContentHeader
-                  title="Thú cưng đang nuôi"
-                  level="h2"
-                  className="mb-8 text-[#0053A3]"
-                />
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {userProfile.currentPets.length > 0 ? (
                     userProfile.currentPets.map((pet) => (
                       <div
                         key={pet.id}
-                        className="transform transition-transform hover:scale-[0.98]"
+                        className="transform transition-transform "
                       >
                         <Card
                           type="pet"
@@ -685,18 +700,14 @@ export default function ProfileDetail() {
               <div className="space-y-12">
                 {/* Adoption History */}
                 <div>
-                  <ContentHeader
-                    title="Lịch sử nhận nuôi"
-                    level="h2"
-                    className="mb-8 text-[#FF99C0]"
-                  />
+                  <ContentHeader title="Lịch sử nhận nuôi" level="h2" />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {userProfile.adoptionHistory.length > 0 ? (
                       userProfile.adoptionHistory.map((history) => (
                         <div
                           key={history.id}
-                          className="transform transition-transform hover:scale-[0.98]"
+                          className="transform transition-transform "
                         >
                           <Card
                             type="pet"
@@ -722,13 +733,9 @@ export default function ProfileDetail() {
 
                 {/* Pet Care Skills */}
                 <div className="mt-12">
-                  <ContentHeader
-                    title="Kỹ năng nuôi thú cưng"
-                    level="h2"
-                    className="mb-8 text-[#0053A3]"
-                  />
+                  <ContentHeader title="Kỹ năng nuôi thú cưng" level="h2" />
 
-                  <div className="bg-blue-50 rounded-xl p-6 shadow-sm">
+                  <div className="rounded-xl ">
                     {userProfile.petCareSkills.length > 0 ? (
                       <div className="space-y-4">
                         {userProfile.petCareSkills.map((skill) => (
@@ -744,14 +751,16 @@ export default function ProfileDetail() {
                                 {[...Array(5)].map((_, i) => (
                                   <div
                                     key={i}
-                                    className={`w-2 h-2 rounded-full ${i < skill.level
-                                      ? "bg-[#0053A3]"
-                                      : "bg-gray-200"
-                                      }`}
+                                    className={`w-2 h-2 rounded-full ${
+                                      i < skill.level
+                                        ? "bg-[#0053A3]"
+                                        : "bg-gray-200"
+                                    }`}
                                   />
                                 ))}
                               </div>
                             </div>
+
                             <p className="text-sm text-gray-600">
                               {skill.description}
                             </p>

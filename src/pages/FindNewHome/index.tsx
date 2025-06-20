@@ -60,7 +60,7 @@ export default function FindNewHome() {
 
   // Function to check if user has Staff or Admin role
   const hasStaffOrAdminRole = (roles: string[]): boolean => {
-    return roles.some(role => role === "Staff" || role === "Admin");
+    return roles.some((role) => role === "Staff" || role === "Admin");
   };
 
   // Function to calculate age from birthDate
@@ -109,15 +109,17 @@ export default function FindNewHome() {
       if (roles.includes(role)) return role;
     }
     // If only Staff/Admin roles exist, return the first available role
-    return roles.find(role => role !== "Staff" && role !== "Admin") || "Guest";
+    return (
+      roles.find((role) => role !== "Staff" && role !== "Admin") || "Guest"
+    );
   };
 
   // Function to get role display in Vietnamese
   const getRoleDisplay = (role: string): string => {
     const roleMap: { [key: string]: string } = {
       "Pet Foster": "Người nuôi dưỡng",
-      "Volunteer": "Tình nguyện viên",
-      "Guest": "Khách"
+      Volunteer: "Tình nguyện viên",
+      Guest: "Khách",
     };
     return roleMap[role] || role;
   };
@@ -130,23 +132,47 @@ export default function FindNewHome() {
         setError(null);
 
         // Since you're using axios, the response will be an AxiosResponse object
-        const response: AxiosResponse<ApiResponse> = await userService.getAllUser();
+        const response: AxiosResponse<ApiResponse> =
+          await userService.getAllUser();
 
         // With axios, the data is in response.data
         const apiResponse = response.data;
 
         if (!apiResponse.success) {
-          throw new Error(apiResponse.message || 'Failed to fetch users');
+          throw new Error(apiResponse.message || "Failed to fetch users");
         }
 
         const users = apiResponse.data.items;
 
         // Filter out users with Staff or Admin roles
-        const filteredUsers = users.filter(user => !hasStaffOrAdminRole(user.roles));
+        const filteredUsers = users.filter(
+          (user) => !hasStaffOrAdminRole(user.roles)
+        );
 
         setTotalCount(filteredUsers.length); // Use filtered count instead of API total
 
         // Transform API data to match our component's expected structure
+<<<<<<< HEAD
+        const transformedProfiles: AdopterProfile[] = filteredUsers.map(
+          (user) => {
+            const primaryRole = getPrimaryRole(user.roles);
+            const isCurrentUser = user.username === currentUserLogin;
+
+            return {
+              id: user.userId.toString(),
+              name: user.fullName || user.username,
+              age: generateRandomAge(), // Generate random age since API doesn't provide it
+              location: user.city || "Chưa cập nhật",
+              occupation: getRoleDisplay(primaryRole),
+              imageUrl:
+                user.profilePicture || "/placeholder.svg?height=200&width=200",
+              verified: user.isVerified,
+              role: primaryRole,
+              isCurrentUser,
+            };
+          }
+        );
+=======
         const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
           const primaryRole = getPrimaryRole(user.roles);
           return {
@@ -160,10 +186,11 @@ export default function FindNewHome() {
             role: primaryRole,
           };
         });
+>>>>>>> 48253beec17cc46a139f72da363bd11ce553f598
 
         setProfiles(transformedProfiles);
       } catch (err: any) {
-        console.error('Error fetching users:', err);
+        console.error("Error fetching users:", err);
 
         // Handle different types of axios errors
         if (err.response) {
@@ -172,22 +199,24 @@ export default function FindNewHome() {
           const data = err.response.data;
 
           if (status === 401) {
-            setError('Bạn cần đăng nhập để xem danh sách này.');
+            setError("Bạn cần đăng nhập để xem danh sách này.");
           } else if (status === 403) {
-            setError('Bạn không có quyền truy cập danh sách này.');
+            setError("Bạn không có quyền truy cập danh sách này.");
           } else if (status === 404) {
-            setError('Không tìm thấy dữ liệu người dùng.');
+            setError("Không tìm thấy dữ liệu người dùng.");
           } else if (status >= 500) {
-            setError('Lỗi server. Vui lòng thử lại sau.');
+            setError("Lỗi server. Vui lòng thử lại sau.");
           } else {
             setError(data?.message || `Lỗi HTTP ${status}`);
           }
         } else if (err.request) {
           // Network error
-          setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+          setError(
+            "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+          );
         } else {
           // Other error
-          setError(err.message || 'Đã xảy ra lỗi không xác định.');
+          setError(err.message || "Đã xảy ra lỗi không xác định.");
         }
       } finally {
         setLoading(false);
@@ -249,20 +278,34 @@ export default function FindNewHome() {
     // Location filter
     if (locationFilter !== "all") {
       if (locationFilter === "empty") {
-        if (profile.location !== "Chưa cập nhật" && profile.location.trim() !== "") {
+        if (
+          profile.location !== "Chưa cập nhật" &&
+          profile.location.trim() !== ""
+        ) {
           return false;
         }
       } else {
         const locationMatch = {
-          "hanoi": ["hà nội", "hanoi", "ha noi"],
-          "hcm": ["tp hcm", "hồ chí minh", "ho chi minh", "tphcm", "saigon", "sài gòn"],
-          "danang": ["đà nẵng", "da nang", "danang"]
+          hanoi: ["hà nội", "hanoi", "ha noi"],
+          hcm: [
+            "tp hcm",
+            "hồ chí minh",
+            "ho chi minh",
+            "tphcm",
+            "saigon",
+            "sài gòn",
+          ],
+          danang: ["đà nẵng", "da nang", "danang"],
         };
 
-        const matchTerms = locationMatch[locationFilter as keyof typeof locationMatch];
-        if (matchTerms && !matchTerms.some(term =>
-          profile.location.toLowerCase().includes(term)
-        )) {
+        const matchTerms =
+          locationMatch[locationFilter as keyof typeof locationMatch];
+        if (
+          matchTerms &&
+          !matchTerms.some((term) =>
+            profile.location.toLowerCase().includes(term)
+          )
+        ) {
           return false;
         }
       }
@@ -288,14 +331,22 @@ export default function FindNewHome() {
   // Apply sorting
   const sortedProfiles = [...filteredProfiles].sort((a, b) => {
     switch (filter) {
+<<<<<<< HEAD
+      case "current-user":
+        // Show current user first
+        if (a.isCurrentUser && !b.isCurrentUser) return -1;
+        if (!a.isCurrentUser && b.isCurrentUser) return 1;
+        return a.name.localeCompare(b.name, "vi");
+=======
+>>>>>>> 48253beec17cc46a139f72da363bd11ce553f598
       case "name":
-        return a.name.localeCompare(b.name, 'vi');
+        return a.name.localeCompare(b.name, "vi");
       case "age":
         return a.age - b.age;
       case "verified":
         if (a.verified && !b.verified) return -1;
         if (!a.verified && b.verified) return 1;
-        return a.name.localeCompare(b.name, 'vi');
+        return a.name.localeCompare(b.name, "vi");
       default:
         return 0;
     }
@@ -333,20 +384,24 @@ export default function FindNewHome() {
 
     // Re-run the fetch logic
     try {
-      const response: AxiosResponse<ApiResponse> = await userService.getAllUser();
+      const response: AxiosResponse<ApiResponse> =
+        await userService.getAllUser();
       const apiResponse = response.data;
 
       if (!apiResponse.success) {
-        throw new Error(apiResponse.message || 'Failed to fetch users');
+        throw new Error(apiResponse.message || "Failed to fetch users");
       }
 
       const users = apiResponse.data.items;
 
       // Filter out users with Staff or Admin roles
-      const filteredUsers = users.filter(user => !hasStaffOrAdminRole(user.roles));
+      const filteredUsers = users.filter(
+        (user) => !hasStaffOrAdminRole(user.roles)
+      );
 
       setTotalCount(filteredUsers.length);
 
+      // Transform API data to match our component's expected structure
       const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
         const primaryRole = getPrimaryRole(user.roles);
         console.log(user)
@@ -364,8 +419,8 @@ export default function FindNewHome() {
 
       setProfiles(transformedProfiles);
     } catch (err: any) {
-      console.error('Retry error:', err);
-      setError(err.message || 'Thử lại không thành công');
+      console.error("Retry error:", err);
+      setError(err.message || "Thử lại không thành công");
     } finally {
       setLoading(false);
     }
@@ -384,12 +439,14 @@ export default function FindNewHome() {
     return (
       <div className="min-h-screen">
         <Breadcrumb items={breadcrumbItems} />
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />
           <div className="flex justify-center items-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Đang tải danh sách người có thể nhận nuôi...</p>
+              <p className="text-gray-600">
+                Đang tải danh sách người có thể nhận nuôi...
+              </p>
             </div>
           </div>
         </div>
@@ -427,7 +484,9 @@ export default function FindNewHome() {
         <div className="container mx-auto px-4">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />
           <div className="flex flex-col justify-center items-center h-64">
-            <div className="text-gray-500 text-xl mb-4">📭 Không có dữ liệu</div>
+            <div className="text-gray-500 text-xl mb-4">
+              📭 Không có dữ liệu
+            </div>
             <p className="text-gray-600">
               Hiện tại chưa có người dùng phù hợp để nhận nuôi thú cưng.
             </p>
@@ -442,29 +501,52 @@ export default function FindNewHome() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto ">
         {/* Header and Filter Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />
           <Filter filters={filterConfigs} className="mt-4 md:mt-0" />
         </div>
 
+        {/* Results count */}
+        <div className="mb-4 text-gray-600">
+          Hiển thị {currentProfiles.length} trong tổng số{" "}
+          {sortedProfiles.length} người có thể nhận nuôi
+          {sortedProfiles.length !== profiles.length && (
+            <span className="text-blue-600 ml-1">
+              (đã lọc từ {totalCount} người dùng phù hợp)
+            </span>
+          )}
+        </div>
+
+
         {/* Profile Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentProfiles.map((profile) => (
             <div
               key={profile.id}
-              className={`transform transition-transform hover:scale-[0.98]`}
+              className={`transform transition-transform hover:scale-[0.98] ${
+                profile.isCurrentUser
+                  ? "ring-2 ring-blue-400 ring-opacity-50"
+                  : ""
+              }`}
+
             >
               <Card
                 type="person"
                 image={profile.imageUrl}
-                title={profile.name}
+                title={
+                  profile.isCurrentUser ? `${profile.name} (Bạn)` : profile.name
+                }
+
                 gender={`${profile.age} tuổi`}
                 location={profile.location}
                 area={profile.occupation || ""}
                 badge={profile.verified ? "✓ Đã xác thực" : "Chưa xác thực"}
-                buttonText={"Xem chi tiết"}
+                buttonText={
+                  profile.isCurrentUser ? "Xem hồ sơ của tôi" : "Xem chi tiết"
+                }
+
                 onButtonClick={() => handleProfileDetail(profile.id)}
               />
             </div>
@@ -474,9 +556,12 @@ export default function FindNewHome() {
         {/* No results after filtering */}
         {sortedProfiles.length === 0 && profiles.length > 0 && (
           <div className="flex flex-col justify-center items-center h-64">
-            <div className="text-gray-500 text-xl mb-4">🔍 Không tìm thấy kết quả</div>
+            <div className="text-gray-500 text-xl mb-4">
+              🔍 Không tìm thấy kết quả
+            </div>
             <p className="text-gray-600 text-center mb-4">
-              Không có người dùng nào phù hợp với bộ lọc đã chọn.<br />
+              Không có người dùng nào phù hợp với bộ lọc đã chọn.
+              <br />
               Thử thay đổi bộ lọc để xem thêm kết quả.
             </p>
             <button

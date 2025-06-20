@@ -5,6 +5,10 @@ const axiosClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  // Increase default timeout for requests with large images
+  timeout: 30000, // 30 seconds
+  maxContentLength: 10 * 1024 * 1024, // 10MB max content length
+  maxBodyLength: 10 * 1024 * 1024, // 10MB max body length
 });
 
 const axiosPrivate = axios.create({
@@ -98,6 +102,26 @@ const handleError = (error: AxiosError) => {
   }
   return Promise.reject(error);
 };
+
+// Debug request interceptor for pet-related requests
+axiosClient.interceptors.request.use(
+  (config) => {
+    if (config.url?.includes('/pets') && (config.method === 'put' || config.method === 'post')) {
+      const hasImageData = typeof config.data === 'object' && 
+        (config.data.primaryImageUrl?.startsWith('data:') || config.data.petImageUrls?.startsWith('data:'));
+      
+      if (hasImageData) {
+        console.log(`${config.method.toUpperCase()} request to ${config.url} includes image data`);
+        // Increase timeout for requests with image data
+        config.timeout = 60000; // 60 seconds
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 axiosClient.interceptors.response.use((response) => response, handleError);
 axiosPrivate.interceptors.response.use((response) => response, handleError);

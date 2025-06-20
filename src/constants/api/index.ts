@@ -19,6 +19,9 @@ export const API_ENDPOINT = {
     APPLICATIONS: "/volunteerApplication",
     UPDATE_APPLICATIONS: `/volunteerApplication/update`,
   },
+  ADOPTER: {
+    APPLICATIONS: "/AdopterApplications",
+  },
   COMMUNITY: {
     LIST: "/community",
   },
