@@ -30,8 +30,8 @@ import FindNewHome from "@/pages/FindNewHome";
 import ProfileDetail from "@/pages/FindNewHome/ProfileDetail";
 import VetClinicProfile from "@/pages/PetCare/ClinicDetail";
 const ProfilePage = lazy(() => import("@/pages/Profile"));
-import AddPet from "@/pages/Profile/AddPet";
-import UpdatePetInfo from "@/pages/Profile/UpdatePetInfo";
+const AddPet = lazy(() => import("@/pages/Profile/AddPet"));
+const UpdatePetInfo = lazy(() => import("@/pages/Profile/UpdatePetInfo"));
 import LoadingPage from "@/pages/Loading";
 import PersistToken from "@/components/Auth/PersistLogin";
 import { ROLE } from "@/constants/global";
@@ -99,8 +99,7 @@ const RouterComponent = () => {
             {
               path: ROUTES.GUEST.MY_APPLICATION,
               element: <MyVolunteerApplicationsPage />,
-            },
-            { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
+            },            { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
             { path: ROUTES.PUBLIC.PROFILE, element: <ProfilePage /> },
             { path: ROUTES.PUBLIC.ADD_PET, element: <AddPet /> },
             { path: ROUTES.PUBLIC.UPDATE_PET, element: <UpdatePetInfo /> },

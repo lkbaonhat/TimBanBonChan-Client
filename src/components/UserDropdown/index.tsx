@@ -69,7 +69,8 @@ const menuItems: MenuItem[] = [
 
 const getRoleBadgeColor = (role: string) => {
   switch (role) {
-    case "staff":
+    case "Staff":
+    case "Admin":
       return "bg-[#5B7CCB] text-white";
     default:
       return "bg-[#C4E2EF] text-[#0052A3]";
@@ -78,7 +79,8 @@ const getRoleBadgeColor = (role: string) => {
 
 const getRoleLabel = (role: string) => {
   switch (role) {
-    case "staff":
+    case "Staff":
+    case "Admin":
       return "Nhân viên";
     default:
       return "Người dùng";

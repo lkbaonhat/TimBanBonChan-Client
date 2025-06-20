@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Camera, Heart } from "lucide-react";
 import {
@@ -14,10 +13,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
-import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
-import ContentHeader from "@/components/ContentHeader/ContentHeader";
 import { useSelector, useDispatch } from "react-redux";
 import { selectorAuth } from "@/store/modules/auth/selector";
 import AvatarUploadDialog from "./AvatarUpload";
@@ -25,6 +30,8 @@ import { userService } from "@/services/userService";
 import { Input } from "@/components/ui/input";
 import { setUserInfo } from "@/store/modules/auth/slice";
 import { toast } from "sonner";
+// Import the extracted components
+import { MyPets, PetCareHistory } from "./components";
 
 export default function ProfilePage() {
   const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
@@ -37,6 +44,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   // Form state
   const [formData, setFormData] = useState({
     fullName: userInfo.fullName || "",
@@ -53,7 +61,7 @@ export default function ProfilePage() {
     description: userInfo.description || "",
   });
 
-  // Initialize current avatar from userInfo
+  // Initialize current avatar
   useEffect(() => {
     if (userInfo.profilePicture) {
       setCurrentAvatar(userInfo.profilePicture);
@@ -68,43 +76,30 @@ export default function ProfilePage() {
       [id]: value,
     }));
   };
+
+  // Handle textarea change
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!userInfo.userId) {
-      toast.error("Không thể cập nhật thông tin người dùng", {
-        description: "Không tìm thấy ID người dùng",
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      // Include userId in the payload as required by the API
-      const updateData = {
-        ...formData,
-        userId: userInfo.userId,
-        city: userInfo.city || "",
-        district: userInfo.district || "",
-        isReadyToAdopt: userInfo.isReadyToAdopt || false,
-        profilePicture: currentAvatar || userInfo.profilePicture,
-      };
-
-      await userService.updateUserProfile(userInfo.userId, updateData);
-
-      // Update the Redux store with new user info
+      await userService.updateUserProfile(formData);
       dispatch(
         setUserInfo({
           ...userInfo,
           ...formData,
         })
       );
-
-      toast.success("Cập nhật thông tin thành công", {
-        description: "Thông tin cá nhân của bạn đã được cập nhật",
-      });
+      toast.success("Cập nhật thông tin thành công");
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Không thể cập nhật thông tin", {
@@ -115,96 +110,83 @@ export default function ProfilePage() {
     }
   };
 
-  // Handle switch toggle with confirmation
-  const handleToggleAdoptionStatus = async (newStatus: boolean) => {
-    setPendingAdoptState(newStatus);
-    setShowConfirmDialog(true);
-  };
-  // Handle confirmation dialog result
-  const handleConfirmToggle = async (confirmed: boolean) => {
-    if (confirmed && userInfo.userId) {
-      setIsLoading(true);
+  // Toggle adoption status
+  const handleToggleAdoptionStatus = async (checked: boolean) => {
+    // If we're already processing a request, don't allow another one
+    if (pendingAdoptState) return;
+
+    setPendingAdoptState(true);
+    setShowConfirmDialog(false);
+
+    if (checked) {
+      // If turning on, just update the state
+      setReadyToAdopt(true);
       try {
-        const payload = {
-          userId: userInfo.userId,
-          isReadyToAdopt: pendingAdoptState,
-        };
-
-        await userService.updateAvatarProfile(userInfo.userId, payload);
-        setReadyToAdopt(pendingAdoptState);
-
-        // Update Redux store
+        await userService.updateAdopterStatus(true);
         dispatch(
           setUserInfo({
             ...userInfo,
-            isReadyToAdopt: pendingAdoptState,
+            isReadyToAdopt: true,
           })
         );
-
-        toast.success(
-          `Đã ${
-            pendingAdoptState ? "bật" : "tắt"
-          } trạng thái sẵn sàng nhận nuôi`
-        );
+        toast.success("Bạn đã sẵn sàng nhận nuôi thú cưng");
       } catch (error) {
-        console.error("Error updating adoption status:", error);
-        toast.error("Không thể cập nhật trạng thái", {
-          description:
-            "Đã xảy ra lỗi khi cập nhật trạng thái sẵn sàng nhận nuôi",
-        });
-      } finally {
-        setIsLoading(false);
+        console.error("Error updating adopter status:", error);
+        setReadyToAdopt(false); // Revert on error
+        toast.error("Không thể cập nhật trạng thái");
       }
+    } else {
+      // If turning off, show confirmation
+      setShowConfirmDialog(true);
     }
-    setShowConfirmDialog(false);
+
+    setPendingAdoptState(false);
   };
 
-  // Handle avatar update
-  const handleAvatarUpdate = async (newAvatarUrl: string) => {
-    if (!userInfo.userId) {
-      toast.error("Không thể cập nhật ảnh đại diện", {
-        description: "Không tìm thấy ID người dùng",
-      });
-      return;
-    }
-    setIsLoading(true);
+  // Confirm turning off adoption status
+  const handleConfirmDisableAdopt = async () => {
+    setPendingAdoptState(true);
+    setShowConfirmDialog(false);
+
     try {
-      const payload = {
-        userId: userInfo.userId,
-        profilePicture: newAvatarUrl,
-      };
-
-      await userService.updateAvatarProfile(userInfo.userId, payload);
-      setCurrentAvatar(newAvatarUrl);
-
-      // Update Redux store
+      await userService.updateAdopterStatus(false);
+      setReadyToAdopt(false);
       dispatch(
         setUserInfo({
           ...userInfo,
-          profilePicture: newAvatarUrl,
+          isReadyToAdopt: false,
         })
       );
-
-      toast.success("Cập nhật ảnh đại diện thành công");
+      toast.success("Đã cập nhật trạng thái");
     } catch (error) {
-      console.error("Error updating avatar:", error);
-      toast.error("Không thể cập nhật ảnh đại diện", {
-        description: "Đã xảy ra lỗi khi cập nhật ảnh đại diện",
-      });
+      console.error("Error updating adopter status:", error);
+      toast.error("Không thể cập nhật trạng thái");
     } finally {
-      setIsLoading(false);
+      setPendingAdoptState(false);
     }
+  };
+
+  // Update avatar
+  const handleAvatarUploaded = (avatarUrl: string) => {
+    setCurrentAvatar(avatarUrl);
+    // Update in Redux
+    dispatch(
+      setUserInfo({
+        ...userInfo,
+        profilePicture: avatarUrl,
+      })
+    );
+  };
+
+  // Handle navigating to adopter form
+  const handleNavigateToAdopterForm = () => {
+    navigate(ROUTES.PUBLIC.VERIFY_ADOPTER);
   };
 
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Tài khoản" },
   ];
-
-  // Function to navigate to adopter verification form
-  const handleNavigateToAdopterForm = () => {
-    navigate(ROUTES.PUBLIC.VERIFY_ADOPTER);
-  };
 
   return (
     <div className="min-h-screen">
@@ -305,54 +287,38 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Avatar Upload Dialog */}
-        <AvatarUploadDialog
-          open={showAvatarDialog}
-          onOpenChange={setShowAvatarDialog}
-          currentAvatar={currentAvatar || userInfo.profilePicture}
-          userName={userInfo.fullName}
-          userId={userInfo.userId || 0}
-          onAvatarUpdate={handleAvatarUpdate}
-        />
-
-        {/* Confirmation Dialog */}
+        {/* Disable adoption dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Xác nhận thay đổi</DialogTitle>
+              <DialogTitle>Xác nhận tắt trạng thái sẵn sàng</DialogTitle>
               <DialogDescription>
-                {pendingAdoptState ? (
-                  <span>
-                    Bạn có muốn đặt trạng thái thành{" "}
-                    <strong>Sẵn sàng nhận nuôi</strong> không?
-                  </span>
-                ) : (
-                  <span>
-                    Bạn có muốn đặt trạng thái thành{" "}
-                    <strong>Chưa sẵn sàng nhận nuôi</strong> không?
-                  </span>
-                )}
+                Bạn có chắc chắn muốn tắt trạng thái sẵn sàng nhận nuôi? Bạn sẽ
+                không xuất hiện trong danh sách người có thể nhận nuôi.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button
-                variant="blue"
-                animation="none"
-                onClick={() => handleConfirmToggle(false)}
+                variant="outline"
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  setReadyToAdopt(true); // Revert switch state
+                }}
               >
                 Hủy
               </Button>
-              <Button
-                variant="pink"
-                animation="none"
-                onClick={() => handleConfirmToggle(true)}
-                disabled={isLoading}
-              >
-                {isLoading ? "Đang xử lý..." : "Xác nhận"}
-              </Button>
+              <Button onClick={handleConfirmDisableAdopt}>Xác nhận</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Avatar dialog */}
+        <AvatarUploadDialog
+          open={showAvatarDialog}
+          onOpenChange={setShowAvatarDialog}
+          onAvatarUploaded={handleAvatarUploaded}
+          currentAvatar={currentAvatar}
+        />
 
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-8">
@@ -404,24 +370,11 @@ export default function ProfilePage() {
                   id="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  className="mt-1"
+                  placeholder="Nhập họ và tên"
                 />
               </div>
-              <div>
-                <Label
-                  htmlFor="birthDate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Ngày tháng năm sinh
-                </Label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  value={formData.birthDate || ""}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md"
-                />
-              </div>
+
               <div>
                 <Label
                   htmlFor="email"
@@ -434,9 +387,67 @@ export default function ProfilePage() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  className="mt-1"
+                  placeholder="name@example.com"
                 />
               </div>
+
+              <div>
+                <Label
+                  htmlFor="birthDate"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Ngày sinh
+                </Label>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  value={formData.birthDate}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label
+                  htmlFor="gender"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Giới tính
+                </Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(val) =>
+                    setFormData((prev) => ({ ...prev, gender: val }))
+                  }
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Chọn giới tính" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Nam">Nam</SelectItem>
+                    <SelectItem value="Nữ">Nữ</SelectItem>
+                    <SelectItem value="Khác">Khác</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label
+                  htmlFor="phoneNumber"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Số điện thoại
+                </Label>
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Nhập số điện thoại"
+                />
+              </div>
+
               <div>
                 <Label
                   htmlFor="occupation"
@@ -448,53 +459,11 @@ export default function ProfilePage() {
                   id="occupation"
                   value={formData.occupation}
                   onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  className="mt-1"
+                  placeholder="Nhập nghề nghiệp"
                 />
               </div>
-              <div>
-                <Label
-                  htmlFor="gender"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Giới tính
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="gender"
-                    value={formData.gender || ""}
-                    onChange={handleInputChange}
-                    className="w-full rounded-md pr-10"
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-gray-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <Label
-                  htmlFor="phoneNumber"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Số điện thoại
-                </Label>
-                <Input
-                  id="phoneNumber"
-                  value={formData.phoneNumber || ""}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md"
-                />
-              </div>{" "}
+
               <div>
                 <Label
                   htmlFor="address"
@@ -504,25 +473,29 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="address"
-                  value={formData.address || ""}
+                  value={formData.address}
                   onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  className="mt-1"
+                  placeholder="Địa chỉ"
                 />
               </div>
+
               <div>
                 <Label
                   htmlFor="city"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Thành phố
+                  Tỉnh/Thành phố
                 </Label>
                 <Input
                   id="city"
-                  value={formData.city || ""}
+                  value={formData.city}
                   onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  className="mt-1"
+                  placeholder="Tỉnh/Thành phố"
                 />
               </div>
+
               <div>
                 <Label
                   htmlFor="district"
@@ -532,218 +505,49 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="district"
-                  value={formData.district || ""}
+                  value={formData.district}
                   onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  className="mt-1"
+                  placeholder="Quận/Huyện"
                 />
-              </div>{" "}
-              <div>
+              </div>
+
+              <div className="md:col-span-2">
                 <Label
                   htmlFor="bio"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Mô tả bản thân
+                  Tiểu sử
                 </Label>
-                <Input
+                <Textarea
                   id="bio"
-                  value={formData.bio || ""}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md"
-                />
-              </div>
-              <div>
-                <Label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Giới thiệu thêm
-                </Label>
-                <Input
-                  id="description"
-                  value={formData.description || ""}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md"
-                />
-              </div>
-              <div>
-                <Label
-                  htmlFor="hobby"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Sở thích cá nhân
-                </Label>
-                <Input
-                  id="hobby"
-                  value={formData.hobby || ""}
-                  onChange={handleInputChange}
-                  className="w-full rounded-md"
+                  value={formData.bio}
+                  onChange={handleTextareaChange}
+                  rows={4}
+                  className="mt-1"
+                  placeholder="Một số thông tin về bạn"
                 />
               </div>
             </div>
-            <div className="flex justify-center mt-20">
+
+            <div className="flex justify-center mt-8">
               <Button
-                type="submit"
                 variant="blue"
-                className="w-1/3"
-                animation="none"
-                shape={"pill"}
                 size="lg"
+                type="submit"
                 disabled={isLoading}
               >
-                {isLoading ? "Đang lưu..." : "Lưu thay đổi"}
+                {isLoading ? "Đang lưu..." : "Lưu thông tin"}
               </Button>
             </div>
           </form>
         )}
 
         {activeTab === "my-pets" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Dog 1 */}
-            <Card
-              type="pet"
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
-              title="Con Bơ"
-              badge="Chó"
-              gender="Cái"
-              location="1 tuổi"
-              className="h-full"
-              buttonText="Xem chi tiết"
-              onButtonClick={() =>
-                navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "1")}`)
-              }
-            />
-
-            {/* Dog 2 */}
-            <Card
-              type="pet"
-              image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
-              title="Bi"
-              badge="Chó"
-              gender="Đực"
-              location="1 tuổi"
-              className="h-full"
-              buttonText="Xem chi tiết"
-              onButtonClick={() =>
-                navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "2")}`)
-              }
-            />
-
-            {/* Add New Pet Card */}
-            <div
-              className="border-2 border-gray-400 rounded-xl overflow-hidden cursor-pointer h-full flex flex-col"
-              onClick={() => navigate(ROUTES.PUBLIC.ADD_PET)}
-            >
-              <div className=" flex-grow flex items-center justify-center p-8">
-                <div className="border-2 border-gray-400 w-16 h-16 rounded-full  flex items-center justify-center shadow-sm">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 5V19M5 12H19"
-                      stroke="#6B7280"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MyPets userId={userInfo.userId as number} />
         )}
 
-        {activeTab === "pet-criteria" && (
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <ContentHeader level="h2" title="Lịch sử nuôi thú cưng" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Cat 1 */}
-                <Card
-                  type="pet"
-                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                  title="Hoàng tử Cát"
-                  badge="Mèo"
-                  gender="Đực"
-                  location="1 tuổi"
-                  className="h-full"
-                />
-
-                {/* Cat 2 */}
-                <Card
-                  type="pet"
-                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                  title="Liu"
-                  badge="Mèo"
-                  gender="Đực"
-                  location="1 tuổi"
-                  className="h-full"
-                />
-
-                {/* Cat 3 */}
-                <Card
-                  type="pet"
-                  image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                  title="Điều"
-                  badge="Mèo"
-                  gender="Đực"
-                  location="1 tuổi"
-                  className="h-full"
-                />
-              </div>
-            </div>
-
-            <div className="rounded-xl">
-              <ContentHeader title="Kỹ năng nuôi thú cưng" level="h2" />
-
-              <div className="space-y-4 mt-6">
-                <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all">
-                  <div className="rounded-xl">
-                    <h2 className="text-lg font-medium mb-4">
-                      Kỹ năng nuôi thú cưng
-                    </h2>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-medium text-lg text-gray-800 mb-2">
-                          Chăm sóc lông mao
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Tắm rửa, gỡ lông rụng
-                        </p>
-                      </div>
-                      <Separator className="my-4" />
-                    </div>
-
-                    <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all">
-                      <div>
-                        <h3 className="font-medium text-lg text-gray-800 mb-2">
-                          Đặt cún đi dạo
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Dắt chó đi dạo hàng ngày
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all">
-                      <div>
-                        <h3 className="font-medium text-lg text-gray-800 mb-2">
-                          Huấn luyện cơ bản
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Dạy các lệnh cơ bản như ngồi, nằm, đứng yên, không sủa
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab === "pet-criteria" && <PetCareHistory />}
       </div>
     </div>
   );

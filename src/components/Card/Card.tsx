@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/button";
 
 type CardType = "pet" | "person" | "clinic";
 
+interface CardAction {
+  icon: React.ReactNode;
+  onClick: () => void;
+}
+
 interface CardProps {
   type: CardType;
   image: string;
@@ -19,6 +24,7 @@ interface CardProps {
   buttonText?: string;
   onButtonClick?: () => void;
   className?: string;
+  actions?: CardAction[];
 }
 
 export default function Card({
@@ -36,6 +42,7 @@ export default function Card({
   buttonText,
   onButtonClick,
   className = "",
+  actions,
 }: CardProps) {
   // Default button text based on card type
   const defaultButtonText = {
@@ -112,9 +119,7 @@ export default function Card({
           className={`w-full ${type === "pet" ? "h-100" : "h-100"
             } object-cover`}
         />
-      </div>
-
-      {/* Content */}
+      </div>      {/* Content */}
       <div className="p-4 relative">
         {/* Header */}
         {type === "clinic" && location && (
@@ -123,12 +128,30 @@ export default function Card({
 
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-lg font-semibold">{title}</h3>
-          {/* Remove duplicate badge for pet cards */}
-          {type === "clinic" && rating !== undefined && (
-            <div className="text-[#ff99c0] font-medium">
-              {rating} <span className="text-[#ff99c0">★</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Actions buttons */}
+            {actions && actions.length > 0 && (
+              <div className="flex gap-1">
+                {actions.map((action, index) => (
+                  <Button 
+                    key={index} 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-full hover:bg-slate-100"
+                    onClick={action.onClick}
+                  >
+                    {action.icon}
+                  </Button>
+                ))}
+              </div>
+            )}
+            {/* Ratings for clinic cards */}
+            {type === "clinic" && rating !== undefined && (
+              <div className="text-[#ff99c0] font-medium">
+                {rating} <span className="text-[#ff99c0">★</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Info Items */}
