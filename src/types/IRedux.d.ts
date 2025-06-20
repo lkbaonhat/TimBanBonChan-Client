@@ -1,5 +1,4 @@
-export declare namespace IREDUX {
-
+export declare namespace IRedux {
     export interface UserInfo {
         userId?: number;
         username?: string;
