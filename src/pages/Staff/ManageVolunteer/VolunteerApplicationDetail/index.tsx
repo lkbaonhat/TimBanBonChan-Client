@@ -45,7 +45,7 @@ function VolunteerApplicationDetail() {
     const [loading, setLoading] = useState<boolean>(true);
     const [updating, setUpdating] = useState<boolean>(false);
     const navigate = useNavigate();
-    const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+    const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
 
     const fetchApplicationDetail = async () => {
         if (!id) return;
