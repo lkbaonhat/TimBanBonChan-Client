@@ -2,6 +2,7 @@ import { petService } from "@/services/petService";
 import { call, put, takeLatest, select } from "redux-saga/effects";
 import { globalSlice } from "./slice";
 import { selectorGlobal } from "./selector";
+import { PayloadAction } from "@reduxjs/toolkit";
 
 function* getAllPetsSaga(): Generator {
   try {
@@ -52,9 +53,21 @@ function* verifyPetSaga(action: {
   }
 }
 
+function* getPetCateSaga(): Generator {
+  try {
+    const response = yield call(petService.getPetCategories);
+    if (response.status === 200) {
+      yield put(globalSlice.actions.setPetCate(response.data.data))
+    }
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+}
+
 export function* globalSaga() {
   yield takeLatest("GET_ALL_PETS", getAllPetsSaga);
   yield takeLatest("GET_PETS_NEEDING_VERIFICATION", getPetsNeedingVerificationSaga);
   yield takeLatest("GET_PET_DETAIL", getPetDetailSaga);
   yield takeLatest("VERIFY_PET", verifyPetSaga);
+  yield takeLatest("GET_PET_CATE", getPetCateSaga);
 }

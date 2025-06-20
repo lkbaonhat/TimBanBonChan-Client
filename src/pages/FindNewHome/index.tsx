@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Check } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
@@ -20,7 +18,6 @@ interface AdopterProfile {
   imageUrl: string;
   verified?: boolean;
   role?: string;
-  isCurrentUser?: boolean;
 }
 
 // API Response type based on your actual API structure
@@ -61,18 +58,47 @@ export default function FindNewHome() {
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
 
-  // Current user info
-  const currentUserLogin = "lkbaonhat";
-
-  // Function to generate random age (since API doesn't provide age)
-  const generateRandomAge = (): number => {
-    return Math.floor(Math.random() * (45 - 20 + 1)) + 20; // Random age between 20-45
-  };
-
   // Function to check if user has Staff or Admin role
   const hasStaffOrAdminRole = (roles: string[]): boolean => {
     return roles.some(role => role === "Staff" || role === "Admin");
   };
+
+  // Function to calculate age from birthDate
+  const calculateAge = (birthDate: string): number | string => {
+    console.log(birthDate)
+    if (!birthDate) {
+      return "Chưa cập nhật";
+    }
+
+    try {
+      const today = new Date("2025-06-20"); // Current date from context
+      const birth = new Date(birthDate);
+
+      // Check if birthDate is valid
+      if (isNaN(birth.getTime())) {
+        return "Chưa cập nhật";
+      }
+
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+
+      // Adjust age if birthday hasn't occurred this year
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+
+      // Return "Chưa cập nhật" for unrealistic ages
+      if (age < 0 || age > 150) {
+        return "Chưa cập nhật";
+      }
+
+      return age;
+    } catch (error) {
+      console.error("Error calculating age:", error);
+      return "Chưa cập nhật";
+    }
+  };
+
 
   // Function to get primary role (excluding Staff and Admin)
   const getPrimaryRole = (roles: string[]): string => {
@@ -123,18 +149,15 @@ export default function FindNewHome() {
         // Transform API data to match our component's expected structure
         const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
           const primaryRole = getPrimaryRole(user.roles);
-          const isCurrentUser = user.username === currentUserLogin;
-
           return {
             id: user.userId.toString(),
             name: user.fullName || user.username,
-            age: generateRandomAge(), // Generate random age since API doesn't provide it
+            age: calculateAge(user.birthDate),
             location: user.city || "Chưa cập nhật",
             occupation: getRoleDisplay(primaryRole),
             imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
             verified: user.isVerified,
             role: primaryRole,
-            isCurrentUser,
           };
         });
 
@@ -187,18 +210,6 @@ export default function FindNewHome() {
         { id: "verified", label: "Đã xác thực", value: "verified" },
         { id: "age", label: "Theo tuổi", value: "age" },
         { id: "current-user", label: "Ưu tiên tôi", value: "current-user" },
-      ],
-    },
-    {
-      id: "roleFilter",
-      placeholder: "Vai trò",
-      value: roleFilter,
-      onChange: setRoleFilter,
-      options: [
-        { id: "all", label: "Tất cả vai trò", value: "all" },
-        { id: "Pet Foster", label: "Người nuôi dưỡng", value: "Pet Foster" },
-        { id: "Volunteer", label: "Tình nguyện viên", value: "Volunteer" },
-        { id: "Guest", label: "Khách", value: "Guest" },
       ],
     },
     {
@@ -277,11 +288,6 @@ export default function FindNewHome() {
   // Apply sorting
   const sortedProfiles = [...filteredProfiles].sort((a, b) => {
     switch (filter) {
-      case "current-user":
-        // Show current user first
-        if (a.isCurrentUser && !b.isCurrentUser) return -1;
-        if (!a.isCurrentUser && b.isCurrentUser) return 1;
-        return a.name.localeCompare(b.name, 'vi');
       case "name":
         return a.name.localeCompare(b.name, 'vi');
       case "age":
@@ -343,18 +349,16 @@ export default function FindNewHome() {
 
       const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
         const primaryRole = getPrimaryRole(user.roles);
-        const isCurrentUser = user.username === currentUserLogin;
-
+        console.log(user)
         return {
           id: user.userId.toString(),
           name: user.fullName || user.username,
-          age: generateRandomAge(),
+          age: calculateAge(user.birthDate),
           location: user.city || "Chưa cập nhật",
           occupation: getRoleDisplay(primaryRole),
           imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
           verified: user.isVerified,
           role: primaryRole,
-          isCurrentUser,
         };
       });
 
@@ -445,33 +449,22 @@ export default function FindNewHome() {
           <Filter filters={filterConfigs} className="mt-4 md:mt-0" />
         </div>
 
-        {/* Results count */}
-        <div className="mb-4 text-gray-600">
-          Hiển thị {currentProfiles.length} trong tổng số {sortedProfiles.length} người có thể nhận nuôi
-          {sortedProfiles.length !== profiles.length && (
-            <span className="text-blue-600 ml-1">
-              (đã lọc từ {totalCount} người dùng phù hợp)
-            </span>
-          )}
-        </div>
-
         {/* Profile Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentProfiles.map((profile) => (
             <div
               key={profile.id}
-              className={`transform transition-transform hover:scale-[0.98] ${profile.isCurrentUser ? 'ring-2 ring-blue-400 ring-opacity-50' : ''
-                }`}
+              className={`transform transition-transform hover:scale-[0.98]`}
             >
               <Card
                 type="person"
                 image={profile.imageUrl}
-                title={profile.isCurrentUser ? `${profile.name} (Bạn)` : profile.name}
+                title={profile.name}
                 gender={`${profile.age} tuổi`}
                 location={profile.location}
                 area={profile.occupation || ""}
                 badge={profile.verified ? "✓ Đã xác thực" : "Chưa xác thực"}
-                buttonText={profile.isCurrentUser ? "Xem hồ sơ của tôi" : "Xem chi tiết"}
+                buttonText={"Xem chi tiết"}
                 onButtonClick={() => handleProfileDetail(profile.id)}
               />
             </div>

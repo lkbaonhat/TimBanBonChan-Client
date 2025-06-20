@@ -13,7 +13,7 @@ interface User {
     fullName: string;
     email: string;
     roles: UserRole[];
-    avatarUrl?: string;
+    profilePicture?: string;
 }
 
 interface UserDropDownProps {
@@ -95,7 +95,7 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
             <DropdownMenuTrigger asChild aria-label="User menu">
                 <button className="relative h-10 w-10 rounded-full hover:bg-[#F1E9F2] transition-colors">
                     <Avatar className="h-10 w-10 border-2 border-[#0052A3]/20">
-                        <AvatarImage src={user.avatarUrl} alt={user.fullName} />
+                        <AvatarImage src={user.profilePicture} alt={user.fullName} />
                         <AvatarFallback className="bg-gradient-to-br from-[#126ac2] to-[#5B7CCB] text-white font-semibold">
                             {user.fullName.split(" ").pop()?.charAt(0).toUpperCase() || user.fullName.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
@@ -107,7 +107,7 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
                 <div className="p-4 bg-gradient-to-r from-[#0052A3] to-[#5B7CCB] text-white">
                     <div className="flex items-center space-x-3">
                         <Avatar className="h-10 w-10 border-2 border-[#0052A3]/20">
-                            <AvatarImage src={user.avatarUrl} alt={user.fullName} />
+                            <AvatarImage src={user.profilePicture} alt={user.fullName} />
                             <AvatarFallback className="bg-gradient-to-br from-[#126ac2] to-[#5B7CCB] text-white font-semibold">
                                 {user.fullName.split(" ").pop()?.charAt(0).toUpperCase() || user.fullName.charAt(0).toUpperCase() || "U"}
                             </AvatarFallback>

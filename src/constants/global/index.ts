@@ -36,6 +36,10 @@ const BANNER = {
   TRANSPORT: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081486/iutn1iljwjycsmbibev4.png",
 }
 
+const SOCIAL = {
+  FACEBOOK: "https://www.facebook.com/timbanbonchan"
+}
+
 const STRING_EMPTY = "";
 
 const HTTP_STATUS = {
@@ -60,4 +64,4 @@ const WEB_SOCKET_STATE = {
   NOTCONNECTED: 4,
 };
 
-export { STRING_EMPTY, HTTP_STATUS, ROLE, WEB_SOCKET_STATE, LOGO, BANNER };
+export { STRING_EMPTY, HTTP_STATUS, ROLE, WEB_SOCKET_STATE, LOGO, BANNER, SOCIAL };

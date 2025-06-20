@@ -147,7 +147,7 @@ export default function ApplicationItem({ application, onViewDetails }: Applicat
         {/* Actions */}
         <div className="flex justify-end pt-4">
           <Button
-            variant="outline"
+            variant="blueOutline"
             size="sm"
             onClick={() => onViewDetails(application.id)}
           >
