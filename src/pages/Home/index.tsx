@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import HeroSection from "@/pages/Home/components/HeroSection";
 import ServiceSection from "@/pages/Home/components/ServiceSection";

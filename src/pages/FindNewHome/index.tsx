@@ -61,9 +61,6 @@ export default function FindNewHome() {
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
 
-  // Current user info
-  const currentUserLogin = "lkbaonhat";
-
   // Function to generate random age (since API doesn't provide age)
   const generateRandomAge = (): number => {
     return Math.floor(Math.random() * (45 - 20 + 1)) + 20; // Random age between 20-45
@@ -123,18 +120,16 @@ export default function FindNewHome() {
         // Transform API data to match our component's expected structure
         const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
           const primaryRole = getPrimaryRole(user.roles);
-          const isCurrentUser = user.username === currentUserLogin;
 
           return {
             id: user.userId.toString(),
             name: user.fullName || user.username,
-            age: generateRandomAge(), // Generate random age since API doesn't provide it
+            age: "Chưa cập nhật", // Generate random age since API doesn't provide it
             location: user.city || "Chưa cập nhật",
             occupation: getRoleDisplay(primaryRole),
             imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
             verified: user.isVerified,
             role: primaryRole,
-            isCurrentUser,
           };
         });
 
