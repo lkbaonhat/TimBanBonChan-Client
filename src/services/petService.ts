@@ -198,6 +198,9 @@ export const petService = {  getAllPets: (params?: PetFilterParams) => {    // I
   },
   getAllAdoptionPost: () => {
     return axiosClient.get(API_ENDPOINT.PET.ADOPTION_POST)
+  },
+  getPetCategories: () => {
+    return axiosClient.get(`/petcategories`)
   }
 };
 

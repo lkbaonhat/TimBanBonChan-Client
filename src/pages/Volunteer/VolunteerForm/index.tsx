@@ -79,7 +79,7 @@ type FormData = z.infer<typeof formSchema>;
 export default function VolunteerPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+  const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),

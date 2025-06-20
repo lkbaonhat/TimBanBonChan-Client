@@ -4,85 +4,7 @@ import PageHeader from "@/components/ContentHeader/ContentHeader";
 import Filter, { FilterConfig } from "@/components/Filter/Filter";
 import Pagination from "@/components/Pagination/Pagination";
 import styles from "./pet-gallery.module.css";
-import { axiosClient } from "@/config/axios";
-import { API_ENDPOINT } from "@/constants/api";
 import { petService } from "@/services/petService";
-
-// Updated interfaces to match your API response
-interface Pet {
-  petId: number;
-  petName: string;
-  age: string;
-  ageUnit: string;
-  gender: string;
-  size: string;
-  color: string | null;
-  weight: number | null;
-  isVaccinated: boolean;
-  isNeutered: boolean;
-  isTrained: boolean;
-  healthStatus: string;
-  personality: string;
-  description: string;
-  adoptionStatus: string;
-  foodPreferences: string;
-  toyPreferences: string | null;
-  compatibleWith: string;
-  notCompatibleWith: string | null;
-  location: string;
-  purpose: string;
-  slug: string;
-  categoryName: string;
-  breedName: string;
-  imageUrls: string[];
-}
-
-interface AdoptionPost {
-  postId: number;
-  title: string;
-  content: string;
-  adoptionFee: number;
-  location: string;
-  city: string | null;
-  district: string | null;
-  postStatus: string;
-  isUrgent: boolean;
-  viewCount: number;
-  createdByUserId: number;
-  createdDate: string;
-  pet: Pet;
-}
-
-interface ApiResponse {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: {
-    items: AdoptionPost[];
-    totalCount: number;
-    pageNumber: number;
-    pageSize: number;
-  };
-  detailErrors: any;
-}
-
-// Updated PetCardData interface to include postId
-export interface PetCardData {
-  id: number;
-  name: string;
-  gender: string;
-  location: string;
-  status: string;
-  imageUrl: string;
-  categoryName: string;
-  slug: string;
-  postId: number; // Added postId for navigation
-  adoptionFee?: number;
-  isUrgent?: boolean;
-  age?: string;
-  ageUnit?: string;
-  breedName?: string;
-}
 
 export default function PetGallery() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,13 +14,10 @@ export default function PetGallery() {
   const [location, setLocation] = useState("all");
   const [pageSize] = useState(6);
 
-  // Current user info
-  const currentUserLogin = "lkbaonhat";
-
   // State for adoption posts data
-  const [allPosts, setAllPosts] = useState<AdoptionPost[]>([]);
-  const [filteredPosts, setFilteredPosts] = useState<AdoptionPost[]>([]);
-  const [displayPosts, setDisplayPosts] = useState<AdoptionPost[]>([]);
+  const [allPosts, setAllPosts] = useState<IEntities.AdoptionPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<IEntities.AdoptionPost[]>([]);
+  const [displayPosts, setDisplayPosts] = useState<IEntities.AdoptionPost[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -124,8 +43,8 @@ export default function PetGallery() {
       onChange: setAge,
       options: [
         { id: "all", label: "Tất cả", value: "all" },
-        { id: "young", label: "Còn nhỏ (< 1 năm)", value: "young" },
-        { id: "adult", label: "Trưởng thành (≥ 1 năm)", value: "adult" },
+        { id: "young", label: "Chưa trưởng thành", value: "Chưa trưởng thành" },
+        { id: "adult", label: "Trưởng thành", value: "Trưởng thành" },
       ],
     },
     {
@@ -135,46 +54,14 @@ export default function PetGallery() {
       onChange: setGender,
       options: [
         { id: "all", label: "Tất cả", value: "all" },
-        { id: "Male", label: "Đực", value: "Male" },
-        { id: "Female", label: "Cái", value: "Female" },
-        { id: "Đực", label: "Đực", value: "Đực" },
-        { id: "Cái", label: "Cái", value: "Cái" },
-        { id: "Unknown", label: "Không rõ", value: "Unknown" },
-      ],
-    },
-    {
-      id: "location",
-      placeholder: "Địa điểm",
-      value: location,
-      onChange: setLocation,
-      options: [
-        { id: "all", label: "Tất cả", value: "all" },
-        { id: "TP. HCM", label: "TP. HCM", value: "TP. HCM" },
-        { id: "Hà Nội", label: "Hà Nội", value: "Hà Nội" },
-        { id: "Đà Nẵng", label: "Đà Nẵng", value: "Đà Nẵng" },
+        { id: "male", label: "Đực", value: "Đực" },
+        { id: "female", label: "Cái", value: "Cái" },
       ],
     },
   ];
 
-  // Function to check if pet is young based on age and unit
-  const isYoungPet = (age: string, ageUnit: string): boolean => {
-    const ageNum = parseInt(age) || 0;
-
-    switch (ageUnit.toLowerCase()) {
-      case 'months':
-      case 'tháng':
-        return ageNum < 12;
-      case 'years':
-      case 'năm':
-        return ageNum < 1;
-      default:
-        // If age is descriptive like "Trưởng thành", treat as adult
-        return age.toLowerCase().includes('nhỏ') || age.toLowerCase().includes('con');
-    }
-  };
-
   // Function to filter posts based on current filter settings
-  const filterPosts = (posts: AdoptionPost[]) => {
+  const filterPosts = (posts: IEntities.AdoptionPost[]) => {
     return posts.filter(post => {
       const pet = post.pet;
 
@@ -183,24 +70,19 @@ export default function PetGallery() {
         return false;
       }
 
-      // Age filter
+      // Age filter - chỉ sử dụng field age
       if (age !== "all") {
-        const isPetYoung = isYoungPet(pet.age, pet.ageUnit);
-        if (age === "young" && !isPetYoung) return false;
-        if (age === "adult" && isPetYoung) return false;
+        if (age === "Chưa trưởng thành" && pet.age !== "Chưa trưởng thành") {
+          return false;
+        }
+        if (age === "Trưởng thành" && pet.age !== "Trưởng thành") {
+          return false;
+        }
       }
 
       // Gender filter
       if (gender !== "all" && pet.gender !== gender) {
         return false;
-      }
-
-      // Location filter
-      if (location !== "all") {
-        const postLocation = post.city || post.location || "";
-        if (!postLocation.includes(location)) {
-          return false;
-        }
       }
 
       // Only show available pets
@@ -296,7 +178,7 @@ export default function PetGallery() {
   };
 
   // Convert AdoptionPost to PetCardData
-  const convertToPetCardData = (post: AdoptionPost): PetCardData => {
+  const convertToPetCardData = (post: IEntities.AdoptionPost): IEntities.PetCardData => {
     const pet = post.pet;
 
     // Get the main image
@@ -344,16 +226,6 @@ export default function PetGallery() {
       <div className="flex justify-between items-center mb-8">
         <PageHeader title="Làm quen với các bé" />
         <Filter filters={filterConfigs} />
-      </div>
-
-      {/* Stats display */}
-      <div className="mb-4 text-sm text-gray-600">
-        Hiển thị {displayPosts.length} trong tổng số {filteredPosts.length} bài đăng
-        {filteredPosts.length !== allPosts.length && (
-          <span className="text-blue-600 ml-1">
-            (đã lọc từ {allPosts.length} bài đăng)
-          </span>
-        )}
       </div>
 
       {loading ? (

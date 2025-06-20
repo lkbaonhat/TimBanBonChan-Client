@@ -10,7 +10,7 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
-    const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
+    const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo)
     const isAuthenticated = useSelector(selectorAuth.isAuthenticated)
 
     if (!Object.keys(userInfo).length || !isAuthenticated) {

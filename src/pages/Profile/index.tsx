@@ -34,7 +34,7 @@ import { toast } from "sonner";
 import { MyPets, PetCareHistory } from "./components";
 
 export default function ProfilePage() {
-  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+  const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
   const [activeTab, setActiveTab] = useState("personal-info");
   const [readyToAdopt, setReadyToAdopt] = useState(userInfo.isReadyToAdopt);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);

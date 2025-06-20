@@ -11,7 +11,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbS
 
 export default function AddPetPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
+  const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo)
   const navigate = useNavigate()
 
   const handleSubmit = async (values: PetFormValues) => {

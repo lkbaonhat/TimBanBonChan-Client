@@ -25,11 +25,14 @@ const globalSlice = createSlice({
       if (verifyIndex !== -1) {
         state.petsNeedingVerification.splice(verifyIndex, 1);
       }
+    },
+    setPetCate: (state, action: PayloadAction<[]>) => {
+      state.petCategories = action.payload
     }
   },
 });
 
-export const { setListPet, setPetsNeedingVerification, verifyPet } = globalSlice.actions;
+export const { setListPet, setPetsNeedingVerification, verifyPet, setPetCate } = globalSlice.actions;
 
 export { globalSlice };
 export default globalSlice.reducer;

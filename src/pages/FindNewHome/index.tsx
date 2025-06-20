@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Check } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
@@ -20,7 +18,6 @@ interface AdopterProfile {
   imageUrl: string;
   verified?: boolean;
   role?: string;
-  isCurrentUser?: boolean;
 }
 
 // API Response type based on your actual API structure
@@ -61,18 +58,47 @@ export default function FindNewHome() {
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
 
-  // Current user info
-  const currentUserLogin = "lkbaonhat";
-
-  // Function to generate random age (since API doesn't provide age)
-  const generateRandomAge = (): number => {
-    return Math.floor(Math.random() * (45 - 20 + 1)) + 20; // Random age between 20-45
-  };
-
   // Function to check if user has Staff or Admin role
   const hasStaffOrAdminRole = (roles: string[]): boolean => {
     return roles.some((role) => role === "Staff" || role === "Admin");
   };
+
+  // Function to calculate age from birthDate
+  const calculateAge = (birthDate: string): number | string => {
+    console.log(birthDate)
+    if (!birthDate) {
+      return "Chưa cập nhật";
+    }
+
+    try {
+      const today = new Date("2025-06-20"); // Current date from context
+      const birth = new Date(birthDate);
+
+      // Check if birthDate is valid
+      if (isNaN(birth.getTime())) {
+        return "Chưa cập nhật";
+      }
+
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+
+      // Adjust age if birthday hasn't occurred this year
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+
+      // Return "Chưa cập nhật" for unrealistic ages
+      if (age < 0 || age > 150) {
+        return "Chưa cập nhật";
+      }
+
+      return age;
+    } catch (error) {
+      console.error("Error calculating age:", error);
+      return "Chưa cập nhật";
+    }
+  };
+
 
   // Function to get primary role (excluding Staff and Admin)
   const getPrimaryRole = (roles: string[]): string => {
@@ -126,6 +152,7 @@ export default function FindNewHome() {
         setTotalCount(filteredUsers.length); // Use filtered count instead of API total
 
         // Transform API data to match our component's expected structure
+<<<<<<< HEAD
         const transformedProfiles: AdopterProfile[] = filteredUsers.map(
           (user) => {
             const primaryRole = getPrimaryRole(user.roles);
@@ -145,6 +172,21 @@ export default function FindNewHome() {
             };
           }
         );
+=======
+        const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
+          const primaryRole = getPrimaryRole(user.roles);
+          return {
+            id: user.userId.toString(),
+            name: user.fullName || user.username,
+            age: calculateAge(user.birthDate),
+            location: user.city || "Chưa cập nhật",
+            occupation: getRoleDisplay(primaryRole),
+            imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
+            verified: user.isVerified,
+            role: primaryRole,
+          };
+        });
+>>>>>>> 48253beec17cc46a139f72da363bd11ce553f598
 
         setProfiles(transformedProfiles);
       } catch (err: any) {
@@ -197,18 +239,6 @@ export default function FindNewHome() {
         { id: "verified", label: "Đã xác thực", value: "verified" },
         { id: "age", label: "Theo tuổi", value: "age" },
         { id: "current-user", label: "Ưu tiên tôi", value: "current-user" },
-      ],
-    },
-    {
-      id: "roleFilter",
-      placeholder: "Vai trò",
-      value: roleFilter,
-      onChange: setRoleFilter,
-      options: [
-        { id: "all", label: "Tất cả vai trò", value: "all" },
-        { id: "Pet Foster", label: "Người nuôi dưỡng", value: "Pet Foster" },
-        { id: "Volunteer", label: "Tình nguyện viên", value: "Volunteer" },
-        { id: "Guest", label: "Khách", value: "Guest" },
       ],
     },
     {
@@ -301,11 +331,14 @@ export default function FindNewHome() {
   // Apply sorting
   const sortedProfiles = [...filteredProfiles].sort((a, b) => {
     switch (filter) {
+<<<<<<< HEAD
       case "current-user":
         // Show current user first
         if (a.isCurrentUser && !b.isCurrentUser) return -1;
         if (!a.isCurrentUser && b.isCurrentUser) return 1;
         return a.name.localeCompare(b.name, "vi");
+=======
+>>>>>>> 48253beec17cc46a139f72da363bd11ce553f598
       case "name":
         return a.name.localeCompare(b.name, "vi");
       case "age":
@@ -368,25 +401,21 @@ export default function FindNewHome() {
 
       setTotalCount(filteredUsers.length);
 
-      const transformedProfiles: AdopterProfile[] = filteredUsers.map(
-        (user) => {
-          const primaryRole = getPrimaryRole(user.roles);
-          const isCurrentUser = user.username === currentUserLogin;
-
-          return {
-            id: user.userId.toString(),
-            name: user.fullName || user.username,
-            age: generateRandomAge(),
-            location: user.city || "Chưa cập nhật",
-            occupation: getRoleDisplay(primaryRole),
-            imageUrl:
-              user.profilePicture || "/placeholder.svg?height=200&width=200",
-            verified: user.isVerified,
-            role: primaryRole,
-            isCurrentUser,
-          };
-        }
-      );
+      // Transform API data to match our component's expected structure
+      const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
+        const primaryRole = getPrimaryRole(user.roles);
+        console.log(user)
+        return {
+          id: user.userId.toString(),
+          name: user.fullName || user.username,
+          age: calculateAge(user.birthDate),
+          location: user.city || "Chưa cập nhật",
+          occupation: getRoleDisplay(primaryRole),
+          imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
+          verified: user.isVerified,
+          role: primaryRole,
+        };
+      });
 
       setProfiles(transformedProfiles);
     } catch (err: any) {
@@ -490,6 +519,7 @@ export default function FindNewHome() {
           )}
         </div>
 
+
         {/* Profile Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentProfiles.map((profile) => (
@@ -500,6 +530,7 @@ export default function FindNewHome() {
                   ? "ring-2 ring-blue-400 ring-opacity-50"
                   : ""
               }`}
+
             >
               <Card
                 type="person"
@@ -507,6 +538,7 @@ export default function FindNewHome() {
                 title={
                   profile.isCurrentUser ? `${profile.name} (Bạn)` : profile.name
                 }
+
                 gender={`${profile.age} tuổi`}
                 location={profile.location}
                 area={profile.occupation || ""}
@@ -514,6 +546,7 @@ export default function FindNewHome() {
                 buttonText={
                   profile.isCurrentUser ? "Xem hồ sơ của tôi" : "Xem chi tiết"
                 }
+
                 onButtonClick={() => handleProfileDetail(profile.id)}
               />
             </div>
