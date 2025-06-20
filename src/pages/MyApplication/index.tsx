@@ -71,7 +71,7 @@ export default function MyApplicationsPage() {
         verification: true
     });
     const [error, setError] = useState<string | null>(null);
-    const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+    const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
 
     const fetchVolunteerApplications = async () => {
         try {

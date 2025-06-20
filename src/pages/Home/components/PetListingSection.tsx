@@ -4,34 +4,12 @@ import Card from "@/components/Card/Card";
 import { Button } from "@/components/ui/button";
 import DotPagination from "@/components/Pagination/DotPagination";
 import { Link, useNavigate } from "react-router-dom";
-import { Pet } from "@/types/Pet";
 import { petService } from "@/services/petService";
 import { useDispatch, useSelector } from "react-redux";
 import { selectorGlobal } from "@/store/modules/global/selector";
 
-// Define the post structure based on your API response
-interface AdoptionPost {
-  postId: number;
-  title: string;
-  content: string;
-  adoptionFee: number;
-  location: string;
-  city: string;
-  district: string;
-  postStatus: string;
-  isUrgent: boolean;
-  viewCount: number;
-  createdByUserId: number;
-  createdDate: string;
-  pet: Pet & {
-    categoryName: string;
-    breedName: string;
-    imageUrls: string[];
-  };
-}
-
 const PetListingSection = () => {
-  const [activeCategory, setActiveCategory] = useState<number | string>(6); // Default to "Chó"
+  const [activeCategory, setActiveCategory] = useState<number | string>('all');
   const [currentPage, setCurrentPage] = useState(0);
   const [activeDot, setActiveDot] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -40,7 +18,7 @@ const PetListingSection = () => {
   const petCate = useSelector(selectorGlobal.petCategories);
 
   // State for API data - using AdoptionPost array
-  const [allPosts, setAllPosts] = useState<AdoptionPost[]>([]);
+  const [allPosts, setAllPosts] = useState<IEntities.AdoptionPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,7 +34,7 @@ const PetListingSection = () => {
         setError(null);
 
         const response = await petService.getAllAdoptionPost();
-        let posts: AdoptionPost[] = [];
+        let posts: IEntities.AdoptionPost[] = [];
 
         if (response?.data?.success === true) {
           if (Array.isArray(response.data.data?.items)) {
@@ -79,7 +57,6 @@ const PetListingSection = () => {
         );
 
         setAllPosts(validPosts);
-        console.log("Fetched posts:", validPosts);
       } catch (err: any) {
         console.error("Error fetching pets:", err);
         setError("Không thể tải danh sách thú cưng. Vui lòng thử lại sau.");
@@ -160,7 +137,7 @@ const PetListingSection = () => {
         </h2>
 
         {/* Category Tabs */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4">
           <div className="inline-flex rounded-full p-1 cursor-pointer gap-2 flex-wrap">
             {allCategories.map((category) => (
               <Button
@@ -197,15 +174,8 @@ const PetListingSection = () => {
           </div>
         ) : (
           <>
-            {/* Show total count */}
-            <div className="text-center mb-4">
-              <p className="text-gray-600">
-                Tìm thấy {filteredPosts.length} bé cần tìm chủ mới
-              </p>
-            </div>
-
             {/* Navigation Controls */}
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end mb-2">
               <div className="flex space-x-2">
                 <Button
                   variant="ghost"
@@ -248,13 +218,13 @@ const PetListingSection = () => {
                 >
                   {Array.from({ length: totalPages }).map((_, pageIndex) => (
                     <div key={pageIndex} className="w-full flex-shrink-0">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-2">
                         {filteredPosts
                           .slice(pageIndex * 3, (pageIndex + 1) * 3)
                           .map((post) => {
                             const pet = post.pet;
                             const postId = post.postId
-                            const displayAge = pet.age === "Test" ? "3 tháng" : `${pet.age} ${pet.ageUnit?.toLowerCase() || 'tháng'}`;
+                            const displayAge = pet.age;
 
                             return (
                               <div

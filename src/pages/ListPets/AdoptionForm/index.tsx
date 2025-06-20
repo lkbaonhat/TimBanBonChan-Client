@@ -95,7 +95,7 @@ export default function AdoptionForm() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const userInfo: IREDUX.UserInfo = useSelector(selectorAuth.userInfo);
+  const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
 
   // Current user and time context
   const currentUserLogin = "lkbaonhat";
