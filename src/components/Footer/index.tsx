@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
-import { BANNER, LOGO } from '@/constants/global';
+import { BANNER, LOGO, SOCIAL } from '@/constants/global';
 
 export default function Footer() {
   return (
@@ -76,14 +76,14 @@ export default function Footer() {
         <div className='mb-8 md:mb-0'>
           <h3 className='font-bold text-lg mb-4'>Kết nối</h3>
           <div className='flex space-x-4 mb-4'>
-            <a
-              href='https://facebook.com'
+            <Link
+              to={SOCIAL.FACEBOOK}
               target='_blank'
               rel='noopener noreferrer'
               aria-label='Facebook'
             >
               <Facebook className='w-5 h-5' />
-            </a>
+            </Link>
             <a
               href='https://tiktok.com'
               target='_blank'

@@ -39,5 +39,8 @@ export const petService = {
   },
   getAllAdoptionPost: () => {
     return axiosClient.get(API_ENDPOINT.PET.ADOPTION_POST)
+  },
+  getPetCategories: () => {
+    return axiosClient.get(`/petcategories`)
   }
 };
