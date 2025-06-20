@@ -71,7 +71,6 @@ export default function FindNewHome() {
     }
 
     try {
-      const today = new Date("2025-06-20"); // Current date from context
       const birth = new Date(birthDate);
 
       // Check if birthDate is valid
@@ -151,28 +150,6 @@ export default function FindNewHome() {
 
         setTotalCount(filteredUsers.length); // Use filtered count instead of API total
 
-        // Transform API data to match our component's expected structure
-<<<<<<< HEAD
-        const transformedProfiles: AdopterProfile[] = filteredUsers.map(
-          (user) => {
-            const primaryRole = getPrimaryRole(user.roles);
-            const isCurrentUser = user.username === currentUserLogin;
-
-            return {
-              id: user.userId.toString(),
-              name: user.fullName || user.username,
-              age: generateRandomAge(), // Generate random age since API doesn't provide it
-              location: user.city || "Chưa cập nhật",
-              occupation: getRoleDisplay(primaryRole),
-              imageUrl:
-                user.profilePicture || "/placeholder.svg?height=200&width=200",
-              verified: user.isVerified,
-              role: primaryRole,
-              isCurrentUser,
-            };
-          }
-        );
-=======
         const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
           const primaryRole = getPrimaryRole(user.roles);
           return {
@@ -186,7 +163,6 @@ export default function FindNewHome() {
             role: primaryRole,
           };
         });
->>>>>>> 48253beec17cc46a139f72da363bd11ce553f598
 
         setProfiles(transformedProfiles);
       } catch (err: any) {
@@ -331,14 +307,6 @@ export default function FindNewHome() {
   // Apply sorting
   const sortedProfiles = [...filteredProfiles].sort((a, b) => {
     switch (filter) {
-<<<<<<< HEAD
-      case "current-user":
-        // Show current user first
-        if (a.isCurrentUser && !b.isCurrentUser) return -1;
-        if (!a.isCurrentUser && b.isCurrentUser) return 1;
-        return a.name.localeCompare(b.name, "vi");
-=======
->>>>>>> 48253beec17cc46a139f72da363bd11ce553f598
       case "name":
         return a.name.localeCompare(b.name, "vi");
       case "age":
