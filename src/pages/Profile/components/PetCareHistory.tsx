@@ -1,6 +1,4 @@
-import ContentHeader from "@/components/ContentHeader/ContentHeader";
 import Card from "@/components/Card/Card";
-import { Separator } from "@/components/ui/separator";
 
 export default function PetCareHistory() {
   return (

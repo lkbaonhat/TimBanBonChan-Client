@@ -16,7 +16,7 @@ interface AvatarUploadDialogProps {
   onOpenChange: (open: boolean) => void;
   currentAvatar?: string;
   userName?: string;
-  userId: number;
+  userId?: number; // Không còn là prop bắt buộc
   onAvatarUpdate: (avatarUrl: string) => void;
 }
 
@@ -25,6 +25,7 @@ const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
   onOpenChange,
   currentAvatar,
   userName,
+  userId,
   onAvatarUpdate,
 }) => {
   const [newAvatarUrl, setNewAvatarUrl] = useState<string>("");
