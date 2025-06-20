@@ -71,7 +71,6 @@ export default function FindNewHome() {
     }
 
     try {
-      const today = new Date("2025-06-20"); // Current date from context
       const birth = new Date(birthDate);
 
       // Check if birthDate is valid
@@ -152,8 +151,6 @@ export default function FindNewHome() {
         );
 
         setTotalCount(filteredUsers.length); // Use filtered count instead of API total
-
-        // Transform API data to match our component's expected structure
 
         const transformedProfiles: AdopterProfile[] = filteredUsers.map(
           (user) => {
@@ -315,11 +312,6 @@ export default function FindNewHome() {
   // Apply sorting
   const sortedProfiles = [...filteredProfiles].sort((a, b) => {
     switch (filter) {
-      case "current-user":
-        // Show current user first
-        if (a.isCurrentUser && !b.isCurrentUser) return -1;
-        if (!a.isCurrentUser && b.isCurrentUser) return 1;
-        return a.name.localeCompare(b.name, "vi");
       case "name":
         return a.name.localeCompare(b.name, "vi");
       case "age":
