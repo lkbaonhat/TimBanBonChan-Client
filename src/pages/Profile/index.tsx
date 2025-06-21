@@ -1,12 +1,10 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Camera, Heart } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,14 +13,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Camera, Heart } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
-import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectorAuth } from "@/store/modules/auth/selector";
 import AvatarUploadDialog from "./AvatarUpload";
 import { userService } from "@/services/userService";
+import { Input } from "@/components/ui/input";
+import { setUserInfo } from "@/store/modules/auth/slice";
+import { toast } from "sonner";
+// Import the extracted components
+import { MyPets, PetCareHistory } from "./components";
 
 export default function ProfilePage() {
   const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
@@ -32,42 +41,239 @@ export default function ProfilePage() {
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
   const [pendingAdoptState, setPendingAdoptState] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  // Format dd/mm/yyyy to yyyy-mm-dd for date input
+  const formatDateForInput = (dateString: string | undefined) => {
+    if (!dateString) return "";
 
-  // Initialize current avatar from userInfo
-  useState(() => {
+    // Check if the date is already in yyyy-mm-dd format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // Check if the date is in dd/mm/yyyy format
+    const ddmmyyyyRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = dateString.match(ddmmyyyyRegex);
+
+    if (match) {
+      const [, day, month, year] = match;
+      return `${year}-${month}-${day}`;
+    }
+
+    console.warn("Unsupported date format:", dateString);
+    return "";
+  };
+
+  // Form state
+  const [formData, setFormData] = useState({
+    fullName: userInfo.fullName || "",
+    birthDate: formatDateForInput(userInfo.birthDate) || "",
+    email: userInfo.email || "",
+    occupation: userInfo.occupation || "",
+    gender: userInfo.gender || "",
+    phoneNumber: userInfo.phoneNumber || "",
+    address: userInfo.address || "",
+    city: userInfo.city || "",
+    district: userInfo.district || "",
+    bio: userInfo.bio || "",
+    hobby: userInfo.hobby || "",
+    description: userInfo.description || "",
+  });
+
+  // Initialize current avatar
+  useEffect(() => {
     if (userInfo.profilePicture) {
       setCurrentAvatar(userInfo.profilePicture);
     }
-  });
+  }, [userInfo.profilePicture]);
 
-  // Handle switch toggle with confirmation
-  const handleToggleAdoptionStatus = async (newStatus: boolean) => {
-    setPendingAdoptState(newStatus);
-    setShowConfirmDialog(true);
-    const payload = {
-      userId: userInfo.userId,
-      isReadyToAdopt: newStatus
+  // Handle input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+  // Handle textarea change
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  }; // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true); // Validate required fields
+    const newErrors: { [key: string]: string } = {};
+    let hasErrors = false;
+
+    // Validate fullName (required field)
+    if (!formData.fullName) {
+      newErrors.fullName = "Họ và tên là bắt buộc";
+      hasErrors = true;
+    } // Validate birthDate (optional field, but must be in correct format if provided)
+    if (formData.birthDate) {
+      // Validate date format (should be YYYY-MM-DD from the date input)
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(formData.birthDate)) {
+        newErrors.birthDate = "Định dạng ngày không hợp lệ";
+        hasErrors = true;
+        console.error("Invalid date format:", formData.birthDate);
+      }
     }
-    if (userInfo.userId) {
-      await userService.updateAvatarProfile(userInfo.userId, payload)
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      setIsLoading(false);
+      toast.error("Vui lòng kiểm tra lại thông tin");
+      return;
+    }
+
+    try {
+      // Handle date format or null value for .NET DateOnly compatibility
+      console.log("Original date input:", formData.birthDate);
+
+      // Create updated form data with userId and handle empty birthDate
+      const updatedFormData = {
+        ...formData,
+        userId: userInfo.userId, // Đảm bảo userId nằm trong payload
+        // Convert empty birthDate to null
+        birthDate: formData.birthDate || null,
+      };
+      console.log("Updating user profile with ID:", userInfo.userId);
+      console.log("Form data to be sent:", updatedFormData); // Send the updated form data directly
+      console.log("Final payload:", updatedFormData);
+
+      // userService.updateUserProfile expects userId as the first parameter
+      const response = await userService.updateUserProfile(
+        userInfo.userId || 0,
+        updatedFormData
+      );
+      console.log("Profile update response:", response);
+
+      // Update Redux store (note: keep original date format in Redux for input compatibility)
+      dispatch(
+        setUserInfo({
+          ...userInfo,
+          ...formData,
+        })
+      );
+
+      // Clear any errors
+      setErrors({});
+      toast.success("Cập nhật thông tin thành công");
+    } catch (error: unknown) {
+      console.error("Error updating profile:", error);
+
+      // Xử lý lỗi theo kiểu AxiosError
+      const err = error as {
+        message?: string;
+        response?: { data?: unknown; status?: number };
+      };
+      console.error("Error details:", {
+        message: err?.message,
+        response: err?.response?.data,
+        status: err?.response?.status,
+      });
+
+      toast.error("Không thể cập nhật thông tin", {
+        description: "Đã xảy ra lỗi khi cập nhật thông tin cá nhân",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Handle confirmation dialog result
-  const handleConfirmToggle = (confirmed: boolean) => {
-    if (confirmed) {
-      setReadyToAdopt(pendingAdoptState);
-    }
+  // Toggle adoption status
+  const handleToggleAdoptionStatus = async (checked: boolean) => {
+    // If we're already processing a request, don't allow another one
+    if (pendingAdoptState) return;
+
+    setPendingAdoptState(true);
     setShowConfirmDialog(false);
+
+    if (checked) {
+      // If turning on, just update the state
+      setReadyToAdopt(true);
+      try {
+        await userService.updateAdopterStatus(userInfo.userId || 0, true);
+        dispatch(
+          setUserInfo({
+            ...userInfo,
+            isReadyToAdopt: true,
+          })
+        );
+        toast.success("Bạn đã sẵn sàng nhận nuôi thú cưng");
+      } catch (error) {
+        console.error("Error updating adopter status:", error);
+        setReadyToAdopt(false); // Revert on error
+        toast.error("Không thể cập nhật trạng thái");
+      }
+    } else {
+      // If turning off, show confirmation
+      setShowConfirmDialog(true);
+    }
+
+    setPendingAdoptState(false);
   };
 
-  // Handle avatar update
-  const handleAvatarUpdate = (newAvatarUrl: string) => {
-    setCurrentAvatar(newAvatarUrl);
-    // Here you would typically also update the user info in your store/database
-    // dispatch(updateUserAvatar(newAvatarUrl));
-    console.log("New avatar URL:", newAvatarUrl);
+  // Confirm turning off adoption status
+  const handleConfirmDisableAdopt = async () => {
+    setPendingAdoptState(true);
+    setShowConfirmDialog(false);
+    try {
+      await userService.updateAdopterStatus(userInfo.userId || 0, false);
+      setReadyToAdopt(false);
+      dispatch(
+        setUserInfo({
+          ...userInfo,
+          isReadyToAdopt: false,
+        })
+      );
+      toast.success("Đã cập nhật trạng thái");
+    } catch (error) {
+      console.error("Error updating adopter status:", error);
+      toast.error("Không thể cập nhật trạng thái");
+    } finally {
+      setPendingAdoptState(false);
+    }
+  };
+
+  // Update avatar
+  const handleAvatarUploaded = async (avatarUrl: string) => {
+    try {
+      // Update avatar in the backend
+      await userService.updateAvatarProfile(userInfo.userId || 0, {
+        userId: userInfo.userId, // Đảm bảo userId nằm trong payload
+        profilePicture: avatarUrl,
+      });
+
+      // Update locally
+      setCurrentAvatar(avatarUrl);
+
+      // Update in Redux
+      dispatch(
+        setUserInfo({
+          ...userInfo,
+          profilePicture: avatarUrl,
+        })
+      );
+
+      toast.success("Cập nhật ảnh đại diện thành công");
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      toast.error("Không thể cập nhật ảnh đại diện");
+    }
+  };
+
+  // Handle navigating to adopter form
+  const handleNavigateToAdopterForm = () => {
+    navigate(ROUTES.PUBLIC.VERIFY_ADOPTER);
   };
 
   const breadcrumbItems = [
@@ -80,17 +286,23 @@ export default function ProfilePage() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto py-6">
-        {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center gap-6 mb-10">
+      <div className="container mx-auto py-6 pb-20">
+        {/* Profile header */}
+        <div className="relative flex items-center mb-10">
           <div className="relative">
-            <Avatar className="w-24 h-24 rounded-full overflow-hidden">
+            <Avatar className="h-24 w-24 border-2 border-gray-100 rounded-full shadow-sm">
               <AvatarImage
                 src={currentAvatar || userInfo.profilePicture}
                 alt={userInfo.fullName}
               />
               <AvatarFallback className="bg-[#C5E2F0] text-[#0053A3] font-medium">
-                {userInfo.fullName?.split(" ").pop()?.charAt(0).toUpperCase() || userInfo.fullName?.charAt(0).toUpperCase() || "U"}
+                {userInfo?.fullName
+                  ?.split(" ")
+                  .pop()
+                  ?.charAt(0)
+                  .toUpperCase() ||
+                  userInfo?.fullName?.charAt(0).toUpperCase() ||
+                  "U"}
               </AvatarFallback>
             </Avatar>
             <Button
@@ -102,163 +314,167 @@ export default function ProfilePage() {
               <Camera size={16} className="text-gray-600" />
             </Button>
           </div>
-          <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold">{userInfo.fullName}</h1>
-            <p className="text-gray-600 text-sm">
-              Người nhận nuôi | Tình nguyện viên
-            </p>
+
+          <div className="ml-6 flex-1">
+            <h1 className="font-bold text-2xl md:text-3xl text-gray-800">
+              {userInfo?.fullName || "User"}
+            </h1>
+            <div className="flex gap-2">
+              <span className="text-gray-600 text-sm font-medium">
+                Người nhận nuôi | Tình nguyện viên
+              </span>
+            </div>
           </div>
 
-          {/* Adoption Readiness Toggle - Moved to right side */}
-          <div className="flex items-center ml-auto flex-col max-w-xs">
-            <div className="flex items-left gap-2 px-4 py-2 rounded-full">
-              <Label
-                htmlFor="ready-to-adopt"
-                className="text-sm cursor-pointer order-1"
-              >
-                <span className="flex items-center gap-1">
-                  <Heart
-                    size={14}
-                    className={`${readyToAdopt
-                      ? "text-[#FF99C0] fill-[#FF99C0]"
-                      : "text-gray-400"
+          {/* Conditional rendering based on verification status */}
+          <div className="flex flex-col items-end max-w-xs">
+            {userInfo.isVerifiedAdopter ? (
+              // Show adoption toggle for verified adopters
+              <div className="flex items-center gap-2 py-2">
+                <Label
+                  htmlFor="ready-to-adopt"
+                  className="text-sm cursor-pointer order-1"
+                >
+                  <span className="flex items-center gap-1">
+                    <Heart
+                      size={14}
+                      className={`${
+                        readyToAdopt
+                          ? "text-[#FF99C0] fill-[#FF99C0]"
+                          : "text-gray-400"
                       }`}
-                  />
-                  <span className="text-gray-700">
-                    {readyToAdopt
-                      ? "Sẵn sàng nhận nuôi"
-                      : "Chưa sẵn sàng nhận nuôi"}
+                    />
+                    <span className="text-gray-700">
+                      {readyToAdopt
+                        ? "Sẵn sàng nhận nuôi"
+                        : "Chưa sẵn sàng nhận nuôi"}
+                    </span>
                   </span>
-                </span>
-              </Label>
-              <Switch
-                checked={readyToAdopt}
-                onCheckedChange={handleToggleAdoptionStatus}
-                className={`${readyToAdopt ? "bg-[#FF99C0]" : "bg-gray-300"
+                </Label>
+                <Switch
+                  checked={readyToAdopt || false}
+                  onCheckedChange={handleToggleAdoptionStatus}
+                  className={`${
+                    readyToAdopt ? "bg-[#FF99C0]" : "bg-gray-300"
                   } order-2`}
-              />
-            </div>
-            <p className="text-xs text-gray-700">
-              Nếu bạn sẵn sàng nhận nuôi thêm thú cưng và muốn chúng tôi liên hệ
-              khi có bé phù hợp với bạn.
-            </p>
+                />
+                <p className="text-xs text-gray-700 text-right mt-2 font-bold">
+                  Bật nếu bạn sẵn sàng nhận nuôi thêm thú cưng
+                </p>
+              </div>
+            ) : (
+              <div>
+                <Button
+                  variant="pink"
+                  onClick={handleNavigateToAdopterForm}
+                  animation={"none"}
+                >
+                  Đăng ký nhận nuôi
+                </Button>
+                <p className="text-xs text-gray-700 text-left font-bold mt-2">
+                  Hãy gửi đơn cho chúng tôi nếu bạn sẵn sàng nhận nuôi thêm thú
+                  cưng
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Avatar Upload Dialog */}
-        <AvatarUploadDialog
-          open={showAvatarDialog}
-          onOpenChange={setShowAvatarDialog}
-          currentAvatar={currentAvatar || userInfo.profilePicture}
-          userName={userInfo.fullName}
-          userId={userInfo.userId || 0}
-          onAvatarUpdate={handleAvatarUpdate}
-        />
-
-        {/* Confirmation Dialog */}
+        {/* Disable adoption dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Xác nhận thay đổi</DialogTitle>
+              <DialogTitle>Xác nhận tắt trạng thái sẵn sàng</DialogTitle>
               <DialogDescription>
-                {pendingAdoptState ? (
-                  <span>
-                    Bạn có muốn đặt trạng thái thành{" "}
-                    <strong>Sẵn sàng nhận nuôi</strong> không?
-                  </span>
-                ) : (
-                  <span>
-                    Bạn có muốn đặt trạng thái thành{" "}
-                    <strong>Chưa sẵn sàng nhận nuôi</strong> không?
-                  </span>
-                )}
+                Bạn có chắc chắn muốn tắt trạng thái sẵn sàng nhận nuôi? Bạn sẽ
+                không xuất hiện trong danh sách người có thể nhận nuôi.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button
-                variant="blue"
-                animation="none"
-                onClick={() => handleConfirmToggle(false)}
+                variant="outline"
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  setReadyToAdopt(true); // Revert switch state
+                }}
               >
                 Hủy
               </Button>
-              <Button
-                variant="pink"
-                animation="none"
-                onClick={() => handleConfirmToggle(true)}
-              >
-                Xác nhận
-              </Button>
+              <Button onClick={handleConfirmDisableAdopt}>Xác nhận</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
-        {/* Rest of your existing tabs content... */}
-        <Tabs
-          defaultValue="personal-info"
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          {/* Your existing tabs content remains the same */}
-          <TabsList className="flex w-full mb-8 bg-transparent">
-            <TabsTrigger
-              value="personal-info"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "personal-info"
-                ? "border-b-1 border-black text-black"
-                : ""
-                }`}
-            >
-              Thông tin cá nhân
-            </TabsTrigger>
-            <TabsTrigger
-              value="my-pets"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "my-pets"
-                ? "border-b-1 border-black text-black"
-                : ""
-                }`}
-            >
-              Thú cưng của tôi
-            </TabsTrigger>
-            <TabsTrigger
-              value="pet-criteria"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "pet-criteria"
-                ? "border-b-1 border-black text-black"
-                : ""
-                }`}
-            >
-              Tiểu sử nuôi thú cưng
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Personal Info Tab */}
-          <TabsContent value="personal-info" className="space-y-6">
+        {/* Avatar dialog */}
+        <AvatarUploadDialog
+          open={showAvatarDialog}
+          onOpenChange={setShowAvatarDialog}
+          onAvatarUpdate={handleAvatarUploaded}
+          currentAvatar={currentAvatar}
+          userName={userInfo.fullName}
+          userId={userInfo.userId}
+        />
+        {/* Tab Navigation */}
+        <div className="flex border-b border-gray-200 mb-8">
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "personal-info"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("personal-info")}
+          >
+            Thông tin cá nhân
+          </button>
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "my-pets"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("my-pets")}
+          >
+            Thú cưng của tôi
+          </button>
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "pet-criteria"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("pet-criteria")}
+          >
+            Tiểu sử nuôi thú cưng
+          </button>
+        </div>
+        {/* Tab Content */}
+        {activeTab === "personal-info" && (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Info Tab Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label
-                  htmlFor="fullname"
+                  htmlFor="fullName"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Họ và tên
+                  Họ và tên <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="fullname"
-                  defaultValue={userInfo.fullName || ""}
-                  className="w-full rounded-md"
+                  id="fullName"
+                  value={formData.fullName}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    // Clear error when user enters a value
+                    if (e.target.value) {
+                      setErrors((prev) => ({ ...prev, fullName: "" }));
+                    }
+                  }}
+                  className={`mt-1 ${errors.fullName ? "border-red-500" : ""}`}
+                  placeholder="Nhập họ và tên"
                 />
-              </div>
-              <div>
-                <Label
-                  htmlFor="birthdate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Ngày tháng năm sinh
-                </Label>
-                <Input
-                  id="birthdate"
-                  defaultValue={userInfo.birthDate || ""}
-                  className="w-full rounded-md"
-                />
+                {errors.fullName && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.fullName}
+                  </span>
+                )}
               </div>
               <div>
                 <Label
@@ -269,8 +485,89 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="email"
-                  defaultValue={userInfo.email || ""}
-                  className="w-full rounded-md"
+                  type="email"
+                  value={formData.email}
+                  disabled={true}
+                  className="mt-1 bg-gray-50"
+                  placeholder="name@example.com"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="birthDate"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Ngày sinh
+                </Label>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  value={formData.birthDate}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    // Clear error when user enters a value
+                    if (e.target.value) {
+                      setErrors((prev) => ({ ...prev, birthDate: "" }));
+
+                      // Log selected date for debugging
+                      console.log("Date selected:", e.target.value);
+
+                      // Parse date parts to verify format
+                      const parts = e.target.value.split("-");
+                      if (parts.length === 3) {
+                        console.log(
+                          `Date parts: Year=${parts[0]}, Month=${parts[1]}, Day=${parts[2]}`
+                        );
+                      }
+                    }
+                  }}
+                  className={`mt-1 ${errors.birthDate ? "border-red-500" : ""}`}
+                />
+                {errors.birthDate && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.birthDate}
+                  </span>
+                )}
+                <span className="text-xs text-gray-500 mt-1 block">
+                  Định dạng: dd/mm/yyyy
+                </span>
+              </div>
+              <div>
+                <Label
+                  htmlFor="gender"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Giới tính
+                </Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(val) =>
+                    setFormData((prev) => ({ ...prev, gender: val }))
+                  }
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Chọn giới tính" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Nam">Nam</SelectItem>
+                    <SelectItem value="Nữ">Nữ</SelectItem>
+                    <SelectItem value="Khác">Khác</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label
+                  htmlFor="phoneNumber"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Số điện thoại
+                </Label>
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Nhập số điện thoại"
                 />
               </div>
               <div>
@@ -282,51 +579,10 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="occupation"
-                  defaultValue={userInfo.occupation || ""}
-                  className="w-full rounded-md"
-                />
-              </div>
-              <div>
-                <Label
-                  htmlFor="gender"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Giới tính
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="gender"
-                    defaultValue={userInfo.gender || ""}
-                    className="w-full rounded-md pr-10"
-                    readOnly
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-gray-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <Label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Số điện thoại
-                </Label>
-                <Input
-                  id="phone"
-                  defaultValue="09.xxx.xxx"
-                  className="w-full rounded-md"
+                  value={formData.occupation}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Nhập nghề nghiệp"
                 />
               </div>
               <div>
@@ -338,156 +594,79 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="address"
-                  defaultValue={userInfo.address || ""}
-                  className="w-full rounded-md"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Địa chỉ"
                 />
               </div>
               <div>
+                <Label
+                  htmlFor="city"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Tỉnh/Thành phố
+                </Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Tỉnh/Thành phố"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="district"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Quận/Huyện
+                </Label>
+                <Input
+                  id="district"
+                  value={formData.district}
+                  onChange={handleInputChange}
+                  className="mt-1"
+                  placeholder="Quận/Huyện"
+                />
+              </div>
+              <div className="md:col-span-2">
                 <Label
                   htmlFor="bio"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Mô tả bản thân
+                  Tiểu sử
                 </Label>
-                <Input
+                <Textarea
                   id="bio"
-                  defaultValue={userInfo.bio || ""}
-                  className="w-full rounded-md"
-                />
-              </div>
-              <div>
-                <Label
-                  htmlFor="interests"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Sở thích cá nhân
-                </Label>
-                <Input
-                  id="interests"
-                  defaultValue={userInfo.hobby || ""}
-                  className="w-full rounded-md"
+                  value={formData.bio}
+                  onChange={handleTextareaChange}
+                  rows={4}
+                  className="mt-1"
+                  placeholder="Một số thông tin về bạn"
                 />
               </div>
             </div>
+
             <div className="flex justify-center mt-8">
-              <Button variant="blue" className="px-10 py-2" animation="none">
-                Lưu thay đổi
+              <Button
+                variant="blue"
+                size="lg"
+                animation={"none"}
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? "Đang lưu..." : "Lưu thông tin"}
               </Button>
             </div>
-          </TabsContent>
-
-          {/* My Pets Tab */}
-          <TabsContent value="my-pets">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Dog 1 */}
-              <Card
-                type="pet"
-                image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
-                title="Con Bơ"
-                badge="Chó"
-                gender="Cái"
-                location="1 tuổi"
-                className="h-full"
-                buttonText="Xem chi tiết"
-                onButtonClick={() =>
-                  navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "1")}`)
-                }
-              />
-
-              {/* Dog 2 */}
-              <Card
-                type="pet"
-                image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png"
-                title="Bi"
-                badge="Chó"
-                gender="Đực"
-                location="1 tuổi"
-                className="h-full"
-                buttonText="Xem chi tiết"
-                onButtonClick={() =>
-                  navigate(`${ROUTES.PUBLIC.UPDATE_PET.replace(":id", "2")}`)
-                }
-              />
-
-              {/* Add New Pet Card */}
-              <Card
-                type="pet"
-                image="/placeholder.svg"
-                title="Thêm thú cưng mới"
-                buttonText="Thêm thú cưng mới"
-                onButtonClick={() => navigate(ROUTES.PUBLIC.ADD_PET)}
-                className="h-full"
-              />
-            </div>
-          </TabsContent>
-
-          {/* Pet Criteria Tab */}
-          <TabsContent value="pet-criteria">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-lg font-medium">Lịch sử nuôi thú cưng</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Cat 1 */}
-                  <Card
-                    type="pet"
-                    image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                    title="Hoàng tử Cát"
-                    badge="Mèo"
-                    gender="Đực"
-                    location="1 tuổi"
-                    className="h-full"
-                  />
-
-                  {/* Cat 2 */}
-                  <Card
-                    type="pet"
-                    image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                    title="Liu"
-                    badge="Mèo"
-                    gender="Đực"
-                    location="1 tuổi"
-                    className="h-full"
-                  />
-
-                  {/* Cat 3 */}
-                  <Card
-                    type="pet"
-                    image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iqVxjNK7x1DWOMawOSw9OBgewjcpBG.png"
-                    title="Điều"
-                    badge="Mèo"
-                    gender="Đực"
-                    location="1 tuổi"
-                    className="h-full"
-                  />
-                </div>
-              </div>
-
-              <div className="rounded-xl">
-                <h2 className="text-lg font-medium mb-4">
-                  Kỹ năng nuôi thú cưng
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-md font-medium mb-2">
-                      Chăm sóc lông mao
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Tắm rửa, gỡ lông rụng
-                    </p>
-                    <Separator className="my-4" />
-                  </div>
-
-                  <div>
-                    <h3 className="text-md font-medium mb-2">Đặt cún đi dạo</h3>
-                    <p className="text-sm text-gray-600">
-                      Dắt chó đi dạo hàng ngày
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+          </form>
+        )}
+        {activeTab === "my-pets" && (
+          <MyPets userId={userInfo.userId as number} />
+        )}
+        {activeTab === "pet-criteria" && (
+          <PetCareHistory userId={userInfo.userId as number} />
+        )}
       </div>
     </div>
   );

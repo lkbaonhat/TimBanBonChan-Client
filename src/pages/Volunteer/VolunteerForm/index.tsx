@@ -107,7 +107,6 @@ export default function VolunteerPage() {
     try {
       const { termsAgreed, ...apiData } = values;
 
-
       const submitData = {
         userId: userInfo.userId,
         applicationStatus: "pending",
@@ -119,11 +118,11 @@ export default function VolunteerPage() {
       toast.success("Đơn đăng ký tình nguyện viên đã được gửi thành công!");
 
       form.reset();
-
     } catch (error: any) {
       console.error("Failed to submit volunteer application:", error);
 
-      const errorMessage = error.response?.data?.message ||
+      const errorMessage =
+        error.response?.data?.message ||
         error.message ||
         "Có lỗi xảy ra khi gửi đơn đăng ký. Vui lòng thử lại.";
 
@@ -143,7 +142,7 @@ export default function VolunteerPage() {
   return (
     <div className="min-h-screen pb-10">
       <Breadcrumb items={breadcrumbItems} />
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <ContentHeader title="Đăng ký làm tình nguyện viên" level="h1" />
 
         <Form {...form}>
@@ -151,7 +150,9 @@ export default function VolunteerPage() {
             {/* Personal Information */}
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Thông tin cá nhân</h2>
+                <h2 className="text-xl font-semibold mb-2">
+                  Thông tin cá nhân
+                </h2>
                 <p className="text-sm text-muted-foreground mb-6">
                   Vui lòng điền đầy đủ thông tin cá nhân của bạn
                 </p>
@@ -192,7 +193,10 @@ export default function VolunteerPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Giới tính *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Chọn giới tính" />
@@ -286,7 +290,8 @@ export default function VolunteerPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Cung cấp link Facebook để chúng tôi có thể liên lạc dễ dàng hơn
+                      Cung cấp link Facebook để chúng tôi có thể liên lạc dễ
+                      dàng hơn
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -297,7 +302,9 @@ export default function VolunteerPage() {
             {/* Experience and Skills */}
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Kinh nghiệm và Kỹ năng</h2>
+                <h2 className="text-xl font-semibold mb-2">
+                  Kinh nghiệm và Kỹ năng
+                </h2>
                 <p className="text-sm text-muted-foreground mb-6">
                   Chia sẻ về kinh nghiệm và kỹ năng của bạn
                 </p>
@@ -351,9 +358,12 @@ export default function VolunteerPage() {
             {/* Role Preferences */}
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Vai trò và Thời gian</h2>
+                <h2 className="text-xl font-semibold mb-2">
+                  Vai trò và Thời gian
+                </h2>
                 <p className="text-sm text-muted-foreground mb-6">
-                  Cho chúng tôi biết về vai trò bạn mong muốn và thời gian có thể tham gia
+                  Cho chúng tôi biết về vai trò bạn mong muốn và thời gian có
+                  thể tham gia
                 </p>
               </div>
 
@@ -364,7 +374,10 @@ export default function VolunteerPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Vai trò mong muốn *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Chọn vai trò" />
@@ -393,16 +406,25 @@ export default function VolunteerPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Ngày có thể tham gia *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Chọn ngày" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Thứ 2 - Thứ 6">Thứ 2 - Thứ 6</SelectItem>
-                          <SelectItem value="Thứ 7, Chủ nhật">Thứ 7, Chủ nhật</SelectItem>
-                          <SelectItem value="Tất cả các ngày">Tất cả các ngày</SelectItem>
+                          <SelectItem value="Thứ 2 - Thứ 6">
+                            Thứ 2 - Thứ 6
+                          </SelectItem>
+                          <SelectItem value="Thứ 7, Chủ nhật">
+                            Thứ 7, Chủ nhật
+                          </SelectItem>
+                          <SelectItem value="Tất cả các ngày">
+                            Tất cả các ngày
+                          </SelectItem>
                           <SelectItem value="Linh hoạt">Linh hoạt</SelectItem>
                         </SelectContent>
                       </Select>
@@ -418,16 +440,25 @@ export default function VolunteerPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Khung giờ có thể tham gia *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Chọn khung giờ" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Sáng (6:00 - 12:00)">Sáng (6:00 - 12:00)</SelectItem>
-                        <SelectItem value="Chiều (12:00 - 18:00)">Chiều (12:00 - 18:00)</SelectItem>
-                        <SelectItem value="Tối (18:00 - 22:00)">Tối (18:00 - 22:00)</SelectItem>
+                        <SelectItem value="Sáng (6:00 - 12:00)">
+                          Sáng (6:00 - 12:00)
+                        </SelectItem>
+                        <SelectItem value="Chiều (12:00 - 18:00)">
+                          Chiều (12:00 - 18:00)
+                        </SelectItem>
+                        <SelectItem value="Tối (18:00 - 22:00)">
+                          Tối (18:00 - 22:00)
+                        </SelectItem>
                         <SelectItem value="Cả ngày">Cả ngày</SelectItem>
                         <SelectItem value="Linh hoạt">Linh hoạt</SelectItem>
                       </SelectContent>
@@ -442,7 +473,9 @@ export default function VolunteerPage() {
                 name="motivation"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Lý do muốn trở thành tình nguyện viên *</FormLabel>
+                    <FormLabel>
+                      Lý do muốn trở thành tình nguyện viên *
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Chia sẻ lý do bạn muốn tham gia làm tình nguyện viên với chúng tôi..."
@@ -462,13 +495,17 @@ export default function VolunteerPage() {
             {/* Terms and Conditions */}
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Điều khoản và Cam kết</h2>
+                <h2 className="text-xl font-semibold mb-2">
+                  Điều khoản và Cam kết
+                </h2>
               </div>
 
               <div className="rounded-lg border p-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <h3 className="font-medium">Cam kết của tình nguyện viên:</h3>
+                    <h3 className="font-medium">
+                      Cam kết của tình nguyện viên:
+                    </h3>
                     <ul className="space-y-2 text-sm text-muted-foreground">
                       <li className="flex items-start gap-2">
                         <span className="font-medium text-primary">1.</span>
@@ -476,18 +513,23 @@ export default function VolunteerPage() {
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="font-medium text-primary">2.</span>
-                        Đồng ý để tổ chức lưu trữ và sử dụng thông tin cá nhân, hình ảnh
+                        Đồng ý để tổ chức lưu trữ và sử dụng thông tin cá nhân,
+                        hình ảnh
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="font-medium text-primary">3.</span>
-                        Tự chịu trách nhiệm về các sự cố ngoài tầm kiểm soát của tổ chức
+                        Tự chịu trách nhiệm về các sự cố ngoài tầm kiểm soát của
+                        tổ chức
                       </li>
                     </ul>
                   </div>
 
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <Heart className="h-6 w-6 text-pink-400 mt-1 flex-shrink-0" fill="currentColor" />
+                      <Heart
+                        className="h-6 w-6 text-pink-400 mt-1 flex-shrink-0"
+                        fill="currentColor"
+                      />
                       <div>
                         <h3 className="font-medium mb-1">
                           Nguyên tắc tình nguyện viên "Tìm bạn bốn chân"
@@ -520,7 +562,8 @@ export default function VolunteerPage() {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel className="text-sm font-normal">
-                        Tôi xác nhận đã đọc và đồng ý với tất cả điều khoản và cam kết trên *
+                        Tôi xác nhận đã đọc và đồng ý với tất cả điều khoản và
+                        cam kết trên *
                       </FormLabel>
                       <FormMessage />
                     </div>
@@ -536,7 +579,7 @@ export default function VolunteerPage() {
                 size="lg"
                 disabled={isSubmitting}
                 className="min-w-[250px]"
-                variant='blue'
+                variant="blue"
               >
                 {isSubmitting ? (
                   <>

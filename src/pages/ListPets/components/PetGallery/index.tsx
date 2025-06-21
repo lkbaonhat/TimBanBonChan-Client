@@ -30,7 +30,7 @@ export default function PetGallery() {
       value: petCategory,
       onChange: setPetCategory,
       options: [
-        { id: "all", label: "Tất cả", value: "all" },
+        { id: "all", label: "Loại", value: "all" },
         { id: "Chó", label: "Chó", value: "Chó" },
         { id: "Mèo", label: "Mèo", value: "Mèo" },
         { id: "Chim", label: "Chim", value: "Chim" },
@@ -42,7 +42,7 @@ export default function PetGallery() {
       value: age,
       onChange: setAge,
       options: [
-        { id: "all", label: "Tất cả", value: "all" },
+        { id: "all", label: "Độ tuổi", value: "all" },
         { id: "young", label: "Chưa trưởng thành", value: "Chưa trưởng thành" },
         { id: "adult", label: "Trưởng thành", value: "Trưởng thành" },
       ],
@@ -53,7 +53,7 @@ export default function PetGallery() {
       value: gender,
       onChange: setGender,
       options: [
-        { id: "all", label: "Tất cả", value: "all" },
+        { id: "all", label: "Giới tính", value: "all" },
         { id: "male", label: "Đực", value: "Đực" },
         { id: "female", label: "Cái", value: "Cái" },
       ],
