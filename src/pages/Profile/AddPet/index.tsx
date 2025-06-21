@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Pet } from "@/types/Pet";
 import { petService, cloudinaryService } from "@/services/petService";
 import { useSelector } from "react-redux";
 import { selectorAuth } from "@/store/modules/auth/selector";
