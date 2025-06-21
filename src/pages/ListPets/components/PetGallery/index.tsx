@@ -53,7 +53,7 @@ export default function PetGallery() {
       value: gender,
       onChange: setGender,
       options: [
-        { id: "all", label: "Tất cả", value: "all" },
+        { id: "all", label: "Giới tính", value: "all" },
         { id: "male", label: "Đực", value: "Đực" },
         { id: "female", label: "Cái", value: "Cái" },
       ],

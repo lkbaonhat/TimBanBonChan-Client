@@ -1,5 +1,5 @@
 "use client";
-import { Heart, Building, MapPin, Phone, Clock } from "lucide-react";
+import { Heart, Building, MapPin, Phone, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type CardType = "pet" | "person" | "clinic";
@@ -66,7 +66,7 @@ export default function Card({
             )}
             {location && (
               <div className="flex items-center text-sm text-gray-600">
-                <Building size={16} className="mr-2 flex-shrink-0" />
+                <Calendar size={16} className="mr-2 flex-shrink-0" />
                 <span>{location}</span>
               </div>
             )}
@@ -133,10 +133,10 @@ export default function Card({
             {actions && actions.length > 0 && (
               <div className="flex gap-1">
                 {actions.map((action, index) => (
-                  <Button 
-                    key={index} 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8 rounded-full hover:bg-slate-100"
                     onClick={action.onClick}
                   >
