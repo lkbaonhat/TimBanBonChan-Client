@@ -116,13 +116,8 @@ export default function ProfilePage() {
     if (!formData.fullName) {
       newErrors.fullName = "Họ và tên là bắt buộc";
       hasErrors = true;
-    }
-
-    // Validate birthDate (required field)
-    if (!formData.birthDate) {
-      newErrors.birthDate = "Ngày sinh là bắt buộc";
-      hasErrors = true;
-    } else {
+    } // Validate birthDate (optional field, but must be in correct format if provided)
+    if (formData.birthDate) {
       // Validate date format (should be YYYY-MM-DD from the date input)
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dateRegex.test(formData.birthDate)) {
@@ -140,15 +135,15 @@ export default function ProfilePage() {
     }
 
     try {
-      // Keep the date in yyyy-MM-dd format for .NET DateOnly compatibility
-      // Log the date for debugging
-      console.log("Original date (yyyy-MM-dd):", formData.birthDate);
+      // Handle date format or null value for .NET DateOnly compatibility
+      console.log("Original date input:", formData.birthDate);
 
-      // Thêm userId vào formData, giữ nguyên định dạng ngày yyyy-MM-dd
+      // Create updated form data with userId and handle empty birthDate
       const updatedFormData = {
         ...formData,
         userId: userInfo.userId, // Đảm bảo userId nằm trong payload
-        // Không thay đổi định dạng birthDate
+        // Convert empty birthDate to null
+        birthDate: formData.birthDate || null,
       };
       console.log("Updating user profile with ID:", userInfo.userId);
       console.log("Form data to be sent:", updatedFormData); // Send the updated form data directly
@@ -355,7 +350,7 @@ export default function ProfilePage() {
                         : "Chưa sẵn sàng nhận nuôi"}
                     </span>
                   </span>
-                </Label>{" "}
+                </Label>
                 <Switch
                   checked={readyToAdopt || false}
                   onCheckedChange={handleToggleAdoptionStatus}
@@ -375,7 +370,7 @@ export default function ProfilePage() {
                   animation={"none"}
                 >
                   Đăng ký nhận nuôi
-                </Button>{" "}
+                </Button>
                 <p className="text-xs text-gray-700 text-left font-bold mt-2">
                   Hãy gửi đơn cho chúng tôi nếu bạn sẵn sàng nhận nuôi thêm thú
                   cưng
@@ -408,7 +403,7 @@ export default function ProfilePage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        {/* Avatar dialog */}{" "}
+        {/* Avatar dialog */}
         <AvatarUploadDialog
           open={showAvatarDialog}
           onOpenChange={setShowAvatarDialog}
@@ -455,7 +450,6 @@ export default function ProfilePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Info Tab Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {" "}
               <div>
                 <Label
                   htmlFor="fullName"
@@ -497,14 +491,14 @@ export default function ProfilePage() {
                   className="mt-1 bg-gray-50"
                   placeholder="name@example.com"
                 />
-              </div>{" "}
+              </div>
               <div>
                 <Label
                   htmlFor="birthDate"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Ngày sinh <span className="text-red-500">*</span>
-                </Label>{" "}
+                  Ngày sinh
+                </Label>
                 <Input
                   id="birthDate"
                   type="date"
@@ -658,6 +652,7 @@ export default function ProfilePage() {
               <Button
                 variant="blue"
                 size="lg"
+                animation={"none"}
                 type="submit"
                 disabled={isLoading}
               >
