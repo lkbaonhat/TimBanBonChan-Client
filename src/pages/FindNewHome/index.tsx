@@ -65,7 +65,7 @@ export default function FindNewHome() {
 
   // Function to calculate age from birthDate
   const calculateAge = (birthDate: string): number | string => {
-    console.log(birthDate)
+    console.log(birthDate);
     if (!birthDate) {
       return "Chưa cập nhật";
     }
@@ -82,7 +82,10 @@ export default function FindNewHome() {
       const monthDiff = today.getMonth() - birth.getMonth();
 
       // Adjust age if birthday hasn't occurred this year
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birth.getDate())
+      ) {
         age--;
       }
 
@@ -97,7 +100,6 @@ export default function FindNewHome() {
       return "Chưa cập nhật";
     }
   };
-
 
   // Function to get primary role (excluding Staff and Admin)
   const getPrimaryRole = (roles: string[]): string => {
@@ -150,19 +152,22 @@ export default function FindNewHome() {
 
         setTotalCount(filteredUsers.length); // Use filtered count instead of API total
 
-        const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
-          const primaryRole = getPrimaryRole(user.roles);
-          return {
-            id: user.userId.toString(),
-            name: user.fullName || user.username,
-            age: calculateAge(user.birthDate),
-            location: user.city || "Chưa cập nhật",
-            occupation: getRoleDisplay(primaryRole),
-            imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
-            verified: user.isVerified,
-            role: primaryRole,
-          };
-        });
+        const transformedProfiles: AdopterProfile[] = filteredUsers.map(
+          (user) => {
+            const primaryRole = getPrimaryRole(user.roles);
+            return {
+              id: user.userId.toString(),
+              name: user.fullName || user.username,
+              age: calculateAge(user.birthDate),
+              location: user.city || "Chưa cập nhật",
+              occupation: getRoleDisplay(primaryRole),
+              imageUrl:
+                user.profilePicture || "/placeholder.svg?height=200&width=200",
+              verified: user.isVerified,
+              role: primaryRole,
+            };
+          }
+        );
 
         setProfiles(transformedProfiles);
       } catch (err: any) {
@@ -370,20 +375,23 @@ export default function FindNewHome() {
       setTotalCount(filteredUsers.length);
 
       // Transform API data to match our component's expected structure
-      const transformedProfiles: AdopterProfile[] = filteredUsers.map((user) => {
-        const primaryRole = getPrimaryRole(user.roles);
-        console.log(user)
-        return {
-          id: user.userId.toString(),
-          name: user.fullName || user.username,
-          age: calculateAge(user.birthDate),
-          location: user.city || "Chưa cập nhật",
-          occupation: getRoleDisplay(primaryRole),
-          imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
-          verified: user.isVerified,
-          role: primaryRole,
-        };
-      });
+      const transformedProfiles: AdopterProfile[] = filteredUsers.map(
+        (user) => {
+          const primaryRole = getPrimaryRole(user.roles);
+          console.log(user);
+          return {
+            id: user.userId.toString(),
+            name: user.fullName || user.username,
+            age: calculateAge(user.birthDate),
+            location: user.city || "Chưa cập nhật",
+            occupation: getRoleDisplay(primaryRole),
+            imageUrl:
+              user.profilePicture || "/placeholder.svg?height=200&width=200",
+            verified: user.isVerified,
+            role: primaryRole,
+          };
+        }
+      );
 
       setProfiles(transformedProfiles);
     } catch (err: any) {
@@ -487,7 +495,6 @@ export default function FindNewHome() {
           )}
         </div>
 
-
         {/* Profile Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {currentProfiles.map((profile) => (
@@ -498,7 +505,6 @@ export default function FindNewHome() {
                   ? "ring-2 ring-blue-400 ring-opacity-50"
                   : ""
               }`}
-
             >
               <Card
                 type="person"
@@ -506,7 +512,6 @@ export default function FindNewHome() {
                 title={
                   profile.isCurrentUser ? `${profile.name} (Bạn)` : profile.name
                 }
-
                 gender={`${profile.age} tuổi`}
                 location={profile.location}
                 area={profile.occupation || ""}
@@ -514,7 +519,6 @@ export default function FindNewHome() {
                 buttonText={
                   profile.isCurrentUser ? "Xem hồ sơ của tôi" : "Xem chi tiết"
                 }
-
                 onButtonClick={() => handleProfileDetail(profile.id)}
               />
             </div>

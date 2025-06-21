@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,6 @@ export default function ProfilePage() {
       [id]: value,
     }));
   };
-
   // Handle textarea change
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -85,23 +84,51 @@ export default function ProfilePage() {
       [id]: value,
     }));
   };
-
   // Handle form submission
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      await userService.updateUserProfile(formData);
+      // Thêm userId vào formData
+      const updatedFormData = {
+        ...formData,
+        userId: userInfo.userId, // Đảm bảo userId nằm trong payload
+      };
+
+      console.log("Updating user profile with ID:", userInfo.userId);
+      console.log("Form data to be sent:", updatedFormData);
+
+      // userService.updateUserProfile expects userId as the first parameter
+      const response = await userService.updateUserProfile(
+        userInfo.userId || 0,
+        updatedFormData
+      );
+      console.log("Profile update response:", response);
+
+      // Update Redux store
       dispatch(
         setUserInfo({
           ...userInfo,
           ...formData,
         })
       );
+
       toast.success("Cập nhật thông tin thành công");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error updating profile:", error);
+
+      // Xử lý lỗi theo kiểu AxiosError
+      const err = error as {
+        message?: string;
+        response?: { data?: unknown; status?: number };
+      };
+      console.error("Error details:", {
+        message: err?.message,
+        response: err?.response?.data,
+        status: err?.response?.status,
+      });
+
       toast.error("Không thể cập nhật thông tin", {
         description: "Đã xảy ra lỗi khi cập nhật thông tin cá nhân",
       });
@@ -122,7 +149,7 @@ export default function ProfilePage() {
       // If turning on, just update the state
       setReadyToAdopt(true);
       try {
-        await userService.updateAdopterStatus(true);
+        await userService.updateAdopterStatus(userInfo.userId || 0, true);
         dispatch(
           setUserInfo({
             ...userInfo,
@@ -147,9 +174,8 @@ export default function ProfilePage() {
   const handleConfirmDisableAdopt = async () => {
     setPendingAdoptState(true);
     setShowConfirmDialog(false);
-
     try {
-      await userService.updateAdopterStatus(false);
+      await userService.updateAdopterStatus(userInfo.userId || 0, false);
       setReadyToAdopt(false);
       dispatch(
         setUserInfo({
@@ -167,15 +193,30 @@ export default function ProfilePage() {
   };
 
   // Update avatar
-  const handleAvatarUploaded = (avatarUrl: string) => {
-    setCurrentAvatar(avatarUrl);
-    // Update in Redux
-    dispatch(
-      setUserInfo({
-        ...userInfo,
+  const handleAvatarUploaded = async (avatarUrl: string) => {
+    try {
+      // Update avatar in the backend
+      await userService.updateAvatarProfile(userInfo.userId || 0, {
+        userId: userInfo.userId, // Đảm bảo userId nằm trong payload
         profilePicture: avatarUrl,
-      })
-    );
+      });
+
+      // Update locally
+      setCurrentAvatar(avatarUrl);
+
+      // Update in Redux
+      dispatch(
+        setUserInfo({
+          ...userInfo,
+          profilePicture: avatarUrl,
+        })
+      );
+
+      toast.success("Cập nhật ảnh đại diện thành công");
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      toast.error("Không thể cập nhật ảnh đại diện");
+    }
   };
 
   // Handle navigating to adopter form
@@ -277,8 +318,8 @@ export default function ProfilePage() {
                   animation={"none"}
                 >
                   Đăng ký nhận nuôi
-                </Button>
-                <p className="text-xs text-gray-700 text-leftfont-bold mt-2">
+                </Button>{" "}
+                <p className="text-xs text-gray-700 text-left font-bold mt-2">
                   Hãy gửi đơn cho chúng tôi nếu bạn sẵn sàng nhận nuôi thêm thú
                   cưng
                 </p>
@@ -286,7 +327,6 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-
         {/* Disable adoption dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
           <DialogContent className="sm:max-w-[425px]">
@@ -311,15 +351,15 @@ export default function ProfilePage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
-        {/* Avatar dialog */}
+        {/* Avatar dialog */}{" "}
         <AvatarUploadDialog
           open={showAvatarDialog}
           onOpenChange={setShowAvatarDialog}
-          onAvatarUploaded={handleAvatarUploaded}
+          onAvatarUpdate={handleAvatarUploaded}
           currentAvatar={currentAvatar}
+          userName={userInfo.fullName}
+          userId={userInfo.userId}
         />
-
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-8">
           <button
@@ -353,7 +393,6 @@ export default function ProfilePage() {
             Tiểu sử nuôi thú cưng
           </button>
         </div>
-
         {/* Tab Content */}
         {activeTab === "personal-info" && (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -542,11 +581,9 @@ export default function ProfilePage() {
             </div>
           </form>
         )}
-
         {activeTab === "my-pets" && (
           <MyPets userId={userInfo.userId as number} />
         )}
-
         {activeTab === "pet-criteria" && <PetCareHistory />}
       </div>
     </div>
