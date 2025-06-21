@@ -2,6 +2,7 @@ import { axiosClient } from "@/config/axios"
 import { API_ENDPOINT } from "@/constants/api"
 import { AxiosResponse } from "axios";
 
+// Define the user profile data structure
 interface UserProfileUpdatePayload {
     userId?: number;
     fullName?: string;
@@ -70,7 +71,7 @@ export const userService = {
             
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(fullUrl, payload);
             console.log("Update user profile response:", response.data);
-            return response.data;        } catch (error: unknown) {
+            return response.data;} catch (error: unknown) {
             console.error("Error updating user profile:", error);
             
             // Cast error to a type with response property
@@ -90,10 +91,11 @@ export const userService = {
                 message: err?.message
             });
             throw error;
-        }
-    },updateAvatarProfile: async (userId: number, payload: { userId?: number; isReadyToAdopt?: boolean, profilePicture?: string }): Promise<UserProfileUpdatePayload> => {
+        }    },updateAvatarProfile: async (userId: number, profileData: { userId?: number; isReadyToAdopt?: boolean, profilePicture?: string }): Promise<UserProfileUpdatePayload> => {
         try {
-            const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(`${API_ENDPOINT.USER.SELF_INFO}/${userId}`, payload);
+            console.log("Avatar update payload:", profileData);
+            
+            const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(`${API_ENDPOINT.USER.SELF_INFO}/${userId}`, profileData);
             return response.data;
         } catch (error) {
             console.error("Error updating avatar or adoption status:", error);

@@ -42,13 +42,35 @@ export default function ProfilePage() {
   const [pendingAdoptState, setPendingAdoptState] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // Format dd/mm/yyyy to yyyy-mm-dd for date input
+  const formatDateForInput = (dateString: string | undefined) => {
+    if (!dateString) return "";
+
+    // Check if the date is already in yyyy-mm-dd format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // Check if the date is in dd/mm/yyyy format
+    const ddmmyyyyRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = dateString.match(ddmmyyyyRegex);
+
+    if (match) {
+      const [, day, month, year] = match;
+      return `${year}-${month}-${day}`;
+    }
+
+    console.warn("Unsupported date format:", dateString);
+    return "";
+  };
 
   // Form state
   const [formData, setFormData] = useState({
     fullName: userInfo.fullName || "",
-    birthDate: userInfo.birthDate || "",
+    birthDate: formatDateForInput(userInfo.birthDate) || "",
     email: userInfo.email || "",
     occupation: userInfo.occupation || "",
     gender: userInfo.gender || "",
@@ -83,21 +105,49 @@ export default function ProfilePage() {
       ...prev,
       [id]: value,
     }));
-  };
-  // Handle form submission
+  }; // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsLoading(true); // Validate required fields
+    const newErrors: { [key: string]: string } = {};
+    let hasErrors = false;
+
+    // Validate fullName (required field)
+    if (!formData.fullName) {
+      newErrors.fullName = "Họ và tên là bắt buộc";
+      hasErrors = true;
+    } // Validate birthDate (optional field, but must be in correct format if provided)
+    if (formData.birthDate) {
+      // Validate date format (should be YYYY-MM-DD from the date input)
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(formData.birthDate)) {
+        newErrors.birthDate = "Định dạng ngày không hợp lệ";
+        hasErrors = true;
+        console.error("Invalid date format:", formData.birthDate);
+      }
+    }
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      setIsLoading(false);
+      toast.error("Vui lòng kiểm tra lại thông tin");
+      return;
+    }
 
     try {
-      // Thêm userId vào formData
+      // Handle date format or null value for .NET DateOnly compatibility
+      console.log("Original date input:", formData.birthDate);
+
+      // Create updated form data with userId and handle empty birthDate
       const updatedFormData = {
         ...formData,
         userId: userInfo.userId, // Đảm bảo userId nằm trong payload
+        // Convert empty birthDate to null
+        birthDate: formData.birthDate || null,
       };
-
       console.log("Updating user profile with ID:", userInfo.userId);
-      console.log("Form data to be sent:", updatedFormData);
+      console.log("Form data to be sent:", updatedFormData); // Send the updated form data directly
+      console.log("Final payload:", updatedFormData);
 
       // userService.updateUserProfile expects userId as the first parameter
       const response = await userService.updateUserProfile(
@@ -106,7 +156,7 @@ export default function ProfilePage() {
       );
       console.log("Profile update response:", response);
 
-      // Update Redux store
+      // Update Redux store (note: keep original date format in Redux for input compatibility)
       dispatch(
         setUserInfo({
           ...userInfo,
@@ -114,6 +164,8 @@ export default function ProfilePage() {
         })
       );
 
+      // Clear any errors
+      setErrors({});
       toast.success("Cập nhật thông tin thành công");
     } catch (error: unknown) {
       console.error("Error updating profile:", error);
@@ -298,7 +350,7 @@ export default function ProfilePage() {
                         : "Chưa sẵn sàng nhận nuôi"}
                     </span>
                   </span>
-                </Label>{" "}
+                </Label>
                 <Switch
                   checked={readyToAdopt || false}
                   onCheckedChange={handleToggleAdoptionStatus}
@@ -318,7 +370,7 @@ export default function ProfilePage() {
                   animation={"none"}
                 >
                   Đăng ký nhận nuôi
-                </Button>{" "}
+                </Button>
                 <p className="text-xs text-gray-700 text-left font-bold mt-2">
                   Hãy gửi đơn cho chúng tôi nếu bạn sẵn sàng nhận nuôi thêm thú
                   cưng
@@ -351,7 +403,7 @@ export default function ProfilePage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        {/* Avatar dialog */}{" "}
+        {/* Avatar dialog */}
         <AvatarUploadDialog
           open={showAvatarDialog}
           onOpenChange={setShowAvatarDialog}
@@ -403,17 +455,27 @@ export default function ProfilePage() {
                   htmlFor="fullName"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Họ và tên
+                  Họ và tên <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="fullName"
                   value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="mt-1"
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    // Clear error when user enters a value
+                    if (e.target.value) {
+                      setErrors((prev) => ({ ...prev, fullName: "" }));
+                    }
+                  }}
+                  className={`mt-1 ${errors.fullName ? "border-red-500" : ""}`}
                   placeholder="Nhập họ và tên"
                 />
+                {errors.fullName && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.fullName}
+                  </span>
+                )}
               </div>
-
               <div>
                 <Label
                   htmlFor="email"
@@ -425,12 +487,11 @@ export default function ProfilePage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={handleInputChange}
-                  className="mt-1"
+                  disabled={true}
+                  className="mt-1 bg-gray-50"
                   placeholder="name@example.com"
                 />
               </div>
-
               <div>
                 <Label
                   htmlFor="birthDate"
@@ -442,11 +503,35 @@ export default function ProfilePage() {
                   id="birthDate"
                   type="date"
                   value={formData.birthDate}
-                  onChange={handleInputChange}
-                  className="mt-1"
-                />
-              </div>
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    // Clear error when user enters a value
+                    if (e.target.value) {
+                      setErrors((prev) => ({ ...prev, birthDate: "" }));
 
+                      // Log selected date for debugging
+                      console.log("Date selected:", e.target.value);
+
+                      // Parse date parts to verify format
+                      const parts = e.target.value.split("-");
+                      if (parts.length === 3) {
+                        console.log(
+                          `Date parts: Year=${parts[0]}, Month=${parts[1]}, Day=${parts[2]}`
+                        );
+                      }
+                    }
+                  }}
+                  className={`mt-1 ${errors.birthDate ? "border-red-500" : ""}`}
+                />
+                {errors.birthDate && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.birthDate}
+                  </span>
+                )}
+                <span className="text-xs text-gray-500 mt-1 block">
+                  Định dạng: dd/mm/yyyy
+                </span>
+              </div>
               <div>
                 <Label
                   htmlFor="gender"
@@ -470,7 +555,6 @@ export default function ProfilePage() {
                   </SelectContent>
                 </Select>
               </div>
-
               <div>
                 <Label
                   htmlFor="phoneNumber"
@@ -486,7 +570,6 @@ export default function ProfilePage() {
                   placeholder="Nhập số điện thoại"
                 />
               </div>
-
               <div>
                 <Label
                   htmlFor="occupation"
@@ -502,7 +585,6 @@ export default function ProfilePage() {
                   placeholder="Nhập nghề nghiệp"
                 />
               </div>
-
               <div>
                 <Label
                   htmlFor="address"
@@ -518,7 +600,6 @@ export default function ProfilePage() {
                   placeholder="Địa chỉ"
                 />
               </div>
-
               <div>
                 <Label
                   htmlFor="city"
@@ -534,7 +615,6 @@ export default function ProfilePage() {
                   placeholder="Tỉnh/Thành phố"
                 />
               </div>
-
               <div>
                 <Label
                   htmlFor="district"
@@ -550,7 +630,6 @@ export default function ProfilePage() {
                   placeholder="Quận/Huyện"
                 />
               </div>
-
               <div className="md:col-span-2">
                 <Label
                   htmlFor="bio"
@@ -573,6 +652,7 @@ export default function ProfilePage() {
               <Button
                 variant="blue"
                 size="lg"
+                animation={"none"}
                 type="submit"
                 disabled={isLoading}
               >
@@ -584,7 +664,9 @@ export default function ProfilePage() {
         {activeTab === "my-pets" && (
           <MyPets userId={userInfo.userId as number} />
         )}
-        {activeTab === "pet-criteria" && <PetCareHistory />}
+        {activeTab === "pet-criteria" && (
+          <PetCareHistory userId={userInfo.userId as number} />
+        )}
       </div>
     </div>
   );
