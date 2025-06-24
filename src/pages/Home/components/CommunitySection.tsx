@@ -1,5 +1,4 @@
-"use client";
-
+import { SOCIAL } from "@/constants/global";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -9,7 +8,7 @@ const socialLinks = [
     icon: <Facebook className="w-8 h-8" />,
     color: "bg-blue-500 text-white",
     hoverColor: "hover:bg-blue-600",
-    url: "https://facebook.com",
+    url: SOCIAL.FACEBOOK,
   },
   {
     name: "TikTok",
@@ -20,7 +19,7 @@ const socialLinks = [
     ),
     color: "bg-black text-white",
     hoverColor: "hover:bg-gray-800",
-    url: "https://tiktok.com",
+    url: SOCIAL.TIKTOK,
   },
   {
     name: "Youtube",
@@ -86,12 +85,11 @@ const CommunitySection = () => {
               target="_blank"
               rel="noopener noreferrer"
               data-index={index}
-              className={`social-item flex flex-col items-center transition-all duration-500 transform hover:scale-110 ${
-                visibleItems.includes(index)
+              className={`social-item flex flex-col items-center transition-all duration-500 transform hover:scale-110 ${visibleItems.includes(index)
                   ? "translate-y-0 opacity-100"
                   : "translate-y-10 opacity-0"
-              }`}
-              // style={{ transitionDelay: `${index * 150}ms` }}
+                }`}
+            // style={{ transitionDelay: `${index * 150}ms` }}
             >
               <div
                 className={`p-4 bg-[#FF99C0] text-white rounded-2xl mb-4 transition-all duration-300`}

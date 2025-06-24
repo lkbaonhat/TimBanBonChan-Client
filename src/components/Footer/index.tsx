@@ -85,7 +85,7 @@ export default function Footer() {
               <Facebook className='w-5 h-5' />
             </Link>
             <a
-              href='https://tiktok.com'
+              href={SOCIAL.TIKTOK}
               target='_blank'
               rel='noopener noreferrer'
               aria-label='Tiktok'
