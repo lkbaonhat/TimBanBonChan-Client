@@ -37,7 +37,8 @@ const BANNER = {
 }
 
 const SOCIAL = {
-  FACEBOOK: "https://www.facebook.com/timbanbonchan"
+  FACEBOOK: "https://www.facebook.com/timbanbonchan",
+  TIKTOK: "https://www.tiktok.com/@tm.bn.bn.chn"
 }
 
 const STRING_EMPTY = "";
