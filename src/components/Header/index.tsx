@@ -27,7 +27,7 @@ const Header = () => {
   // Get authentication state from Redux
   const isAuthenticated = useSelector(selectorAuth.isAuthenticated);
 
-  const user: IREDUX.UserInfo = useSelector(selectorAuth.userInfo)
+  const user: IRedux.UserInfo = useSelector(selectorAuth.userInfo)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,7 +60,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
         }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-10">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">

@@ -1,6 +1,5 @@
 import { axiosClient } from "@/config/axios";
 import { API_ENDPOINT } from "@/constants/api";
-import { Pet } from "@/types/Pet";
 
 interface PetFilterParams {
   userId?: number;
