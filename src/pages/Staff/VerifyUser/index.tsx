@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search } from 'lucide-react'
 import VerifyUserTable from './components/VerifyUserTable'
-import { userService } from '@/services/userService'
+import { useQuery } from '@tanstack/react-query'
+import { adopterApplicationsQuery } from '@/features/admin/adopter-applications/services/queries'
 
 // Define interface here or export from VerifyUserTable
 interface VerifyUser {
@@ -22,22 +23,10 @@ interface VerifyUser {
 export default function VerifyUser() {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
-    const [adopterApplication, setAdopterApplication] = useState([]);
 
-    const fetchDataUserApplication = async () => {
-        try {
-            const response = await userService.getAllAdopterApplications();
-            if (response.status === 200) {
-                setAdopterApplication(response.data.data.items);
-            }
-        } catch (error) {
-            console.error('Error fetching:', error)
-        }
-    }
+    const { data } = useQuery(adopterApplicationsQuery.getAdopterApplications())
 
-    useEffect(() => {
-        fetchDataUserApplication();
-    }, [])
+    const adopterApplication = data || [];
 
     return (
         <div className="">

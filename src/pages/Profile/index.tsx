@@ -135,8 +135,6 @@ export default function ProfilePage() {
     }
 
     try {
-      // Handle date format or null value for .NET DateOnly compatibility
-      console.log("Original date input:", formData.birthDate);
 
       // Create updated form data with userId and handle empty birthDate
       const updatedFormData = {
@@ -145,16 +143,12 @@ export default function ProfilePage() {
         // Convert empty birthDate to null
         birthDate: formData.birthDate || null,
       };
-      console.log("Updating user profile with ID:", userInfo.userId);
-      console.log("Form data to be sent:", updatedFormData); // Send the updated form data directly
-      console.log("Final payload:", updatedFormData);
 
       // userService.updateUserProfile expects userId as the first parameter
       const response = await userService.updateUserProfile(
         userInfo.userId || 0,
         updatedFormData
       );
-      console.log("Profile update response:", response);
 
       // Update Redux store (note: keep original date format in Redux for input compatibility)
       dispatch(
@@ -508,17 +502,6 @@ export default function ProfilePage() {
                     // Clear error when user enters a value
                     if (e.target.value) {
                       setErrors((prev) => ({ ...prev, birthDate: "" }));
-
-                      // Log selected date for debugging
-                      console.log("Date selected:", e.target.value);
-
-                      // Parse date parts to verify format
-                      const parts = e.target.value.split("-");
-                      if (parts.length === 3) {
-                        console.log(
-                          `Date parts: Year=${parts[0]}, Month=${parts[1]}, Day=${parts[2]}`
-                        );
-                      }
                     }
                   }}
                   className={`mt-1 ${errors.birthDate ? "border-red-500" : ""}`}

@@ -32,10 +32,10 @@ export const userService = {
         return axiosClient.post('/volunteerApplication', payload);
     },
     createAdopterApplication: async (data: any) => {
-        console.log("userService: Sending adopter application data to API:", data);
+        
         try {
             const response = await axiosClient.post('/AdopterApplications', data);
-            console.log("userService: API response:", response);
+            
             return response.data;        } catch (error: unknown) {
             const err = error as { 
                 message?: string; 
@@ -65,12 +65,11 @@ export const userService = {
         return axiosClient.get(`/users`);
     },    updateUserProfile: async (userId: number, payload: UserProfileUpdatePayload): Promise<UserProfileUpdatePayload> => {
         try {
-            console.log(`Calling API: PUT ${API_ENDPOINT.USER.SELF_INFO}/${userId} with payload:`, payload);
+            
             const fullUrl = `${API_ENDPOINT.USER.SELF_INFO}/${userId}`;
-            console.log("Full API URL:", fullUrl);
             
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(fullUrl, payload);
-            console.log("Update user profile response:", response.data);
+            
             return response.data;} catch (error: unknown) {
             console.error("Error updating user profile:", error);
             
@@ -93,7 +92,7 @@ export const userService = {
             throw error;
         }    },updateAvatarProfile: async (userId: number, profileData: { userId?: number; isReadyToAdopt?: boolean, profilePicture?: string }): Promise<UserProfileUpdatePayload> => {
         try {
-            console.log("Avatar update payload:", profileData);
+            
             
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(`${API_ENDPOINT.USER.SELF_INFO}/${userId}`, profileData);
             return response.data;
@@ -112,7 +111,6 @@ export const userService = {
                 isReadyToAdopt 
             };
             
-            console.log("Updating adopter status with payload:", payload);
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(`${API_ENDPOINT.USER.SELF_INFO}/${userId}`, payload);
             return response.data;
         } catch (error) {

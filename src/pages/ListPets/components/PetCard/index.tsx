@@ -11,8 +11,6 @@ export function PetCard({ pet }: PetCardProps) {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    console.log("pet postId:", pet.postId); // Updated debugging line
-
     navigate(`/pets/${pet.postId}`); // Navigate using postId
   };
 

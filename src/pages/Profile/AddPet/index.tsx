@@ -43,7 +43,6 @@ export default function AddPet() {
 
   // Handler for CloudinaryUpload component
   const handleImageUploaded = (imageUrl: string) => {
-    console.log("CloudinaryUpload provided URL:", imageUrl);
     setPetImage(imageUrl);
     setNewCloudinaryUrl(imageUrl);
   };
@@ -60,14 +59,6 @@ export default function AddPet() {
     setLoading(true);
 
     try {
-      // Log the Cloudinary image URL before sending
-      console.log(
-        "%c Creating pet with Cloudinary image URL:",
-        "font-weight: bold; color: #4CAF50",
-        petImage
-      );
-      console.log("Image URL exists:", Boolean(petImage));
-      console.log("Image URL length:", petImage?.length || 0);
 
       // Match the backend's expected format
       const petData = {
@@ -102,9 +93,6 @@ export default function AddPet() {
         userId: userInfo.userId,
         purpose: "Show", // Always set purpose to Show for user's own pets
       };
-
-      // For debugging purposes
-      console.log("Sending pet data:", JSON.stringify(petData));
 
       await petService.createPet(petData);
 
