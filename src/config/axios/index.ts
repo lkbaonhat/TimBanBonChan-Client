@@ -111,8 +111,6 @@ axiosClient.interceptors.request.use(
         (config.data.primaryImageUrl?.startsWith('data:') || config.data.petImageUrls?.startsWith('data:'));
       
       if (hasImageData) {
-        console.log(`${config.method.toUpperCase()} request to ${config.url} includes image data`);
-        // Increase timeout for requests with image data
         config.timeout = 60000; // 60 seconds
       }
     }

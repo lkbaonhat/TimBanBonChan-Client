@@ -32,31 +32,12 @@ export default function MyPets({ userId }: MyPetsProps) {
 
     setIsLoading(true);
     try {
-      console.log(
-        "Fetching user pets with CreatedByUserId:",
-        userId,
-        "and Purpose: Show"
-      );
 
       // Using the service function that calls /pets/filter with CreatedByUserId and Purpose
-      const response = await petService.getUserPets(userId, "Show"); // Log the API response for debugging
-      console.log("User pets API response:", response.data);
+      const response = await petService.getUserPets(userId, "Show");
 
       // The pets are inside data.items array, not directly in data
       const petsData = response.data?.data.items || [];
-      console.log("API response contains", petsData.length, "pets");
-
-      // Show sample of first pet if available
-      if (petsData.length > 0) {
-        console.log("Sample pet data:", {
-          petId: petsData[0].petId,
-          name: petsData[0].petName,
-          imageUrls: petsData[0].petImageUrls,
-          primaryImage: petsData[0].primaryImageUrl,
-          purpose: petsData[0].purpose,
-          createdByUserId: petsData[0].createdByUserId,
-        });
-      }
 
       // Set the items array to state
       setUserPets(petsData);
@@ -115,12 +96,6 @@ export default function MyPets({ userId }: MyPetsProps) {
           <>
             {" "}
             {userPets.map((pet) => {
-              // Log the pet data to understand the structure
-              console.log(`Pet ${pet.petId} image:`, {
-                petImageUrls: pet.petImageUrls,
-                primaryImageUrl: pet.primaryImageUrl,
-              });
-
               // Extract image URL properly
               const imageUrl =
                 pet.primaryImageUrl ||

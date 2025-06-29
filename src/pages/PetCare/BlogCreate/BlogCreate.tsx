@@ -91,8 +91,6 @@ const BlogCreate = () => {
         likes: 0,
       };
 
-      console.log("Submitting article:", articleData);
-
       // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -110,7 +108,6 @@ const BlogCreate = () => {
   // Mock function to upload image - replace with actual implementation
   const uploadImage = async (file: File): Promise<string> => {
     // This would be an actual API call to upload the image
-    console.log("Uploading image:", file.name);
 
     // Simulate upload delay
     await new Promise((resolve) => setTimeout(resolve, 500));

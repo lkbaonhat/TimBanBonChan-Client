@@ -156,12 +156,8 @@ export default function AdopterVerificationPage() {
         idCardBackImageUrl: values.idCardBackImageUrl,
       };
 
-      // Log full request data
-      console.log("Submitting application data:", submitData);
-
       try {
         const response = await userService.createAdopterApplication(submitData);
-        console.log("API Response:", response);
         toast.success("Đơn đăng ký nhận nuôi đã được gửi thành công!");
         form.reset();
       } catch (apiError: any) {
@@ -171,11 +167,6 @@ export default function AdopterVerificationPage() {
           message: apiError?.message,
           stack: apiError?.stack,
         });
-
-        if (apiError?.response?.data) {
-          // Log validation errors if they exist
-          console.log("Validation errors:", apiError.response.data.errors);
-        }
 
         throw apiError;
       }
@@ -196,12 +187,10 @@ export default function AdopterVerificationPage() {
 
   // Modified handlers to work with either prop name
   const handleCCCDFrontUpload = (url: string) => {
-    console.log("Front ID card uploaded:", url);
     form.setValue("idCardFrontImageUrl", url);
   };
 
   const handleCCCDBackUpload = (url: string) => {
-    console.log("Back ID card uploaded:", url);
     form.setValue("idCardBackImageUrl", url);
   };
 

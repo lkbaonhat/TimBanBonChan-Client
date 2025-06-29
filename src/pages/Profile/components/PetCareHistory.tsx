@@ -19,11 +19,6 @@ export default function PetCareHistory({ userId }: PetCareHistoryProps) {
 
     setIsLoading(true);
     try {
-      console.log(
-        "Fetching adopted pets for userId:",
-        userId,
-        "with AdoptionStatus: Adopted"
-      );
 
       // Using getAllPets with filter for adoption status
       const response = await petService.getAllPets({
@@ -31,22 +26,8 @@ export default function PetCareHistory({ userId }: PetCareHistoryProps) {
         adoptionStatus: "Adopted",
       });
 
-      console.log("Adopted pets API response:", response.data);
-
       // The pets are inside data.items array
       const petsData = response.data?.data?.items || [];
-      console.log("API response contains", petsData.length, "adopted pets");
-
-      // Show sample of first pet if available
-      if (petsData.length > 0) {
-        console.log("Sample adopted pet data:", {
-          petId: petsData[0].petId,
-          name: petsData[0].petName,
-          imageUrls: petsData[0].petImageUrls,
-          primaryImage: petsData[0].primaryImageUrl,
-          adoptionStatus: petsData[0].adoptionStatus,
-        });
-      }
 
       setAdoptedPets(petsData);
     } catch (error) {
@@ -73,12 +54,6 @@ export default function PetCareHistory({ userId }: PetCareHistoryProps) {
             </div>
           ) : adoptedPets.length > 0 ? (
             adoptedPets.map((pet) => {
-              // Log the pet data to understand the structure
-              console.log(`Adopted pet ${pet.petId} image:`, {
-                petImageUrls: pet.petImageUrls,
-                primaryImageUrl: pet.primaryImageUrl,
-              });
-
               // Extract image URL properly
               const imageUrl =
                 pet.primaryImageUrl ||
