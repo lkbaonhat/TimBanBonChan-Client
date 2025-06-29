@@ -57,4 +57,12 @@ declare namespace IEntities {
         createdDate: string;
         pet: Pet;
     }
+    export interface AdoptionApplication {
+        applicationId: string;
+        applicantFullName: string;
+        applicationStatus: string;
+        petName: string;
+        createdDate: string;
+        applicationStatus: string;
+    }
 }

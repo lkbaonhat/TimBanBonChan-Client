@@ -19,6 +19,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
 import ROUTES from '@/constants/routes'
 import { LOGO } from '@/constants/global'
+import { useDispatch } from 'react-redux'
 
 // Define navigation item type
 type NavItem = {
@@ -179,6 +180,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ role = 'staff' }: AppSidebarProps) {
   const location = useLocation()
+  const dispatch = useDispatch()
   const pathname = location.pathname
   const navigation = navigationConfig[role] || navigationConfig.staff
   const [expandedItems, setExpandedItems] = useState<string[]>([])
@@ -198,6 +200,10 @@ export function AppSidebar({ role = 'staff' }: AppSidebarProps) {
       })
     })
   }, [pathname, navigation, expandedItems])
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" })
+  }
 
 
   return (
@@ -280,10 +286,10 @@ export function AppSidebar({ role = 'staff' }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link to="/logout">
+              <button onClick={handleLogout} className='hover:cursor-pointer'>
                 <LogOut className="h-4 w-4" />
                 <span>Đăng xuất</span>
-              </Link>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

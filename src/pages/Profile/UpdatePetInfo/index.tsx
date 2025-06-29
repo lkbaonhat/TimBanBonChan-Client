@@ -141,21 +141,11 @@ export default function UpdatePetInfo() {
         purpose: "Show", // Always set purpose to Show for user's own pets
       }; // Include image URL in the payload if available
       if (petImage !== "/placeholder-pet.png") {
-        console.log(
-          "%c Including Cloudinary image URL in update payload:",
-          "font-weight: bold; color: #2196F3"
-        );
-        console.log("Image URL:", petImage);
         Object.assign(petData, {
           primaryImageUrl: petImage,
           petImageUrls: petImage, // For backward compatibility
         });
       } else {
-        // No image case
-        console.log(
-          "%c No image included in payload",
-          "font-weight: bold; color: #F44336"
-        );
         Object.assign(petData, {
           primaryImageUrl: "",
           petImageUrls: "",
@@ -170,16 +160,11 @@ export default function UpdatePetInfo() {
         originalImageUrl !== petImage &&
         originalImageUrl.includes("cloudinary.com");
 
-      console.log("Sending updated pet data:", JSON.stringify(petData));
       await petService.updatePet(petId, petData);
 
       // After successful update, if we have a new image, clean up the old one
       if (shouldDeleteOldImage) {
         try {
-          console.log(
-            "Deleting old image after successful update:",
-            originalImageUrl
-          );
           await cloudinaryService.deleteImage(originalImageUrl);
         } catch (deleteError) {
           console.error("Failed to delete old image:", deleteError);
@@ -215,8 +200,6 @@ export default function UpdatePetInfo() {
         imageChanged &&
         newCloudinaryUrl !== originalImageUrl
       ) {
-        // Delete the uploaded image when component unmounts without saving
-        console.log("Cleaning up unused image:", newCloudinaryUrl);
         cloudinaryService.deleteImage(newCloudinaryUrl).catch((err) => {
           console.error("Failed to delete unused image:", err);
         });
@@ -271,20 +254,10 @@ export default function UpdatePetInfo() {
                 <CloudinaryUpload
                   onImageUploaded={(url) => {
                     if (url) {
-                      console.log(
-                        "%c Received new Cloudinary URL in UpdatePetInfo:",
-                        "background: #673AB7; color: white; padding: 4px; border-radius: 4px"
-                      );
-                      console.log("Image URL:", url);
                       setNewCloudinaryUrl(url);
                       setPetImage(url);
                       setImageChanged(true);
                     } else {
-                      // If url is empty (image was removed)
-                      console.log(
-                        "%c Image was removed in UpdatePetInfo",
-                        "background: #FF5722; color: white; padding: 4px; border-radius: 4px"
-                      );
                       setPetImage("/placeholder-pet.png");
                       setImageChanged(true);
                     }

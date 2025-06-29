@@ -33,11 +33,11 @@ const getStatusBadgeVariant = (status: string) => {
         case 'active':
             return 'default'
         case 'pending':
-            return 'secondary'
+            return 'pending'
         case 'approved':
-            return 'outline'
+            return 'success'
         case 'rejected':
-            return 'destructive'
+            return 'reject'
         default:
             return 'default'
     }
@@ -67,9 +67,9 @@ const columns: ColumnDef<VolunteerApplication>[] = [
             const application = row.original
             return (
                 <div className='flex items-center gap-4'>
-                    <Avatar className="w-16 h-16 rounded-xl object-cover border-2 border-gray-200">
+                    <Avatar className="w-14 h-14 rounded-xl">
                         <AvatarImage src={application.petImageUrls || "/placeholder.svg"} alt={application.fullName} />
-                        <AvatarFallback className='w-16 h-16 rounded-xl object-cover border-2 border-gray-200'>{application.fullName.split(" ").pop()?.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className='w-14 h-14 rounded-xl object-cover border-2 border-gray-200'>{application.fullName.split(" ").pop()?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
                         <h3 className="font-semibold text-gray-900">{application.fullName}</h3>

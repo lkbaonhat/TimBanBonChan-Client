@@ -56,20 +56,6 @@ export function CloudinaryUpload({
           });
         }, 200);
 
-        // Log upload start
-        console.log(
-          `%c Starting Cloudinary upload for ${file.name} (${(
-            file.size / 1024
-          ).toFixed(1)} KB)`,
-          "background: #2196F3; color: white; padding: 4px; border-radius: 4px"
-        ); // Make the actual API call to Cloudinary
-        console.log(
-          `%c Making Cloudinary API call to cloud: ${
-            import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-          }`,
-          "background: #03A9F4; color: white; padding: 4px; border-radius: 4px"
-        );
-
         const response = await fetch(
           `https://api.cloudinary.com/v1_1/${
             import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
@@ -90,25 +76,6 @@ export function CloudinaryUpload({
 
         const data = await response.json();
         setProgress(100);
-
-        // Enhanced logging with styled console output
-        console.log(
-          "%c Cloudinary upload successful!",
-          "background: #4CAF50; color: white; padding: 4px; border-radius: 4px"
-        );
-        console.log("Response data:", data);
-        console.log(
-          "%c Image URL (secure_url):",
-          "font-weight: bold; color: #2196F3",
-          data.secure_url
-        );
-        console.log("%c Public ID:", "font-weight: bold", data.public_id);
-        console.log("%c Asset ID:", "font-weight: bold", data.asset_id);
-        console.log(
-          "%c Original filename:",
-          "font-weight: bold",
-          data.original_filename
-        );
 
         // Clean up the local preview URL
         URL.revokeObjectURL(localPreview);

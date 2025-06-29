@@ -124,13 +124,6 @@ export default function PetDetail() {
         setAdoptionPost(postData);
         setPet(postData.pet);
 
-        console.log(`[${currentDateTime}] Pet data:`, {
-          petId: postData.pet.petId,
-          petName: postData.pet.petName,
-          slug: postData.pet.slug,
-          adoptionStatus: postData.pet.adoptionStatus
-        });
-
         // Update the display details with pet information only
         setPetDetails({
           breed: postData.pet.breedName || "Không xác định",
@@ -242,7 +235,6 @@ export default function PetDetail() {
       // Fallback: show error message or use postId
       if (adoptionPost) {
         const fallbackUrl = `/adoption-form/${adoptionPost.postId}`;
-        console.log(`[${currentDateTime}] Using fallback URL: ${fallbackUrl}`);
         navigate(fallbackUrl);
       }
     }
