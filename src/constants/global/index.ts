@@ -41,7 +41,7 @@ const BANNER = {
 
 const SOCIAL = {
   FACEBOOK: "https://www.facebook.com/timbanbonchan",
-  TIKTOK: "https://www.tiktok.com/@tm.bn.bn.chn"
+  TIKTOK: "https://www.tiktok.com/@timaico?_t=ZS-8xgg3wg6fEG&_r=1"
 }
 
 const STRING_EMPTY = "";
