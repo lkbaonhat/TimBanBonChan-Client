@@ -37,6 +37,7 @@ import PersistToken from "@/components/Auth/PersistLogin";
 import { ROLE } from "@/constants/global";
 import NotFound from "@/pages/NotFound";
 import MyVolunteerApplicationsPage from "@/pages/MyApplication";
+import DonationPage from "@/pages/Donation";
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -67,6 +68,7 @@ const RouterComponent = () => {
           path: ROUTES.PUBLIC.FIND_NEW_HOME_DETAIL,
           element: <ProfileDetail />,
         },
+        { path: ROUTES.PRIVATE.DONATION, element: <DonationPage /> }
       ],
     },
     //* AUTH routes *\
@@ -97,9 +99,10 @@ const RouterComponent = () => {
               element: <AdopterVerificationForm />,
             },
             {
-              path: ROUTES.GUEST.MY_APPLICATION,
+              path: ROUTES.PRIVATE.MY_APPLICATION,
               element: <MyVolunteerApplicationsPage />,
-            },            { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
+            },
+            { path: ROUTES.PUBLIC.ADOPTION_FORM, element: <AdoptionForm /> },
             { path: ROUTES.PUBLIC.PROFILE, element: <ProfilePage /> },
             { path: ROUTES.PUBLIC.ADD_PET, element: <AddPet /> },
             { path: ROUTES.PUBLIC.UPDATE_PET, element: <UpdatePetInfo /> },

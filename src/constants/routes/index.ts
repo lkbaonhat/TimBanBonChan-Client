@@ -17,13 +17,15 @@ const ROUTES = {
     REGISTRATION_SUCCESS: "/registration-success",
     CONFIRM_EMAIL: "/auth/confirm-email",
     FIND_NEW_HOME: "/find-new-home",
-    FIND_NEW_HOME_DETAIL: "/find-new-home/:id", PROFILE: "/profile",
-    ADD_PET: "/profile/add-pet", // Route for adding a pet
-    UPDATE_PET: "/profile/pets/:id", // Route for updating pet info
-    VERIFY_ADOPTER: "/verify-adopter", // New route for adopter verification
+    FIND_NEW_HOME_DETAIL: "/find-new-home/:id",
+    PROFILE: "/profile",
+    ADD_PET: "/profile/add-pet",
+    UPDATE_PET: "/profile/pets/:id",
+    VERIFY_ADOPTER: "/verify-adopter",
   },
-  GUEST: {
-    MY_APPLICATION: '/my-applications'
+  PRIVATE: {
+    MY_APPLICATION: '/my-applications',
+    DONATION: '/donation',
   },
   STAFF: {
     HOME: '/staff',

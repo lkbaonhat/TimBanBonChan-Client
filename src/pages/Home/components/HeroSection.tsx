@@ -13,14 +13,14 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="py-16 md:py-24 px-20 bg-[#FFEDFA]">
+    <section className="py-16 md:py-24 px-10 bg-[#FFEDFA]">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-10">
           {/* Text Content */}
           <div
             className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${isVisible
-                ? "translate-x-0 opacity-100"
-                : "-translate-x-10 opacity-0"
+              ? "translate-x-0 opacity-100"
+              : "-translate-x-10 opacity-0"
               }`}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
@@ -47,8 +47,8 @@ const HeroSection = () => {
           {/* Hero Image */}
           <div
             className={`md:w-1/2 transition-all duration-1000 transform ${isVisible
-                ? "translate-x-0 opacity-100"
-                : "translate-x-10 opacity-0"
+              ? "translate-x-0 opacity-100"
+              : "translate-x-10 opacity-0"
               }`}
           >
             <div className="relative rounded-3xl overflow-hidden  transform hover:scale-102 transition-all duration-500">
