@@ -55,7 +55,7 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Đơn đăng ký của tôi",
-    href: ROUTES.GUEST.MY_APPLICATION,
+    href: ROUTES.PRIVATE.MY_APPLICATION,
     icon: FileText,
     roles: ["Guest"],
   },
@@ -190,9 +190,8 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
                 onClick={() => handleItemClick(item.href)}
               >
                 <Icon
-                  className={`h-4 w-4 ${
-                    isStaffOnly ? "text-[#5B7CCB]" : "text-[#0052A3]"
-                  } transition-transform duration-200 group-hover:scale-110`}
+                  className={`h-4 w-4 ${isStaffOnly ? "text-[#5B7CCB]" : "text-[#0052A3]"
+                    } transition-transform duration-200 group-hover:scale-110`}
                 />
                 <span className="font-medium text-gray-700 transition-colors duration-200 group-hover:text-[#0052A3]">
                   {item.label}

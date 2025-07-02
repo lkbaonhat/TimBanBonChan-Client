@@ -60,7 +60,7 @@ const Header = () => {
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
         }`}
     >
-      <div className="container mx-auto px-10">
+      <div className="container mx-auto">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
@@ -73,7 +73,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav
-            className={`hidden md:flex items-center space-x-4 ${styles.navbar}`}
+            className={`hidden md:flex items-center space-x-2 ${styles.navbar}`}
           >
             <NavLink
               to="/"
@@ -140,6 +140,17 @@ const Header = () => {
               }
             >
               Tình nguyện viên
+            </NavLink>
+            <NavLink
+              to="/donation"
+              className={({ isActive }) =>
+                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
+                  ? "active"
+                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                }`
+              }
+            >
+              Quyên góp
             </NavLink>
           </nav>
 

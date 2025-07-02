@@ -19,6 +19,8 @@ const LOGO = {
   HEART_PINK: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081477/ehebso30ul7bzqrz7qry.png",
   COMMUNICATE_PINK: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081475/ezwp0ccloybwwcjip8pv.png",
   COMMUNITY_PINK: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081475/xir55eqfjzilfbcdulxh.png",
+  MESSAGE_PINK: "https://res.cloudinary.com/drcj6f81i/image/upload/v1751426831/ndtocyozloiuo5tqmzqn.png",
+  PAYMENT_METHOD: "https://res.cloudinary.com/drcj6f81i/image/upload/v1751427441/iwtp6ti0afwb1kpealpx.png",
 };
 
 const BANNER = {
@@ -34,6 +36,7 @@ const BANNER = {
   SURVEY: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081484/kburs8qcc9pg9ztrqbky.png",
   TAKE_CARE: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081485/rstspsvo1iubivbtgwfe.png",
   TRANSPORT: "https://res.cloudinary.com/drcj6f81i/image/upload/v1749081486/iutn1iljwjycsmbibev4.png",
+  DOG_CIRCLE: "https://res.cloudinary.com/drcj6f81i/image/upload/v1751426549/w262mmfr9jzetprd4xww.png",
 }
 
 const SOCIAL = {
