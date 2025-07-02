@@ -6,7 +6,7 @@ export default function DefaultLayout() {
   return (
     <div>
       <Header />
-      <div className="flex flex-col bg-[#FFEDFA] px-20">
+      <div className="flex flex-col bg-[#FFEDFA]">
         {/* Main content area */}
         <Outlet />
       </div>
