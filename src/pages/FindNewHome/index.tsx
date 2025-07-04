@@ -7,6 +7,7 @@ import Filter, { FilterConfig } from "@/components/Filter/Filter";
 import { useNavigate } from "react-router-dom";
 import { userService } from "@/services/userService";
 import { AxiosResponse } from "axios";
+import { SectionLoading } from "@/components/Loading";
 
 // Cải thiện type definitions
 interface AdopterProfile {
@@ -14,7 +15,7 @@ interface AdopterProfile {
   name: string;
   age: number;
   ageDisplay: string;
-  address: string;
+  location: string; // Changed from address to location to match actual data
   occupation: string; // Nghề nghiệp thực tế
   occupationCategory: string; // Danh mục nghề nghiệp để filter
   imageUrl: string;
@@ -35,7 +36,7 @@ interface ApiUser {
   birthDate: string;
   roles: string[];
   occupation?: string; // Giả sử API có field này
-  jobTitle?: string;   // Hoặc field này
+  jobTitle?: string; // Hoặc field này
 }
 
 interface ApiResponse {
@@ -53,10 +54,12 @@ interface ApiResponse {
 
 // Utility functions
 const hasStaffOrAdminRole = (roles: string[]): boolean => {
-  return roles.some(role => role === "Staff" || role === "Admin");
+  return roles.some((role) => role === "Staff" || role === "Admin");
 };
 
-const calculateAge = (birthDate: string): { numericAge: number; displayAge: string } => {
+const calculateAge = (
+  birthDate: string
+): { numericAge: number; displayAge: string } => {
   if (!birthDate) {
     return { numericAge: 0, displayAge: "Chưa cập nhật" };
   }
@@ -72,7 +75,10 @@ const calculateAge = (birthDate: string): { numericAge: number; displayAge: stri
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
 
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
       age--;
     }
 
@@ -90,22 +96,26 @@ const calculateAge = (birthDate: string): { numericAge: number; displayAge: stri
 const getPrimaryRole = (roles: string[]): string => {
   if (roles.length === 0) return "Guest";
   const rolePriority = ["Pet Foster", "Volunteer", "Guest"];
-  return rolePriority.find(role => roles.includes(role)) ||
-    roles.find(role => role !== "Staff" && role !== "Admin") ||
-    "Guest";
+  return (
+    rolePriority.find((role) => roles.includes(role)) ||
+    roles.find((role) => role !== "Staff" && role !== "Admin") ||
+    "Guest"
+  );
 };
 
 const getRoleDisplay = (role: string): string => {
   const roleMap: Record<string, string> = {
     "Pet Foster": "Người nuôi dưỡng",
-    "Volunteer": "Tình nguyện viên",
-    "Guest": "Khách",
+    Volunteer: "Tình nguyện viên",
+    Guest: "Khách",
   };
   return roleMap[role] || role;
 };
 
 // Hàm phân loại nghề nghiệp và trả về danh mục
-const categorizeOccupation = (occupation: string): { category: string; display: string } => {
+const categorizeOccupation = (
+  occupation: string
+): { category: string; display: string } => {
   if (!occupation || occupation.trim() === "") {
     return { category: "unknown", display: "Chưa cập nhật" };
   }
@@ -114,106 +124,266 @@ const categorizeOccupation = (occupation: string): { category: string; display: 
 
   // Công nghệ thông tin
   const techKeywords = [
-    "developer", "lập trình", "software", "it", "công nghệ", "tech", "engineer",
-    "programmer", "coder", "web", "mobile", "fullstack", "backend", "frontend",
-    "devops", "data", "ai", "machine learning", "blockchain", "cyber", "network",
-    "system admin", "database", "qa", "tester", "ui", "ux", "designer"
+    "developer",
+    "lập trình",
+    "software",
+    "it",
+    "công nghệ",
+    "tech",
+    "engineer",
+    "programmer",
+    "coder",
+    "web",
+    "mobile",
+    "fullstack",
+    "backend",
+    "frontend",
+    "devops",
+    "data",
+    "ai",
+    "machine learning",
+    "blockchain",
+    "cyber",
+    "network",
+    "system admin",
+    "database",
+    "qa",
+    "tester",
+    "ui",
+    "ux",
+    "designer",
   ];
 
   // Y tế - Sức khỏe
   const healthKeywords = [
-    "bác sĩ", "doctor", "nurse", "y tá", "dược sĩ", "pharmacist", "dentist",
-    "nha sĩ", "therapist", "điều dưỡng", "medical", "hospital", "clinic",
-    "healthcare", "physiotherapist", "psychologist", "psychiatrist"
+    "bác sĩ",
+    "doctor",
+    "nurse",
+    "y tá",
+    "dược sĩ",
+    "pharmacist",
+    "dentist",
+    "nha sĩ",
+    "therapist",
+    "điều dưỡng",
+    "medical",
+    "hospital",
+    "clinic",
+    "healthcare",
+    "physiotherapist",
+    "psychologist",
+    "psychiatrist",
   ];
 
   // Giáo dục
   const educationKeywords = [
-    "teacher", "giáo viên", "lecturer", "giảng viên", "professor", "giáo sư",
-    "educator", "instructor", "tutor", "gia sư", "principal", "hiệu trưởng",
-    "education", "training", "coach", "mentor"
+    "teacher",
+    "giáo viên",
+    "lecturer",
+    "giảng viên",
+    "professor",
+    "giáo sư",
+    "educator",
+    "instructor",
+    "tutor",
+    "gia sư",
+    "principal",
+    "hiệu trưởng",
+    "education",
+    "training",
+    "coach",
+    "mentor",
   ];
 
   // Kinh doanh - Tài chính
   const businessKeywords = [
-    "manager", "quản lý", "director", "giám đốc", "ceo", "business", "sales",
-    "marketing", "finance", "tài chính", "accountant", "kế toán", "banker",
-    "ngân hàng", "consultant", "analyst", "economy", "kinh tế", "entrepreneur",
-    "startup", "investment", "đầu tư", "insurance", "bảo hiểm"
+    "manager",
+    "quản lý",
+    "director",
+    "giám đốc",
+    "ceo",
+    "business",
+    "sales",
+    "marketing",
+    "finance",
+    "tài chính",
+    "accountant",
+    "kế toán",
+    "banker",
+    "ngân hàng",
+    "consultant",
+    "analyst",
+    "economy",
+    "kinh tế",
+    "entrepreneur",
+    "startup",
+    "investment",
+    "đầu tư",
+    "insurance",
+    "bảo hiểm",
   ];
 
   // Dịch vụ - Bán hàng
   const serviceKeywords = [
-    "customer service", "bán hàng", "cashier", "thu ngân", "waiter", "phục vụ",
-    "bartender", "chef", "cook", "đầu bếp", "cleaner", "security", "bảo vệ",
-    "driver", "tài xế", "delivery", "giao hàng", "receptionist", "lễ tân"
+    "customer service",
+    "bán hàng",
+    "cashier",
+    "thu ngân",
+    "waiter",
+    "phục vụ",
+    "bartender",
+    "chef",
+    "cook",
+    "đầu bếp",
+    "cleaner",
+    "security",
+    "bảo vệ",
+    "driver",
+    "tài xế",
+    "delivery",
+    "giao hàng",
+    "receptionist",
+    "lễ tân",
   ];
 
   // Nghệ thuật - Sáng tạo
   const creativeKeywords = [
-    "artist", "nghệ sĩ", "designer", "thiết kế", "photographer", "nhiếp ảnh",
-    "writer", "nhà văn", "journalist", "báo chí", "editor", "musician",
-    "nhạc sĩ", "actor", "diễn viên", "painter", "họa sĩ", "creative",
-    "content creator", "influencer", "blogger", "youtuber"
+    "artist",
+    "nghệ sĩ",
+    "designer",
+    "thiết kế",
+    "photographer",
+    "nhiếp ảnh",
+    "writer",
+    "nhà văn",
+    "journalist",
+    "báo chí",
+    "editor",
+    "musician",
+    "nhạc sĩ",
+    "actor",
+    "diễn viên",
+    "painter",
+    "họa sĩ",
+    "creative",
+    "content creator",
+    "influencer",
+    "blogger",
+    "youtuber",
   ];
 
   // Kỹ thuật - Xây dựng
   const engineeringKeywords = [
-    "engineer", "kỹ sư", "architect", "kiến trúc sư", "construction", "xây dựng",
-    "mechanical", "electrical", "civil", "chemical", "industrial", "automotive",
-    "technician", "kỹ thuật viên", "mechanic", "thợ máy", "plumber", "thợ ống nước",
-    "electrician", "thợ điện", "carpenter", "thợ mộc"
+    "engineer",
+    "kỹ sư",
+    "architect",
+    "kiến trúc sư",
+    "construction",
+    "xây dựng",
+    "mechanical",
+    "electrical",
+    "civil",
+    "chemical",
+    "industrial",
+    "automotive",
+    "technician",
+    "kỹ thuật viên",
+    "mechanic",
+    "thợ máy",
+    "plumber",
+    "thợ ống nước",
+    "electrician",
+    "thợ điện",
+    "carpenter",
+    "thợ mộc",
   ];
 
   // Luật - Chính phủ
   const legalKeywords = [
-    "lawyer", "luật sư", "judge", "thẩm phán", "attorney", "legal", "law",
-    "government", "chính phủ", "police", "cảnh sát", "officer", "công chức",
-    "civil servant", "diplomat", "ngoại giao", "military", "quân đội"
+    "lawyer",
+    "luật sư",
+    "judge",
+    "thẩm phán",
+    "attorney",
+    "legal",
+    "law",
+    "government",
+    "chính phủ",
+    "police",
+    "cảnh sát",
+    "officer",
+    "công chức",
+    "civil servant",
+    "diplomat",
+    "ngoại giao",
+    "military",
+    "quân đội",
   ];
 
   // Học sinh - Sinh viên
   const studentKeywords = [
-    "student", "học sinh", "sinh viên", "pupil", "learner", "undergraduate",
-    "graduate", "postgraduate", "researcher", "nghiên cứu sinh", "intern",
-    "thực tập sinh", "apprentice", "học việc"
+    "student",
+    "học sinh",
+    "sinh viên",
+    "pupil",
+    "learner",
+    "undergraduate",
+    "graduate",
+    "postgraduate",
+    "researcher",
+    "nghiên cứu sinh",
+    "intern",
+    "thực tập sinh",
+    "apprentice",
+    "học việc",
   ];
 
   // Hưu trí - Không làm việc
   const retiredKeywords = [
-    "retired", "hưu trí", "pension", "unemployed", "thất nghiệp", "homemaker",
-    "nội trợ", "housewife", "stay at home", "freelancer", "tự do"
+    "retired",
+    "hưu trí",
+    "pension",
+    "unemployed",
+    "thất nghiệp",
+    "homemaker",
+    "nội trợ",
+    "housewife",
+    "stay at home",
+    "freelancer",
+    "tự do",
   ];
 
   // Kiểm tra từng danh mục
-  if (techKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (techKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "technology", display: occupation };
   }
-  if (healthKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (healthKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "healthcare", display: occupation };
   }
-  if (educationKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (educationKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "education", display: occupation };
   }
-  if (businessKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (businessKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "business", display: occupation };
   }
-  if (serviceKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (serviceKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "service", display: occupation };
   }
-  if (creativeKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (creativeKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "creative", display: occupation };
   }
-  if (engineeringKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (
+    engineeringKeywords.some((keyword) => occupationLower.includes(keyword))
+  ) {
     return { category: "engineering", display: occupation };
   }
-  if (legalKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (legalKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "legal", display: occupation };
   }
-  if (studentKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (studentKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "student", display: occupation };
   }
-  if (retiredKeywords.some(keyword => occupationLower.includes(keyword))) {
+  if (retiredKeywords.some((keyword) => occupationLower.includes(keyword))) {
     return { category: "retired", display: occupation };
   }
 
@@ -231,7 +401,11 @@ const getErrorMessage = (err: any): string => {
     };
 
     if (status >= 500) return "Lỗi server. Vui lòng thử lại sau.";
-    return statusMessages[status] || err.response.data?.message || `Lỗi HTTP ${status}`;
+    return (
+      statusMessages[status] ||
+      err.response.data?.message ||
+      `Lỗi HTTP ${status}`
+    );
   }
 
   if (err.request) {
@@ -253,7 +427,8 @@ const useUserProfiles = () => {
       setLoading(true);
       setError(null);
 
-      const response: AxiosResponse<ApiResponse> = await userService.getAllUser();
+      const response: AxiosResponse<ApiResponse> =
+        await userService.getAllUser();
       const apiResponse = response.data;
 
       if (!apiResponse.success) {
@@ -261,30 +436,36 @@ const useUserProfiles = () => {
       }
 
       const users = apiResponse.data.items;
-      const filteredUsers = users.filter(user => !hasStaffOrAdminRole(user.roles));
+      const filteredUsers = users.filter(
+        (user) => !hasStaffOrAdminRole(user.roles)
+      );
       setTotalCount(filteredUsers.length);
 
-      const transformedProfiles: AdopterProfile[] = filteredUsers.map(user => {
-        const primaryRole = getPrimaryRole(user.roles);
-        const ageData = calculateAge(user.birthDate);
+      const transformedProfiles: AdopterProfile[] = filteredUsers.map(
+        (user) => {
+          const primaryRole = getPrimaryRole(user.roles);
+          const ageData = calculateAge(user.birthDate);
 
-        // Lấy nghề nghiệp thực tế từ API (giả sử có trong user.occupation hoặc user.jobTitle)
-        const realOccupation = user.occupation || user.jobTitle || getRoleDisplay(primaryRole);
-        const occupationData = categorizeOccupation(realOccupation);
+          // Lấy nghề nghiệp thực tế từ API (giả sử có trong user.occupation hoặc user.jobTitle)
+          const realOccupation =
+            user.occupation || user.jobTitle || getRoleDisplay(primaryRole);
+          const occupationData = categorizeOccupation(realOccupation);
 
-        return {
-          id: user.userId.toString(),
-          name: user.fullName || user.username,
-          age: ageData.numericAge,
-          ageDisplay: ageData.displayAge,
-          location: user.city || "Chưa cập nhật",
-          occupation: user.occupation || "Chưa cập nhật", // Nghề nghiệp thực tế để hiển thị
-          occupationCategory: occupationData.category, // Danh mục để filter
-          imageUrl: user.profilePicture || "/placeholder.svg?height=200&width=200",
-          verified: user.isVerified,
-          role: primaryRole,
-        };
-      });
+          return {
+            id: user.userId.toString(),
+            name: user.fullName || user.username,
+            age: ageData.numericAge,
+            ageDisplay: ageData.displayAge,
+            location: user.city || "Chưa cập nhật",
+            occupation: user.occupation || "Chưa cập nhật", // Nghề nghiệp thực tế để hiển thị
+            occupationCategory: occupationData.category, // Danh mục để filter
+            imageUrl:
+              user.profilePicture || "/placeholder.svg?height=200&width=200",
+            verified: user.isVerified,
+            role: primaryRole,
+          };
+        }
+      );
 
       setProfiles(transformedProfiles);
     } catch (err: any) {
@@ -334,7 +515,7 @@ const useProfileFiltering = (profiles: AdopterProfile[], filters: any) => {
   return useMemo(() => {
     const { ageFilter, occupationFilter, locationFilter } = filters;
 
-    const filteredProfiles = profiles.filter(profile => {
+    const filteredProfiles = profiles.filter((profile) => {
       // 1. Filter theo tuổi
       if (ageFilter !== "all") {
         if (ageFilter === "under-18") {
@@ -361,39 +542,78 @@ const useProfileFiltering = (profiles: AdopterProfile[], filters: any) => {
       if (locationFilter !== "all") {
         if (locationFilter === "hanoi") {
           const hanoiTerms = ["hà nội", "hanoi", "ha noi"];
-          if (!hanoiTerms.some(term =>
-            profile.location.toLowerCase().includes(term)
-          )) return false;
+          if (
+            !hanoiTerms.some((term) =>
+              profile.location.toLowerCase().includes(term)
+            )
+          )
+            return false;
         } else if (locationFilter === "hcm") {
-          const hcmTerms = ["tp hcm", "hồ chí minh", "ho chi minh", "tphcm", "saigon", "sài gòn"];
-          if (!hcmTerms.some(term =>
-            profile.location.toLowerCase().includes(term)
-          )) return false;
+          const hcmTerms = [
+            "tp hcm",
+            "hồ chí minh",
+            "ho chi minh",
+            "tphcm",
+            "saigon",
+            "sài gòn",
+          ];
+          if (
+            !hcmTerms.some((term) =>
+              profile.location.toLowerCase().includes(term)
+            )
+          )
+            return false;
         } else if (locationFilter === "danang") {
           const danangTerms = ["đà nẵng", "da nang", "danang"];
-          if (!danangTerms.some(term =>
-            profile.location.toLowerCase().includes(term)
-          )) return false;
+          if (
+            !danangTerms.some((term) =>
+              profile.location.toLowerCase().includes(term)
+            )
+          )
+            return false;
         } else if (locationFilter === "can-tho") {
           const canthoTerms = ["cần thơ", "can tho", "cantho"];
-          if (!canthoTerms.some(term =>
-            profile.location.toLowerCase().includes(term)
-          )) return false;
+          if (
+            !canthoTerms.some((term) =>
+              profile.location.toLowerCase().includes(term)
+            )
+          )
+            return false;
         } else if (locationFilter === "hai-phong") {
           const haiphongTerms = ["hải phòng", "hai phong", "haiphong"];
-          if (!haiphongTerms.some(term =>
-            profile.location.toLowerCase().includes(term)
-          )) return false;
+          if (
+            !haiphongTerms.some((term) =>
+              profile.location.toLowerCase().includes(term)
+            )
+          )
+            return false;
         } else if (locationFilter === "other") {
           const majorCities = [
-            "hà nội", "hanoi", "ha noi",
-            "tp hcm", "hồ chí minh", "ho chi minh", "tphcm", "saigon", "sài gòn",
-            "đà nẵng", "da nang", "danang",
-            "cần thơ", "can tho", "cantho",
-            "hải phòng", "hai phong", "haiphong"
+            "hà nội",
+            "hanoi",
+            "ha noi",
+            "tp hcm",
+            "hồ chí minh",
+            "ho chi minh",
+            "tphcm",
+            "saigon",
+            "sài gòn",
+            "đà nẵng",
+            "da nang",
+            "danang",
+            "cần thơ",
+            "can tho",
+            "cantho",
+            "hải phòng",
+            "hai phong",
+            "haiphong",
           ];
-          if (profile.location === "Chưa cập nhật" ||
-            majorCities.some(term => profile.location.toLowerCase().includes(term))) {
+          if (
+            profile.location === "Chưa cập nhật" ||
+            majorCities.some((term) =>
+              profile.location.toLowerCase().includes(term)
+            )
+          ) {
             return false;
           }
         } else if (locationFilter === "unknown") {
@@ -420,7 +640,8 @@ const useProfileFiltering = (profiles: AdopterProfile[], filters: any) => {
 
 export default function FindNewHome() {
   const navigate = useNavigate();
-  const { profiles, loading, error, totalCount, fetchUsers } = useUserProfiles();
+  const { profiles, loading, error, totalCount, fetchUsers } =
+    useUserProfiles();
   const filters = useFilters();
   const sortedProfiles = useProfileFiltering(profiles, filters);
 
@@ -428,6 +649,21 @@ export default function FindNewHome() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Animation effect for page elements - only run once on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const elements = document.querySelectorAll(".fade-in-element");
+      elements.forEach((element, index) => {
+        setTimeout(() => {
+          element.classList.remove("opacity-0");
+          element.classList.add("opacity-100");
+        }, index * 150);
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [loading]); // Only re-run when loading state changes
 
   // Filter configurations theo nghề nghiệp thực tế
   const filterConfigs: FilterConfig[] = [
@@ -459,7 +695,11 @@ export default function FindNewHome() {
         { id: "business", label: "Kinh doanh - Tài chính", value: "business" },
         { id: "service", label: "Dịch vụ - Bán hàng", value: "service" },
         { id: "creative", label: "Nghệ thuật - Sáng tạo", value: "creative" },
-        { id: "engineering", label: "Kỹ thuật - Xây dựng", value: "engineering" },
+        {
+          id: "engineering",
+          label: "Kỹ thuật - Xây dựng",
+          value: "engineering",
+        },
         { id: "legal", label: "Luật - Chính phủ", value: "legal" },
         { id: "student", label: "Học sinh - Sinh viên", value: "student" },
         { id: "retired", label: "Hưu trí - Tự do", value: "retired" },
@@ -490,26 +730,23 @@ export default function FindNewHome() {
   const totalPages = Math.ceil(sortedProfiles.length / profilesPerPage);
   const indexOfLastProfile = filters.currentPage * profilesPerPage;
   const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
-  const currentProfiles = sortedProfiles.slice(indexOfFirstProfile, indexOfLastProfile);
+  const currentProfiles = sortedProfiles.slice(
+    indexOfFirstProfile,
+    indexOfLastProfile
+  );
 
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Tìm nhà mới cho bé" },
   ];
 
-  // Loading component
   if (loading) {
     return (
       <div className="min-h-screen">
         <Breadcrumb items={breadcrumbItems} />
         <div className="container mx-auto">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />
-          <div className="flex justify-center items-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Đang tải danh sách người có thể nhận nuôi...</p>
-            </div>
-          </div>
+          <SectionLoading text="Đang tải danh sách người có thể nhận nuôi..." />
         </div>
       </div>
     );
@@ -545,7 +782,9 @@ export default function FindNewHome() {
         <div className="container mx-auto px-4">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />
           <div className="flex flex-col justify-center items-center h-64">
-            <div className="text-gray-500 text-xl mb-4">📭 Không có dữ liệu</div>
+            <div className="text-gray-500 text-xl mb-4">
+              📭 Không có dữ liệu
+            </div>
             <p className="text-gray-600">
               Hiện tại chưa có người dùng phù hợp để nhận nuôi thú cưng.
             </p>
@@ -557,11 +796,13 @@ export default function FindNewHome() {
 
   return (
     <div className="min-h-screen">
-      <Breadcrumb items={breadcrumbItems} />
+      <div className="fade-in-element opacity-0 transition-opacity duration-700">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto ">
         {/* Header and Filter Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4 fade-in-element opacity-0 transition-opacity duration-700">
           <ContentHeader title="Tìm nhà mới cho bé" level="h1" />
 
           {/* 3 filter riêng biệt */}
@@ -574,9 +815,10 @@ export default function FindNewHome() {
 
         {/* Results count and clear filters */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-
           {/* Nút xóa filter khi có filter được áp dụng */}
-          {(filters.ageFilter !== "all" || filters.occupationFilter !== "all" || filters.locationFilter !== "all") && (
+          {(filters.ageFilter !== "all" ||
+            filters.occupationFilter !== "all" ||
+            filters.locationFilter !== "all") && (
             <button
               onClick={filters.clearAllFilters}
               className="px-1 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
@@ -587,11 +829,11 @@ export default function FindNewHome() {
         </div>
 
         {/* Profile Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {currentProfiles.map(profile => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 fade-in-element opacity-0 transition-opacity duration-700">
+          {currentProfiles.map((profile) => (
             <div
               key={profile.id}
-              className={`transform transition-transform hover:scale-[0.98] `}
+              className={`transform transition-all hover:scale-[0.98] duration-300`}
             >
               <Card
                 type="person"
@@ -602,6 +844,7 @@ export default function FindNewHome() {
                 area={profile.location} // Hiển thị nghề nghiệp thực tế
                 badge={profile.verified ? "✓ Đã xác thực" : "Chưa xác thực"}
                 buttonText={"Xem chi tiết"}
+                onButtonClick={() => navigate(`/find-new-home/${profile.id}`)}
               />
             </div>
           ))}
@@ -609,8 +852,10 @@ export default function FindNewHome() {
 
         {/* No results after filtering */}
         {sortedProfiles.length === 0 && profiles.length > 0 && (
-          <div className="flex flex-col justify-center items-center h-64">
-            <div className="text-gray-500 text-xl mb-4">🔍 Không tìm thấy kết quả</div>
+          <div className="flex flex-col justify-center items-center h-64 fade-in-element opacity-0 transition-opacity duration-700">
+            <div className="text-gray-500 text-xl mb-4">
+              🔍 Không tìm thấy kết quả
+            </div>
             <p className="text-gray-600 text-center mb-4">
               Không có người dùng nào phù hợp với bộ lọc đã chọn.
               <br />
@@ -627,7 +872,7 @@ export default function FindNewHome() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8 mb-12">
+          <div className="mt-8 mb-12 fade-in-element opacity-0 transition-opacity duration-700">
             <Pagination
               currentPage={filters.currentPage}
               totalPages={totalPages}

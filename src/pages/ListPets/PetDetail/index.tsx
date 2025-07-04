@@ -5,6 +5,7 @@ import styles from "./pet-detail.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import ROUTES from "@/constants/routes";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
+import { PageLoading } from "@/components/Loading";
 import { axiosClient } from "@/config/axios";
 import { API_ENDPOINT } from "@/constants/api";
 import { petService } from "@/services/petService";
@@ -110,7 +111,9 @@ export default function PetDetail() {
 
         // Handle the API response format
         if (!response.data.success) {
-          throw new Error(response.data.message || 'Failed to fetch adoption post details');
+          throw new Error(
+            response.data.message || "Failed to fetch adoption post details"
+          );
         }
 
         const postData = response.data.data;
@@ -128,24 +131,35 @@ export default function PetDetail() {
         setPetDetails({
           breed: postData.pet.breedName || "Không xác định",
           healthStatus: postData.pet.healthStatus || "Khỏe mạnh",
-          weight: postData.pet.weight ? `${postData.pet.weight} kg` : "Không xác định",
+          weight: postData.pet.weight
+            ? `${postData.pet.weight} kg`
+            : "Không xác định",
           size: postData.pet.size || "Không xác định",
           age: postData.pet.age,
           color: postData.pet.color || "Không xác định",
           personality: postData.pet.personality || "Không có thông tin",
           foodAndToys: postData.pet.foodPreferences,
           suitableWith: postData.pet.compatibleWith || "Không có thông tin",
-          notSuitableWith: postData.pet.notCompatibleWith || "Không có thông tin",
+          notSuitableWith:
+            postData.pet.notCompatibleWith || "Không có thông tin",
           location: postData.pet.location || "Không xác định",
-          vaccinationStatus: postData.pet.isVaccinated ? "Đã tiêm vắc-xin" : "Chưa tiêm vắc-xin",
-          neuterStatus: postData.pet.isNeutered ? "Đã triệt sản" : "Chưa triệt sản",
-          trainingStatus: postData.pet.isTrained ? "Đã huấn luyện" : "Chưa huấn luyện",
+          vaccinationStatus: postData.pet.isVaccinated
+            ? "Đã tiêm vắc-xin"
+            : "Chưa tiêm vắc-xin",
+          neuterStatus: postData.pet.isNeutered
+            ? "Đã triệt sản"
+            : "Chưa triệt sản",
+          trainingStatus: postData.pet.isTrained
+            ? "Đã huấn luyện"
+            : "Chưa huấn luyện",
           categoryName: postData.pet.categoryName || "Không xác định",
           adoptionStatus: formatAdoptionStatus(postData.pet.adoptionStatus),
         });
-
       } catch (err: any) {
-        console.error(`[${currentDateTime}] Error fetching adoption post details:`, err);
+        console.error(
+          `[${currentDateTime}] Error fetching adoption post details:`,
+          err
+        );
 
         if (err.response) {
           const status = err.response.status;
@@ -157,7 +171,9 @@ export default function PetDetail() {
             setError("Lỗi server. Vui lòng thử lại sau.");
           }
         } else if (err.request) {
-          setError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+          setError(
+            "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+          );
         } else {
           setError("Không thể tải thông tin chi tiết. Vui lòng thử lại sau.");
         }
@@ -176,17 +192,19 @@ export default function PetDetail() {
     const ageNum = parseInt(age) || 0;
 
     switch (ageUnit?.toLowerCase()) {
-      case 'months':
-      case 'tháng':
+      case "months":
+      case "tháng":
         if (ageNum < 12) {
           return `${ageNum} tháng tuổi`;
         } else {
           const years = Math.floor(ageNum / 12);
           const months = ageNum % 12;
-          return months === 0 ? `${years} năm tuổi` : `${years} năm ${months} tháng tuổi`;
+          return months === 0
+            ? `${years} năm tuổi`
+            : `${years} năm ${months} tháng tuổi`;
         }
-      case 'years':
-      case 'năm':
+      case "years":
+      case "năm":
         return `${ageNum} năm tuổi`;
       default:
         return age; // Return as-is if it's descriptive like "Trưởng thành"
@@ -231,7 +249,6 @@ export default function PetDetail() {
 
       navigate(adoptionUrl);
     } else {
-
       // Fallback: show error message or use postId
       if (adoptionPost) {
         const fallbackUrl = `/adoption-form/${adoptionPost.postId}`;
@@ -248,18 +265,7 @@ export default function PetDetail() {
   ];
 
   if (loading && !pet) {
-    return (
-      <div className="container mx-auto px-4">
-        <Breadcrumb items={breadcrumbItems} />
-        <div className="flex justify-center items-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải thông tin thú cưng...</p>
-            <p className="text-xs text-gray-500 mt-2">User: {currentUserLogin} | {currentDateTime}</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoading text="Đang tải thông tin thú cưng..." />;
   }
 
   if (error && !pet) {
@@ -272,18 +278,14 @@ export default function PetDetail() {
             Đã xảy ra lỗi
           </h2>
           <p className="text-center mb-4">{error}</p>
-          <p className="text-xs text-gray-500 mb-4">User: {currentUserLogin} | {currentDateTime}</p>
+          <p className="text-xs text-gray-500 mb-4">
+            User: {currentUserLogin} | {currentDateTime}
+          </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/pets")}
-            >
+            <Button variant="outline" onClick={() => navigate("/pets")}>
               Quay lại danh sách
             </Button>
-            <Button
-              variant="blue"
-              onClick={() => window.location.reload()}
-            >
+            <Button variant="blue" onClick={() => window.location.reload()}>
               Thử lại
             </Button>
           </div>
@@ -293,9 +295,10 @@ export default function PetDetail() {
   }
 
   // Get main image from pet images
-  const mainImage = pet?.imageUrls && pet.imageUrls.length > 0
-    ? pet.imageUrls[0]
-    : "/placeholder.svg?height=400&width=600";
+  const mainImage =
+    pet?.imageUrls && pet.imageUrls.length > 0
+      ? pet.imageUrls[0]
+      : "/placeholder.svg?height=400&width=600";
 
   return (
     <div className="container mx-auto px-4">
@@ -324,13 +327,17 @@ export default function PetDetail() {
             {pet?.imageUrls && pet.imageUrls.length > 1 && (
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {pet.imageUrls.slice(1, 4).map((imageUrl, index) => (
-                  <div key={index} className="relative w-full h-0 pb-[75%] overflow-hidden rounded">
+                  <div
+                    key={index}
+                    className="relative w-full h-0 pb-[75%] overflow-hidden rounded"
+                  >
                     <img
                       src={imageUrl}
                       alt={`${pet.petName} - ảnh ${index + 2}`}
                       className="absolute inset-0 w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg?height=200&width=200";
+                        e.currentTarget.src =
+                          "/placeholder.svg?height=200&width=200";
                       }}
                     />
                   </div>
@@ -365,13 +372,9 @@ export default function PetDetail() {
             </div>
 
             <div className={styles.petTags}>
-              <span className={styles.tag}>
-                {petDetails.categoryName}
-              </span>
+              <span className={styles.tag}>{petDetails.categoryName}</span>
               <span className={styles.tagSeparator}>|</span>
-              <span className={styles.tag}>
-                {petDetails.age}
-              </span>
+              <span className={styles.tag}>{petDetails.age}</span>
               <span className={styles.tagSeparator}>|</span>
               <span className={styles.tag}>
                 {pet?.gender || "Không xác định"}
@@ -404,7 +407,9 @@ export default function PetDetail() {
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Giới tính</div>
-                <div className={styles.infoValue}>{pet?.gender || "Không xác định"}</div>
+                <div className={styles.infoValue}>
+                  {pet?.gender || "Không xác định"}
+                </div>
               </div>
 
               <div className={styles.infoRow}>
@@ -432,7 +437,11 @@ export default function PetDetail() {
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Tiêm vắc-xin</div>
                 <div className={styles.infoValue}>
-                  <span className={pet?.isVaccinated ? 'text-green-600' : 'text-red-600'}>
+                  <span
+                    className={
+                      pet?.isVaccinated ? "text-green-600" : "text-red-600"
+                    }
+                  >
                     {petDetails.vaccinationStatus}
                   </span>
                 </div>
@@ -441,7 +450,11 @@ export default function PetDetail() {
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Triệt sản</div>
                 <div className={styles.infoValue}>
-                  <span className={pet?.isNeutered ? 'text-green-600' : 'text-red-600'}>
+                  <span
+                    className={
+                      pet?.isNeutered ? "text-green-600" : "text-red-600"
+                    }
+                  >
                     {petDetails.neuterStatus}
                   </span>
                 </div>
@@ -450,7 +463,11 @@ export default function PetDetail() {
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Huấn luyện</div>
                 <div className={styles.infoValue}>
-                  <span className={pet?.isTrained ? 'text-green-600' : 'text-red-600'}>
+                  <span
+                    className={
+                      pet?.isTrained ? "text-green-600" : "text-red-600"
+                    }
+                  >
                     {petDetails.trainingStatus}
                   </span>
                 </div>
@@ -468,24 +485,27 @@ export default function PetDetail() {
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Phù hợp với</div>
-                <div className={styles.infoValue} dangerouslySetInnerHTML={{ __html: petDetails.suitableWith }} />
+                <div
+                  className={styles.infoValue}
+                  dangerouslySetInnerHTML={{ __html: petDetails.suitableWith }}
+                />
               </div>
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Địa chỉ</div>
-                <div className={styles.infoValue}>
-                  {petDetails.location}
-                </div>
+                <div className={styles.infoValue}>{petDetails.location}</div>
               </div>
 
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>Trạng thái nhận nuôi</div>
                 <div className={styles.infoValue}>
-                  <span className={
-                    pet?.adoptionStatus === "Available"
-                      ? 'text-green-600 font-semibold'
-                      : 'text-yellow-600 font-semibold'
-                  }>
+                  <span
+                    className={
+                      pet?.adoptionStatus === "Available"
+                        ? "text-green-600 font-semibold"
+                        : "text-yellow-600 font-semibold"
+                    }
+                  >
                     {petDetails.adoptionStatus}
                   </span>
                 </div>
@@ -510,8 +530,7 @@ export default function PetDetail() {
               >
                 {pet?.adoptionStatus === "Available"
                   ? "Đăng ký thủ tục nhận nuôi"
-                  : "Không thể nhận nuôi"
-                }
+                  : "Không thể nhận nuôi"}
               </Button>
             </div>
           </div>

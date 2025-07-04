@@ -66,7 +66,7 @@ export default function PetCareHandbook() {
 
   return (
     <div className="container mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 animate-on-scroll opacity-0">
         <ContentHeader title="Sổ tay chăm sóc các bé" level="h1" />
 
         {/* Search Bar */}
@@ -75,11 +75,11 @@ export default function PetCareHandbook() {
             <input
               type="text"
               placeholder="Tìm kiếm..."
-              className="w-full md:w-80 h-10 pl-4 pr-10 rounded-full bg-pink-50 border-none focus:outline-none focus:ring-2 focus:ring-[#FF99C0]"
+              className="w-full md:w-80 h-10 pl-4 pr-10 rounded-full text-white bg-[#FF99C0] border-none focus:outline-none focus:ring-2 focus:ring-[#FF99C0]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#FF99C0]">
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[white]">
               <Search size={18} />
             </button>
           </div>
@@ -104,7 +104,7 @@ export default function PetCareHandbook() {
       </div> */}
 
       {/* Featured Image */}
-      <div className="w-full h-120 rounded-xl overflow-hidden mb-8">
+      <div className="w-full h-120 rounded-xl overflow-hidden mb-8 animate-on-scroll opacity-0">
         <img
           src={BANNER.PET_CARE_BG}
           alt="Dogs playing together"
@@ -113,25 +113,30 @@ export default function PetCareHandbook() {
       </div>
 
       {/* Articles Section */}
-      <div className="space-y-4">
-        {currentArticles.map((article) => (
-          <ArticleItem
+      <div className="space-y-4 animate-on-scroll opacity-0">
+        {currentArticles.map((article, index) => (
+          <div
             key={article.id}
-            id={article.id}
-            title={article.title}
-            summary={article.summary}
-            author={article.author}
-            likes={article.likes}
-            thumbnail={article.thumbnail}
-            tags={article.tags}
-            saved={article.saved}
-            onToggleSaved={toggleSaved}
-          />
+            className="animate-on-scroll opacity-0"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <ArticleItem
+              id={article.id}
+              title={article.title}
+              summary={article.summary}
+              author={article.author}
+              likes={article.likes}
+              thumbnail={article.thumbnail}
+              tags={article.tags}
+              saved={article.saved}
+              onToggleSaved={toggleSaved}
+            />
+          </div>
         ))}
       </div>
 
       {/* Pagination */}
-      <div className="mt-8 mb-12">
+      <div className="mt-8 mb-12 animate-on-scroll opacity-0">
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

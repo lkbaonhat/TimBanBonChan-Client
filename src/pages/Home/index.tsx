@@ -41,7 +41,7 @@ const HomePage = () => {
         <WhatWeDoSection />
         <VolunteerSection />
         <PetCareSection />
-        <PetSuppliesSection />
+        {/* <PetSuppliesSection /> */}
       </main>
     </div>
   );

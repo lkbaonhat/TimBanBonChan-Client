@@ -54,7 +54,15 @@ const ZeroSection = ({
     <section className="py-12 px-4 md:px-8 bg-[#FFEDFA]">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-8 md:mb-0">
+          <div className="md:w-1/2 flex justify-center items-center ">
+            <img
+              ref={imageRef}
+              src={imageSrc}
+              alt="Pets illustration"
+              className="rounded-lg transition-all duration-700" // Removed opacity-0
+            />
+          </div>
+          <div className="md:w-1/2 mb-8 md:mb-0 text-right">
             <h1
               ref={titleRef}
               className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
@@ -68,7 +76,7 @@ const ZeroSection = ({
             </h1>
             <p
               ref={textRef}
-              className="text-gray-600 text-lg mb-10 max-w-lg leading-relaxed"
+              className="text-gray-600 text-lg mb-10 max-w-lg ml-auto" // Added ml-auto to align text right
             >
               {subtitle}
             </p>
@@ -78,18 +86,10 @@ const ZeroSection = ({
               shape="pill"
               size="lg"
               ref={buttonRef}
-              className="transition-all duration-700" // Removed opacity-0
+              className="transition-all duration-700"
             >
               <Link to={buttonLink}>{buttonText}</Link>
             </Button>
-          </div>
-          <div className="md:w-1/2">
-            <img
-              ref={imageRef}
-              src={imageSrc}
-              alt="Pets illustration"
-              className="rounded-lg transition-all duration-700" // Removed opacity-0
-            />
           </div>
         </div>
       </div>
