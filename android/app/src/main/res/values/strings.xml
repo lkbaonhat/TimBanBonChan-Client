@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tìm Bạn Bốn Chân</string>
+    
+    <!-- Contact Activity -->
+    <string name="contacts_title">Danh bạ</string>
+    <string name="contacts_subtitle">Quản lý danh sách liên hệ</string>
+    <string name="search_contacts_hint">Tìm kiếm liên hệ...</string>
+    <string name="create_group">Tạo nhóm</string>
+    <string name="no_contacts">Không có liên hệ nào</string>
+    <string name="add_contacts_message">Hãy thêm một số liên hệ để bắt đầu</string>
+    
+    <!-- Create Group Activity -->
+    <string name="create_group_title">Tạo nhóm</string>
+    <string name="create_group_subtitle">Chọn liên hệ để tạo nhóm mới</string>
+    <string name="group_name">Tên nhóm</string>
+    <string name="group_name_hint">Nhập tên nhóm</string>
+    <string name="selected_count">Đã chọn: %d liên hệ</string>
+    <string name="select_all">Chọn tất cả</string>
+    <string name="deselect_all">Bỏ chọn</string>
+    <string name="group_name_required">Vui lòng nhập tên nhóm</string>
+    <string name="select_contacts_required">Vui lòng chọn ít nhất một liên hệ</string>
+    <string name="creating_group">Đang tạo nhóm \'%s\' với %d thành viên...</string>
+    <string name="group_created">Đã tạo nhóm \'%s\' với %d thành viên</string>
+    <string name="cancel_create_group_title">Xác nhận</string>
+    <string name="cancel_create_group_message">Bạn có chắc chắn muốn hủy tạo nhóm? Tất cả thông tin đã nhập sẽ bị mất.</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    
+    <!-- General -->
+    <string name="search">Tìm kiếm</string>
+    <string name="more_options">Thêm tùy chọn</string>
+    <string name="profile_picture">Ảnh đại diện</string>
+    <string name="view_contact">Xem liên hệ</string>
+    <string name="no_group_contacts">Không có liên hệ nào</string>
+    <string name="no_group_contacts_message">Không thể tạo nhóm khi không có liên hệ</string>
+</resources>
