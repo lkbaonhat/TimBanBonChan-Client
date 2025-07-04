@@ -7,9 +7,12 @@ export default function ListPets() {
     { label: "Trang chủ", path: "/" },
     { label: "Làm quen với các bé" },
   ];
+
   return (
     <main className="min-h-screen mb-10">
-      <Breadcrumb items={breadcrumbItems} />
+      <div>
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
 
       <div className="container mx-auto">
         <PetGallery />

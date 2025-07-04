@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
 export type BreadcrumbItem = {
   label: string;

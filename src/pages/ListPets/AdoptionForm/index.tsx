@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
+import { PageLoading } from "@/components/Loading";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
 import { userService } from "@/services/userService";
 import { toast } from "sonner";
@@ -252,27 +253,7 @@ export default function AdoptionForm() {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="container mx-auto px-4">
-        <Breadcrumb
-          items={[
-            { label: "Trang chủ", path: "/" },
-            { label: "Làm quen với các bé", path: "/pets" },
-            { label: "Đang tải...", path: "#" },
-            { label: "Thủ tục nhận nuôi" },
-          ]}
-        />
-        <div className="flex justify-center items-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải thông tin thú cưng...</p>
-            <p className="text-xs text-gray-500 mt-2">
-              User: {currentUserLogin} | {currentDateTime}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoading text="Đang tải thông tin thú cưng..." />;
   }
 
   // Error state

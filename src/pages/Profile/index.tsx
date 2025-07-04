@@ -136,7 +136,6 @@ export default function ProfilePage() {
     }
 
     try {
-
       // Create updated form data with userId and handle empty birthDate
       const updatedFormData = {
         ...formData,
@@ -333,10 +332,11 @@ export default function ProfilePage() {
                   <span className="flex items-center gap-1">
                     <Heart
                       size={14}
-                      className={`${readyToAdopt
-                        ? "text-[#FF99C0] fill-[#FF99C0]"
-                        : "text-gray-400"
-                        }`}
+                      className={`${
+                        readyToAdopt
+                          ? "text-[#FF99C0] fill-[#FF99C0]"
+                          : "text-gray-400"
+                      }`}
                     />
                     <span className="text-gray-700">
                       {readyToAdopt
@@ -348,8 +348,9 @@ export default function ProfilePage() {
                 <Switch
                   checked={readyToAdopt || false}
                   onCheckedChange={handleToggleAdoptionStatus}
-                  className={`${readyToAdopt ? "bg-[#FF99C0]" : "bg-gray-300"
-                    } order-2`}
+                  className={`${
+                    readyToAdopt ? "bg-[#FF99C0]" : "bg-gray-300"
+                  } order-2`}
                 />
                 <p className="text-xs text-gray-700 text-right mt-2 font-bold">
                   Bật nếu bạn sẵn sàng nhận nuôi thêm thú cưng
@@ -406,41 +407,38 @@ export default function ProfilePage() {
           userId={userInfo.userId}
         />
         {/* Tab Navigation */}
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <TabsList className="flex w-full mb-8 bg-transparent">
-            <TabsTrigger
-              value="personal-info"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "personal-info"
-                ? "border-b-1 border-black text-black"
-                : ""
-                }`}
-            >
-              Thông tin cá nhân
-            </TabsTrigger>
-            <TabsTrigger
-              value="my-pets"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "my-pets"
-                ? "border-b-1 border-black text-black"
-                : ""
-                }`}
-            >
-              Thú cưng của tôi
-            </TabsTrigger>
-            <TabsTrigger
-              value="pet-criteria"
-              className={`p-4 text-sm font-medium rounded-none border-0 ${activeTab === "pet-criteria"
-                ? "border-b-1 border-black text-black"
-                : ""
-                }`}
-            >
-              Tiểu sử nuôi thú cưng
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex border-b border-gray-200 mb-8 justify-around">
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "personal-info"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("personal-info")}
+          >
+            Thông tin cá nhân
+          </button>
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "my-pets"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("my-pets")}
+          >
+            Thú cưng của tôi
+          </button>
+          <button
+            className={`py-4 px-6 text-base font-medium border-b-2 ${
+              activeTab === "pet-criteria"
+                ? "border-gray-700 text-gray-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            } transition-colors`}
+            onClick={() => setActiveTab("pet-criteria")}
+          >
+            Tiểu sử nuôi thú cưng
+          </button>
+        </div>
         {/* Tab Content */}
         {activeTab === "personal-info" && (
           <form onSubmit={handleSubmit} className="space-y-6">

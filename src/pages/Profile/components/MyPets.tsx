@@ -6,6 +6,7 @@ import Card from "@/components/Card/Card";
 import ROUTES from "@/constants/routes";
 import { petService } from "@/services/petService";
 import { Pet } from "@/types/Pet";
+import { SectionLoading } from "@/components/Loading";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +33,6 @@ export default function MyPets({ userId }: MyPetsProps) {
 
     setIsLoading(true);
     try {
-
       // Using the service function that calls /pets/filter with CreatedByUserId and Purpose
       const response = await petService.getUserPets(userId, "Show");
 
@@ -89,9 +89,12 @@ export default function MyPets({ userId }: MyPetsProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {" "}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen">
         {isLoading ? (
-          <div className="col-span-3 text-center py-8">Đang tải dữ liệu...</div>
+          <div className="col-span-3">
+            <SectionLoading text="Đang tải danh sách thú cưng..." />
+          </div>
         ) : userPets.length > 0 ? (
           <>
             {" "}
@@ -166,7 +169,6 @@ export default function MyPets({ userId }: MyPetsProps) {
           </div>
         </div>
       </div>
-
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="sm:max-w-[425px]">

@@ -4,6 +4,7 @@ import { petService } from "@/services/petService";
 import { Pet } from "@/types/Pet";
 import { toast } from "sonner";
 import { Heart } from "lucide-react";
+import { SectionLoading } from "@/components/Loading";
 
 interface PetCareHistoryProps {
   userId: number;
@@ -19,7 +20,6 @@ export default function PetCareHistory({ userId }: PetCareHistoryProps) {
 
     setIsLoading(true);
     try {
-
       // Using getAllPets with filter for adoption status
       const response = await petService.getAllPets({
         userId: userId,
@@ -45,12 +45,12 @@ export default function PetCareHistory({ userId }: PetCareHistoryProps) {
   }, [userId, fetchAdoptedPets]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-h-screen">
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {isLoading ? (
-            <div className="col-span-3 text-center py-8">
-              Đang tải dữ liệu...
+            <div className="col-span-3">
+              <SectionLoading text="Đang tải thú cưng đã nhận nuôi..." />
             </div>
           ) : adoptedPets.length > 0 ? (
             adoptedPets.map((pet) => {

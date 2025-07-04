@@ -120,7 +120,7 @@ export default function SignIn() {
                       {...field}
                       type="email"
                       placeholder="Địa chỉ email"
-                      className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                      className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                     />
                   </FormControl>
                   <FormMessage className="text-red-500 text-sm mt-1" />
@@ -139,7 +139,7 @@ export default function SignIn() {
                         {...field}
                         type={showPassword ? "text" : "password"}
                         placeholder="Mật khẩu"
-                        className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                        className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                       />
                       <button
                         type="button"
@@ -161,7 +161,7 @@ export default function SignIn() {
 
             <Button
               type="submit"
-              className="w-full bg-[#0066cc] hover:bg-[#0055aa] text-white font-semibold text-base md:text-2xl py-4 md:py-6 rounded-[36px]"
+              className="w-full bg-[#0053A3] hover:bg-[#004890] text-white font-semibold text-base md:text-2xl py-4 md:py-6 rounded-[36px]"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Đang xử lý..." : "Đăng nhập"}
@@ -169,7 +169,7 @@ export default function SignIn() {
           </form>
         </Form>
 
-        <div className="flex items-center my-6 md:my-10">
+        {/* <div className="flex items-center my-6 md:my-10">
           <Separator className="flex-1" />
           <span className="px-3 md:px-6 text-xl md:text-2xl font-bold">
             Hoặc
@@ -187,10 +187,10 @@ export default function SignIn() {
           <button className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mx-3 md:mx-8">
             <img src={LOGO.FB_LOGO || "/placeholder.svg"} alt="fb_logo" />
           </button>
-        </div>
+        </div> */}
 
         <div className="flex justify-center items-center mt-4 md:mt-6">
-          <Link to={""} className="text-[#0066cc] font-medium hover:underline">
+          <Link to={""} className="text-[#0053A3] font-medium hover:underline">
             Bạn quên mật khẩu?
           </Link>
         </div>
@@ -200,7 +200,7 @@ export default function SignIn() {
             Bạn chưa có tài khoản?{" "}
             <Link
               to={ROUTES.PUBLIC.SIGNUP}
-              className="text-[#0066cc] font-medium hover:underline"
+              className="text-[#0053A3] font-medium hover:underline"
             >
               Đăng ký ngay
             </Link>
