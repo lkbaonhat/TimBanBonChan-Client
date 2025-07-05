@@ -56,57 +56,90 @@ export default function AddPet() {
       return;
     }
 
+    // Validate required fields
+    if (!petName.trim()) {
+      toast.error("Vui lòng nhập tên thú cưng");
+      return;
+    }
+
+    if (!petAge || petAge <= 0) {
+      toast.error("Vui lòng nhập tuổi hợp lệ");
+      return;
+    }
+
     setLoading(true);
 
     try {
-
-      // Match the backend's expected format
-      const petData = {
-        petName,
-        breedId: parseInt(petBreed),
-        categoryId: parseInt(petBreed) <= 2 ? parseInt(petBreed) : 3,
+      // Clean up and validate data before sending to backend
+      const cleanedPetData = {
+        petName: petName.trim(),
+        categoryId: parseInt(petBreed),
+        // Use a default breedId of 1 since we don't have breed data
+        // TODO: Implement proper breed selection when breed API is available
+        breedId: 1,
         gender: petGender,
         age: petAge.toString(),
-        ageUnit: "year", // Default to years
-        color: petColor,
-        description: petDescription || "",
-        weight: petWeight,
+        ageUnit: "year",
+        color: petColor.trim() || "Không xác định",
+        description: petDescription.trim() || "Chưa có mô tả",
+        weight: petWeight > 0 ? petWeight : 1, // Default to 1kg if not provided
         size: "medium", // Default size
-        personality: petPersonality || "",
+        personality: petPersonality.trim() || "Thân thiện",
         isVaccinated,
         isNeutered,
         isTrained,
         healthStatus: healthStatus || "healthy",
-        location: petLocation || "",
-        adoptionStatus: "Available", // Default status
-        foodPreferences: "",
-        toyPreferences: "",
-        compatibleWith: "",
-        notCompatibleWith: "",
+        location: petLocation.trim() || "Không xác định",
+        adoptionStatus: "Available",
+        foodPreferences: "Không có yêu cầu đặc biệt",
+        toyPreferences: "Không có yêu cầu đặc biệt",
+        compatibleWith: "Người có kinh nghiệm",
+        notCompatibleWith: "Không có",
         createdByUserId: userInfo.userId,
-        primaryImageUrl: petImage || "", // Use the Cloudinary URL
+        // Only send image URL if it's not the placeholder
+        primaryImageUrl:
+          petImage && petImage !== "/placeholder-pet.png" ? petImage : "",
         additionalImageUrls: [],
         createAdoptionPost: false,
-
-        // Keep for backward compatibility
-        petImageUrls: petImage !== "/placeholder-pet.png" ? petImage : "",
-        userId: userInfo.userId,
         purpose: "Show", // Always set purpose to Show for user's own pets
       };
 
-      await petService.createPet(petData);
+      console.log("Sending pet data:", cleanedPetData);
+      console.log("Selected breed value:", petBreed);
+      console.log("Category ID:", parseInt(petBreed));
+
+      await petService.createPet(cleanedPetData);
 
       toast.success("Thêm thú cưng mới thành công");
       navigate(ROUTES.PUBLIC.PROFILE);
     } catch (error: unknown) {
-      console.error("Error creating pet:", error); // Extract more specific error message if available
+      console.error("Error creating pet:", error);
+
+      // Extract more specific error message if available
       const axiosError = error as {
-        response?: { data?: { errors?: { $?: string[] }; title?: string } };
+        response?: {
+          data?: {
+            errors?: { $?: string[] };
+            title?: string;
+            message?: string;
+          };
+          status?: number;
+        };
       };
-      const errorMessage =
-        axiosError.response?.data?.errors?.$?.[0] ||
-        axiosError.response?.data?.title ||
-        "Đã xảy ra lỗi khi thêm thú cưng mới";
+
+      let errorMessage = "Đã xảy ra lỗi khi thêm thú cưng mới";
+
+      if (axiosError.response?.data?.errors?.$?.[0]) {
+        errorMessage = axiosError.response.data.errors.$[0];
+      } else if (axiosError.response?.data?.message) {
+        errorMessage = axiosError.response.data.message;
+      } else if (axiosError.response?.data?.title) {
+        errorMessage = axiosError.response.data.title;
+      } else if (axiosError.response?.status === 400) {
+        errorMessage = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.";
+      } else if (axiosError.response?.status === 500) {
+        errorMessage = "Lỗi server. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.";
+      }
 
       toast.error("Không thể thêm thú cưng", {
         description: errorMessage,
@@ -180,8 +213,8 @@ export default function AddPet() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1">Mèo</SelectItem>
-                      <SelectItem value="2">Chó</SelectItem>
-                      <SelectItem value="3">Khác</SelectItem>
+                      <SelectItem value="6">Chó</SelectItem>
+                      <SelectItem value="7">Khác</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

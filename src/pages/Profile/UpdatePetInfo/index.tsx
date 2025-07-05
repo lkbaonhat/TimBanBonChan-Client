@@ -44,6 +44,7 @@ export default function UpdatePetInfo() {
   const [isTrained, setIsTrained] = useState(false);
   const [petLocation, setPetLocation] = useState("");
   const [healthStatus, setHealthStatus] = useState("healthy");
+  const [petId, setPetId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchPetData = async () => {
@@ -51,11 +52,18 @@ export default function UpdatePetInfo() {
 
       try {
         setFetchLoading(true);
-        const petId = parseInt(id);
-        const response = await petService.getPetById(petId);
-        const petData = response.data;
+        // Use slug instead of petId
+        const response = await petService.getPetBySlug(id);
+        console.log("Full API response:", response);
+
+        // Check if data is nested in response.data.data
+        const petData = response.data?.data || response.data;
+
+        console.log("Fetched pet data:", petData);
+
+        setPetId(petData.petId); // Store the actual petId
         setPetName(petData.petName || "");
-        setPetBreed(petData.breedId?.toString() || "1");
+        setPetBreed(petData.categoryId?.toString() || "1");
         setPetGender(petData.gender || "Đực");
         setPetAge(parseInt(petData.age) || 0); // Convert string age to number
         setPetColor(petData.color || "");
@@ -66,14 +74,29 @@ export default function UpdatePetInfo() {
         setIsNeutered(petData.isNeutered || false);
         setIsTrained(petData.isTrained || false);
         setPetLocation(petData.location || "");
-        setHealthStatus(petData.healthStatus || "healthy"); // Handle different image field names
+        setHealthStatus(petData.healthStatus || "healthy");
+
+        console.log("Set breed value:", petData.categoryId?.toString());
+        console.log("Set name:", petData.petName);
+        console.log("Set age:", petData.age); // Handle different image field names
         if (petData.primaryImageUrl) {
-          setPetImage(petData.primaryImageUrl);
-          setOriginalImageUrl(petData.primaryImageUrl);
+          console.log(
+            "Setting image from primaryImageUrl:",
+            petData.primaryImageUrl
+          );
+          const imageUrl = Array.isArray(petData.primaryImageUrl)
+            ? petData.primaryImageUrl[0]
+            : petData.primaryImageUrl;
+          setPetImage(imageUrl);
+          setOriginalImageUrl(imageUrl);
           setImageChanged(false); // Reset the image changed flag
         } else if (petData.petImageUrls) {
-          setPetImage(petData.petImageUrls);
-          setOriginalImageUrl(petData.petImageUrls);
+          console.log("Setting image from petImageUrls:", petData.petImageUrls);
+          const imageUrl = Array.isArray(petData.petImageUrls)
+            ? petData.petImageUrls[0]
+            : petData.petImageUrls;
+          setPetImage(imageUrl);
+          setOriginalImageUrl(imageUrl);
           setImageChanged(false); // Reset the image changed flag
         }
       } catch (error: unknown) {
@@ -99,7 +122,7 @@ export default function UpdatePetInfo() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!userInfo.userId || !id) {
+    if (!userInfo.userId || !id || !petId) {
       toast.error("Không thể cập nhật thú cưng", {
         description: "Thiếu thông tin cần thiết",
       });
@@ -109,13 +132,12 @@ export default function UpdatePetInfo() {
     setLoading(true);
 
     try {
-      const petId = parseInt(id);
       // Build basic pet data without images first
       const petData = {
-        petId: parseInt(id),
+        petId: petId,
         petName,
-        breedId: parseInt(petBreed),
-        categoryId: parseInt(petBreed) <= 2 ? parseInt(petBreed) : 3,
+        categoryId: parseInt(petBreed),
+        breedId: 1, // Use default breedId
         gender: petGender,
         age: petAge.toString(),
         ageUnit: "year", // Default to years
@@ -142,7 +164,7 @@ export default function UpdatePetInfo() {
       }; // Include image URL in the payload if available
       if (petImage !== "/placeholder-pet.png") {
         Object.assign(petData, {
-          primaryImageUrl: petImage,
+          primaryImageUrl: petImage, // Make sure this is a string, not array
           petImageUrls: petImage, // For backward compatibility
         });
       } else {
@@ -160,7 +182,12 @@ export default function UpdatePetInfo() {
         originalImageUrl !== petImage &&
         originalImageUrl.includes("cloudinary.com");
 
-      await petService.updatePet(petId, petData);
+      console.log("Pet data being sent:", petData);
+      console.log("Primary image URL:", petData.primaryImageUrl);
+      console.log("Primary image URL type:", typeof petData.primaryImageUrl);
+
+      // Use petData with petId included for update
+      await petService.updatePet(petData);
 
       // After successful update, if we have a new image, clean up the old one
       if (shouldDeleteOldImage) {
@@ -229,28 +256,10 @@ export default function UpdatePetInfo() {
       <div className="container mx-auto py-20">
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col md:flex-row gap-20 px-20">
-            {" "}
             {/* Left side - Pet Photo and Cloudinary Upload */}
             <div className="w-full md:w-1/2">
-              <div className="relative h-full mb-6">
-                {petImage !== "/placeholder-pet.png" && (
-                  <img
-                    src={petImage}
-                    alt="Ảnh thú cưng"
-                    className="w-full h-full rounded-xl object-cover"
-                    style={{ maxHeight: "300px", maxWidth: "600px" }}
-                  />
-                )}
-                {petImage === "/placeholder-pet.png" && (
-                  <div className="h-[300px] w-full border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400">
-                    <span>Chưa có ảnh thú cưng</span>
-                  </div>
-                )}
-              </div>
-
               {/* Cloudinary upload component */}
               <div className="mb-6">
-                <h3 className="text-gray-700 font-medium mb-2">Tải ảnh lên</h3>{" "}
                 <CloudinaryUpload
                   onImageUploaded={(url) => {
                     if (url) {
@@ -266,6 +275,21 @@ export default function UpdatePetInfo() {
                     petImage !== "/placeholder-pet.png" ? petImage : undefined
                   }
                 />
+              </div>
+              <div className="relative h-full mb-6">
+                {petImage !== "/placeholder-pet.png" && (
+                  <img
+                    src={petImage}
+                    alt="Ảnh thú cưng"
+                    className="w-full h-full rounded-xl object-cover"
+                    style={{ maxHeight: "400px", maxWidth: "700px" }}
+                  />
+                )}
+                {petImage === "/placeholder-pet.png" && (
+                  <div className="h-[300px] w-full border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400">
+                    <span>Chưa có ảnh thú cưng</span>
+                  </div>
+                )}
               </div>
             </div>
             {/* Right side - Form with 2x2 grid layout */}
@@ -292,9 +316,9 @@ export default function UpdatePetInfo() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Chó</SelectItem>
-                      <SelectItem value="2">Mèo</SelectItem>
-                      <SelectItem value="3">Khác</SelectItem>
+                      <SelectItem value="1">Mèo</SelectItem>
+                      <SelectItem value="6">Chó</SelectItem>
+                      <SelectItem value="7">Khác</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -452,7 +476,7 @@ export default function UpdatePetInfo() {
                   type="submit"
                   variant="blue"
                   className="py-2"
-                  shape="pill"
+                  shape="default"
                   animation="none"
                   size="lg"
                   disabled={loading}

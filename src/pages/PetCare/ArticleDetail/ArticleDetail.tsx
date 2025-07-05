@@ -5,7 +5,6 @@ import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
-import { PageLoading } from "@/components/Loading";
 import articlesData from "@/constants/data/articlesData.json";
 
 export default function ArticleDetail() {
@@ -46,7 +45,7 @@ export default function ArticleDetail() {
 
   // Make sure we have an article before rendering the full content
   if (!article) {
-    return <PageLoading text="Đang tải bài viết..." />;
+    return <div className="p-8 text-center">Loading article...</div>;
   }
 
   const breadcrumbItems = [
@@ -96,7 +95,7 @@ export default function ArticleDetail() {
               {/* Article title */}
               <ContentHeader title={article.title} level="h1" />
 
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <Button
                   variant="ghost"
                   shape="pill"
@@ -123,7 +122,7 @@ export default function ArticleDetail() {
                   <Share2 size={18} />
                   <span className="hidden md:inline">Chia sẻ</span>
                 </Button>
-              </div>
+              </div> */}
             </div>
 
             {/* Featured Image */}
@@ -153,7 +152,7 @@ export default function ArticleDetail() {
             </div>
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            {/* <div className="flex flex-wrap gap-2 mb-6">
               {article.tags.map((tag) => (
                 <span
                   key={tag}
@@ -162,16 +161,16 @@ export default function ArticleDetail() {
                   #{tag}
                 </span>
               ))}
-            </div>
+            </div> */}
 
             {/* Article content */}
             <div
-              className="prose max-w-none mb-8 prose-headings:text-[#0053A3] prose-a:text-[#FF99C0]"
+              className="prose max-w-none mb-8 prose-headings:text-[#0053A3] prose-a:text-[#FF99C0] prose-p:leading-relaxed prose-p:mb-4 [&_h3]:mb-6 [&_h3]:mt-8 [&_br]:block [&_br]:mb-2"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
 
             {/* Like button */}
-            <div className="flex items-center justify-end">
+            {/* <div className="flex items-center justify-end">
               <Button
                 variant="pink"
                 shape="pill"
@@ -183,7 +182,7 @@ export default function ArticleDetail() {
                 <Heart className={liked ? "fill-white" : ""} size={18} />
                 <span>{likeCount} thích</span>
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
 
