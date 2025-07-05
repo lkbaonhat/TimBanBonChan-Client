@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import {
-  Menu,
-  X,
-  Search,
-  ShoppingCart,
-  Phone,
-  Bell,
-  User,
-} from "lucide-react";
+import { Menu, X, Search, ShoppingCart, Phone, Bell, User } from "lucide-react";
 import { LOGO } from "@/constants/global";
 import ROUTES from "@/constants/routes";
 import { useSelector, useDispatch } from "react-redux";
@@ -27,7 +19,7 @@ const Header = () => {
   // Get authentication state from Redux
   const isAuthenticated = useSelector(selectorAuth.isAuthenticated);
 
-  const user: IRedux.UserInfo = useSelector(selectorAuth.userInfo)
+  const user: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,8 +49,9 @@ const Header = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
-        }`}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 px-14 ${
+        isScrolled ? "bg-white shadow-md py-2" : "bg-[#FFEDFA] py-4"
+      }`}
     >
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
@@ -78,9 +71,10 @@ const Header = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -89,20 +83,46 @@ const Header = () => {
             <NavLink
               to="/community"
               className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
               Cộng đồng
             </NavLink>
             <NavLink
+              to="/volunteer"
+              className={({ isActive }) =>
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                }`
+              }
+            >
+              Tình nguyện viên
+            </NavLink>
+            <NavLink
+              to="/pet-care"
+              className={({ isActive }) =>
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                }`
+              }
+            >
+              Sổ tay chăm sóc
+            </NavLink>
+            <NavLink
               to="/pets"
               className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -111,42 +131,23 @@ const Header = () => {
             <NavLink
               to="/find-new-home"
               className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
               Tìm nhà cho bé yêu
             </NavLink>
-            <NavLink
-              to="/pet-care"
-              className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
-                }`
-              }
-            >
-              Sổ tay chăm sóc
-            </NavLink>
-            <NavLink
-              to="/volunteer"
-              className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
-                }`
-              }
-            >
-              Tình nguyện viên
-            </NavLink>
+
             <NavLink
               to="/donation"
               className={({ isActive }) =>
-                `px-2 py-2 rounded-full transition-all duration-200  ${isActive
-                  ? "active"
-                  : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
+                `px-2 py-2 rounded-full transition-all duration-200  ${
+                  isActive
+                    ? "active"
+                    : "text-gray-700 hover:text-white hover:bg-[#FF99C0]"
                 }`
               }
             >
@@ -173,23 +174,18 @@ const Header = () => {
               <Bell size={20} />
             </Button>
             {/* DropdownMenu */}
-            {isAuthenticated ?
-              <UserDropDown
-                user={user}
-                onClickLogout={handleLogout}
-              />
-              : (
-                <Link
-                  to={ROUTES.PUBLIC.SIGNIN}
-                  aria-label="Account"
-                  className="ml-2 px-4 py-2  flex items-center  bg-[#0053A3] text-white rounded-full hover:bg-[#004080] transition-colors text-center"
-                >
-                  <User size={18} className="mr-2" />
-                  <span>Đăng nhập</span>
-                </Link>
-              )
-
-            }
+            {isAuthenticated ? (
+              <UserDropDown user={user} onClickLogout={handleLogout} />
+            ) : (
+              <Link
+                to={ROUTES.PUBLIC.SIGNIN}
+                aria-label="Account"
+                className="ml-2 px-4 py-2  flex items-center  bg-[#0053A3] text-white rounded-full hover:bg-[#004080] transition-colors text-center"
+              >
+                <User size={18} className="mr-2" />
+                <span>Đăng nhập</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

@@ -32,6 +32,7 @@ import { setUserInfo } from "@/store/modules/auth/slice";
 import { toast } from "sonner";
 // Import the extracted components
 import { MyPets, PetCareHistory } from "./components";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ProfilePage() {
   const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
@@ -135,7 +136,6 @@ export default function ProfilePage() {
     }
 
     try {
-
       // Create updated form data with userId and handle empty birthDate
       const updatedFormData = {
         ...formData,
@@ -276,7 +276,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="px-14">
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
@@ -407,7 +407,7 @@ export default function ProfilePage() {
           userId={userInfo.userId}
         />
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 mb-8">
+        <div className="flex border-b border-gray-200 mb-8 justify-around">
           <button
             className={`py-4 px-6 text-base font-medium border-b-2 ${
               activeTab === "personal-info"

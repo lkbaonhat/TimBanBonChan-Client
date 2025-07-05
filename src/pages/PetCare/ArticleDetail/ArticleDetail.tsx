@@ -5,6 +5,7 @@ import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ContentHeader from "@/components/ContentHeader/ContentHeader";
+import { PageLoading } from "@/components/Loading";
 import articlesData from "@/constants/data/articlesData.json";
 
 export default function ArticleDetail() {
@@ -45,7 +46,7 @@ export default function ArticleDetail() {
 
   // Make sure we have an article before rendering the full content
   if (!article) {
-    return <div className="p-8 text-center">Loading article...</div>;
+    return <PageLoading text="Đang tải bài viết..." />;
   }
 
   const breadcrumbItems = [

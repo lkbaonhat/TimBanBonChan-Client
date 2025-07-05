@@ -91,14 +91,16 @@ export default function VeterinaryClinics() {
     <div className="container mx-auto  mb-12">
       {/* Clinic List Section */}
       <div>
-        <ContentHeader
-          title="Danh sách phòng khám"
-          level="h2"
-          className="mb-4"
-        />
+        <div className="animate-on-scroll opacity-0">
+          <ContentHeader
+            title="Danh sách phòng khám"
+            level="h2"
+            className="mb-4"
+          />
+        </div>
 
         {/* Clinic Cards Slider */}
-        <div className="relative">
+        <div className="relative animate-on-scroll opacity-0">
           <div className="overflow-hidden">
             <div
               ref={sliderRef}
@@ -110,10 +112,11 @@ export default function VeterinaryClinics() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {filteredClinics
                       .slice(pageIndex * 3, (pageIndex + 1) * 3)
-                      .map((clinic) => (
+                      .map((clinic, index) => (
                         <div
                           key={clinic.id}
-                          className="cursor-pointer transition-transform transform hover:scale-[0.99]"
+                          className="cursor-pointer transition-transform transform hover:scale-[0.99] animate-on-scroll opacity-0"
+                          style={{ animationDelay: `${index * 0.1}s` }}
                           onClick={() => handleClinicDetail(clinic.id)}
                         >
                           <Card
@@ -141,14 +144,16 @@ export default function VeterinaryClinics() {
         </div>
 
         {/* Dots Pagination */}
-        <DotPagination
-          currentPage={activeDot}
-          totalPages={totalPages}
-          onPageChange={handleDotClick}
-          className="mt-8"
-        />
+        <div className="animate-on-scroll opacity-0">
+          <DotPagination
+            currentPage={activeDot}
+            totalPages={totalPages}
+            onPageChange={handleDotClick}
+            className="mt-8"
+          />
+        </div>
 
-        <div className="text-right mt-6">
+        <div className="text-right mt-6 animate-on-scroll opacity-0">
           <Button
             asChild
             variant="link"

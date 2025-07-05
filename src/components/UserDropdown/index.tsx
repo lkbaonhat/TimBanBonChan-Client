@@ -190,8 +190,9 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
                 onClick={() => handleItemClick(item.href)}
               >
                 <Icon
-                  className={`h-4 w-4 ${isStaffOnly ? "text-[#5B7CCB]" : "text-[#0052A3]"
-                    } transition-transform duration-200 group-hover:scale-110`}
+                  className={`h-4 w-4 ${
+                    isStaffOnly ? "text-[#5B7CCB]" : "text-[#0052A3]"
+                  } transition-transform duration-200 group-hover:scale-110`}
                 />
                 <span className="font-medium text-gray-700 transition-colors duration-200 group-hover:text-[#0052A3]">
                   {item.label}
@@ -213,8 +214,8 @@ function UserDropDown({ user, onClickLogout }: UserDropDownProps) {
             className="flex items-center space-x-3 p-3 cursor-pointer hover:bg-red-50 rounded-lg text-red-600 transition-colors duration-200 group"
             onClick={onClickLogout}
           >
-            <LogOut className="h-4 w-4 transition-transform duration-200 group-hover:scale-100 text-red-600" />
-            <span className="font-medium transition-colors duration-200 group-hover:text-red-700">
+            <LogOut className="h-4 w-4 transition-transform duration-200 group-hover:scale-110  text-red-600" />
+            <span className="font-medium text-gray-700 transition-colors duration-200 group-hover:text-red-600">
               Đăng xuất
             </span>
           </DropdownMenuItem>

@@ -467,7 +467,7 @@ export default function ProfileDetail() {
       {/* Breadcrumb */}
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto  py-6">
         <div className="bg-white rounded-xl overflow-hidden shadow-md relative">
           {/* Decorative circles to match home page style */}
           <div className="absolute -top-6 -left-6 w-20 h-20 bg-[#C5E2F0] opacity-70 rounded-full z-0 hidden md:block"></div>

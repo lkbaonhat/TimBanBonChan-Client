@@ -24,7 +24,7 @@ const VolunteerPage = () => {
         const windowHeight = window.innerHeight;
 
         if (elementPosition < windowHeight - 100) {
-          element.classList.add("animate-fadeIn");
+          element.classList.add("animate-fadeInUp");
         }
       });
     };
@@ -46,11 +46,12 @@ const VolunteerPage = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FFEDFA]">
       <main className="flex-grow">
-        <Breadcrumb items={breadcrumbItems} />
+        <div className="animate-on-scroll opacity-0">
+          <Breadcrumb items={breadcrumbItems} />
+        </div>
 
         <div className="px-12">
-          <div className="bg-[#FFEDFA]">
-            {" "}
+          <div className="bg-[#FFEDFA] animate-on-scroll opacity-0">
             {/* Added explicit background container */}
             <HeroSection
               title="Trở thành tình nguyện viên"
@@ -61,11 +62,15 @@ const VolunteerPage = () => {
             />
           </div>
 
-          <VolunteerRoles />
+          <div className="animate-on-scroll opacity-0">
+            <VolunteerRoles />
+          </div>
 
-          <ServiceSection />
+          <div className="animate-on-scroll opacity-0">
+            <ServiceSection />
+          </div>
 
-          <div className="py-12 px-4 md:px-8 bg-gradient-to-b to-[#FFEDFA] from-pink-50">
+          <div className="py-12 px-4 md:px-8 bg-gradient-to-b to-[#FFEDFA] from-pink-50 animate-on-scroll opacity-0">
             <div className="container mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="col-span-2">
@@ -78,8 +83,7 @@ const VolunteerPage = () => {
             </div>
           </div>
 
-          <div className="bg-[#FFEDFA]">
-            {" "}
+          <div className="bg-[#FFEDFA] animate-on-scroll opacity-0">
             {/* Added explicit background container */}
             <ZeroSection
               title="Tham gia "

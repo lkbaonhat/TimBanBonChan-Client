@@ -137,6 +137,7 @@ const ContactForm = () => {
         <Button
           type="submit"
           variant="blue"
+          animation={"none"}
           className="w-full h-12tại sao bg và button của 2 phần này không hiện ra text-white font-medium py-2 px-4 rounded-lg flex items-center justify-center"
         >
           Gửi câu hỏi

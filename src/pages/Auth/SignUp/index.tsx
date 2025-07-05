@@ -139,7 +139,7 @@ export default function SignUpForm() {
                       {...field}
                       type="text"
                       placeholder="Họ và tên"
-                      className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                      className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                     />
                   </FormControl>
                   <FormMessage className="text-red-500 text-sm mt-1" />
@@ -157,7 +157,7 @@ export default function SignUpForm() {
                       {...field}
                       type="text"
                       placeholder="Tên đăng nhập"
-                      className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                      className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                     />
                   </FormControl>
                   <FormMessage className="text-red-500 text-sm mt-1" />
@@ -175,7 +175,7 @@ export default function SignUpForm() {
                       {...field}
                       type="email"
                       placeholder="Địa chỉ email cá nhân"
-                      className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                      className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                     />
                   </FormControl>
                   <FormMessage className="text-red-500 text-sm mt-1" />
@@ -193,7 +193,7 @@ export default function SignUpForm() {
                       {...field}
                       type="number"
                       placeholder="Số điện thoại"
-                      className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                      className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                     />
                   </FormControl>
                   <FormMessage className="text-red-500 text-sm mt-1" />
@@ -212,7 +212,7 @@ export default function SignUpForm() {
                         {...field}
                         type={showPassword ? "text" : "password"}
                         placeholder="Mật khẩu"
-                        className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                        className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                       />
                       <button
                         type="button"
@@ -243,7 +243,7 @@ export default function SignUpForm() {
                         {...field}
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Xác nhận mật khẩu"
-                        className="bg-[#C5E2F0] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
+                        className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                       />
                       <button
                         type="button"
@@ -265,7 +265,7 @@ export default function SignUpForm() {
 
             <Button
               type="submit"
-              className="w-full bg-[#0066cc] hover:bg-[#0055aa] text-white font-semibold text-base md:text-2xl py-4 md:py-6 rounded-[36px]"
+              className="w-full bg-[#0053A3] hover:bg-[#004890] text-white font-semibold text-base md:text-2xl py-4 md:py-6 rounded-[36px]"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Đang xử lý..." : "Đăng ký"}
@@ -273,7 +273,7 @@ export default function SignUpForm() {
           </form>
         </Form>
 
-        <div className="flex items-center my-6 md:my-10">
+        {/* <div className="flex items-center my-6 md:my-10">
           <Separator className="flex-1" />
           <span className="px-3 md:px-6 text-xl md:text-2xl font-bold">
             Hoặc
@@ -291,14 +291,14 @@ export default function SignUpForm() {
           <button className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mx-3 md:mx-8">
             <img src={LOGO.FB_LOGO || "/placeholder.svg"} alt="fb_logo" />
           </button>
-        </div>
+        </div> */}
 
         <div className="text-center text-sm md:text-base text-gray-500 mt-6 md:mt-8">
           <p>
             Bạn đã có tài khoản?{" "}
             <Link
               to={ROUTES.PUBLIC.SIGNIN}
-              className="text-[#0066cc] font-medium hover:underline"
+              className="text-[#0053A3] font-medium hover:underline"
             >
               Đăng nhập ngay
             </Link>

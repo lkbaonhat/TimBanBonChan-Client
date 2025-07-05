@@ -3,6 +3,7 @@ import { PetCard } from "../PetCard";
 import PageHeader from "@/components/ContentHeader/ContentHeader";
 import Filter, { FilterConfig } from "@/components/Filter/Filter";
 import Pagination from "@/components/Pagination/Pagination";
+import { SectionLoading } from "@/components/Loading";
 import styles from "./pet-gallery.module.css";
 import { petService } from "@/services/petService";
 
@@ -16,11 +17,30 @@ export default function PetGallery() {
 
   // State for adoption posts data
   const [allPosts, setAllPosts] = useState<IEntities.AdoptionPost[]>([]);
-  const [filteredPosts, setFilteredPosts] = useState<IEntities.AdoptionPost[]>([]);
-  const [displayPosts, setDisplayPosts] = useState<IEntities.AdoptionPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<IEntities.AdoptionPost[]>(
+    []
+  );
+  const [displayPosts, setDisplayPosts] = useState<IEntities.AdoptionPost[]>(
+    []
+  );
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Add animation trigger effect
+  useEffect(() => {
+    const triggerAllAnimations = () => {
+      const elements = document.querySelectorAll(".animate-on-scroll");
+      elements.forEach((element) => {
+        element.classList.add("animate-fadeInLeft");
+      });
+    };
+
+    // Run immediately when displayPosts changes
+    if (displayPosts.length > 0) {
+      triggerAllAnimations();
+    }
+  }, [displayPosts]); // Trigger when displayPosts changes
 
   // Define filter configurations
   const filterConfigs: FilterConfig[] = [
@@ -62,7 +82,7 @@ export default function PetGallery() {
 
   // Function to filter posts based on current filter settings
   const filterPosts = (posts: IEntities.AdoptionPost[]) => {
-    return posts.filter(post => {
+    return posts.filter((post) => {
       const pet = post.pet;
 
       // Category filter
@@ -105,7 +125,9 @@ export default function PetGallery() {
         const response = await petService.getAllAdoptionPost();
 
         if (!response.data.success) {
-          throw new Error(response.data.message || 'Failed to fetch adoption posts');
+          throw new Error(
+            response.data.message || "Failed to fetch adoption posts"
+          );
         }
 
         const posts = response.data.data.items;
@@ -122,7 +144,6 @@ export default function PetGallery() {
 
         // Reset to first page when data changes
         setCurrentPage(1);
-
       } catch (err: any) {
         console.error("Error fetching adoption posts:", err);
 
@@ -140,7 +161,9 @@ export default function PetGallery() {
             setError("Lỗi server. Vui lòng thử lại sau.");
           }
         } else if (err.request) {
-          setError("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
+          setError(
+            "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+          );
         } else {
           setError(err.message || "Đã xảy ra lỗi không xác định.");
         }
@@ -178,21 +201,27 @@ export default function PetGallery() {
   };
 
   // Convert AdoptionPost to PetCardData
-  const convertToPetCardData = (post: IEntities.AdoptionPost): IEntities.PetCardData => {
+  const convertToPetCardData = (
+    post: IEntities.AdoptionPost
+  ): IEntities.PetCardData => {
     const pet = post.pet;
 
     // Get the main image
-    const imageUrl = pet.imageUrls && pet.imageUrls.length > 0
-      ? pet.imageUrls[0]
-      : "/placeholder.svg?height=200&width=200";
+    const imageUrl =
+      pet.imageUrls && pet.imageUrls.length > 0
+        ? pet.imageUrls[0]
+        : "/placeholder.svg?height=200&width=200";
 
     // Format location
     const displayLocation = post.city
-      ? `${post.district ? post.district + ', ' : ''}${post.city}`
+      ? `${post.district ? post.district + ", " : ""}${post.city}`
       : post.location || pet.location || "Không xác định";
 
     // Format status based on adoption status and urgency
-    let status = pet.adoptionStatus === "Available" ? "Có thể nhận nuôi" : pet.adoptionStatus;
+    let status =
+      pet.adoptionStatus === "Available"
+        ? "Có thể nhận nuôi"
+        : pet.adoptionStatus;
     if (post.isUrgent) {
       status = "🚨 Cần gấp - " + status;
     }
@@ -221,26 +250,36 @@ export default function PetGallery() {
     window.location.reload();
   };
 
+  // Add animation trigger effect
+  useEffect(() => {
+    const triggerAllAnimations = () => {
+      const elements = document.querySelectorAll(".animate-on-scroll");
+      elements.forEach((element) => {
+        element.classList.add("animate-fadeInLeft");
+      });
+    };
+
+    // Run immediately when component mounts or when displayPosts changes
+    setTimeout(triggerAllAnimations, 100);
+  }, [displayPosts]); // Trigger when displayPosts changes
+
   return (
     <div className={styles.container}>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 animate-on-scroll opacity-0">
         <PageHeader title="Làm quen với các bé" />
         <Filter filters={filterConfigs} />
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Đang tải danh sách thú cưng...</p>
-          </div>
-        </div>
+        <SectionLoading text="Đang tải danh sách thú cưng..." />
       ) : error ? (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 animate-on-scroll opacity-0">
           <div className="flex justify-between items-center">
             <div>
               <p className="font-medium">{error}</p>
-              <p className="text-sm mt-1">Thời gian: {new Date().toLocaleString('vi-VN')}</p>
+              <p className="text-sm mt-1">
+                Thời gian: {new Date().toLocaleString("vi-VN")}
+              </p>
             </div>
             <button
               onClick={handleRetry}
@@ -251,12 +290,16 @@ export default function PetGallery() {
           </div>
         </div>
       ) : filteredPosts.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-gray-500 text-xl mb-4">🐾 Không tìm thấy kết quả</div>
+        <div className="text-center py-16 animate-on-scroll opacity-0">
+          <div className="text-gray-500 text-xl mb-4">
+            🐾 Không tìm thấy kết quả
+          </div>
           <p className="text-lg text-gray-600 mb-2">
             Không tìm thấy thú cưng nào phù hợp với bộ lọc hiện tại.
           </p>
-          <p className="mt-2 text-gray-500">Vui lòng thử với các tiêu chí khác.</p>
+          <p className="mt-2 text-gray-500">
+            Vui lòng thử với các tiêu chí khác.
+          </p>
           <button
             onClick={() => {
               setPetCategory("all");
@@ -271,18 +314,20 @@ export default function PetGallery() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {displayPosts.map((post) => (
-              <div key={post.postId} className="relative">
-                <PetCard
-                  pet={convertToPetCardData(post)}
-                />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 animate-on-scroll">
+            {displayPosts.map((post, index) => (
+              <div
+                key={post.postId}
+                className="relative animate-on-scroll"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <PetCard pet={convertToPetCardData(post)} />
               </div>
             ))}
           </div>
 
           {filteredPosts.length > pageSize && (
-            <div className="mt-8">
+            <div className="mt-8 animate-on-scroll">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

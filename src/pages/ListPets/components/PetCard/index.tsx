@@ -25,7 +25,9 @@ export function PetCard({ pet }: PetCardProps) {
       area={pet.location}
       buttonText="Thông tin chi tiết"
       onButtonClick={handleButtonClick}
-      className={styles.card}
+      className={
+        styles.card + " hover:scale-[0.98] transition-transform duration-300"
+      }
     />
   );
 }
