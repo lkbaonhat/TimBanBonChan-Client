@@ -60,8 +60,8 @@ export default function MyPets({ userId }: MyPetsProps) {
   };
 
   // Navigate to Edit Pet page
-  const handleEditPet = (petId: number) => {
-    navigate(ROUTES.PUBLIC.UPDATE_PET.replace(":id", petId.toString()));
+  const handleEditPet = (slug: string) => {
+    navigate(ROUTES.PUBLIC.UPDATE_PET.replace(":id", slug));
   };
 
   // Handle delete pet click - show confirmation dialog
@@ -90,7 +90,7 @@ export default function MyPets({ userId }: MyPetsProps) {
   return (
     <div>
       {" "}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
         {isLoading ? (
           <div className="col-span-3">
             <SectionLoading text="Đang tải danh sách thú cưng..." />
@@ -108,7 +108,7 @@ export default function MyPets({ userId }: MyPetsProps) {
                 "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-8tzGZPvIid5Qe3xRaobyJwv8n7kYoh.png";
 
               return (
-                <div className="relative h-full">
+                <div className="relative ">
                   <Card
                     key={pet.petId}
                     type="pet"
@@ -117,7 +117,6 @@ export default function MyPets({ userId }: MyPetsProps) {
                     badge={pet.categoryName}
                     gender={pet.gender}
                     location={`${pet.age} tuổi`}
-                    className="h-full"
                   />
                   {/* Action buttons positioned at bottom right */}
                   <div className="absolute bottom-3 right-3 flex gap-1">
@@ -128,7 +127,7 @@ export default function MyPets({ userId }: MyPetsProps) {
                       className="h-8 w-8 rounded-full hover:bg-slate-100 "
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleEditPet(pet.petId);
+                        handleEditPet(pet.slug);
                       }}
                     >
                       <Edit size={16} />
@@ -158,7 +157,7 @@ export default function MyPets({ userId }: MyPetsProps) {
 
         {/* Add New Pet Card */}
         <div
-          className="border-2 border-gray-300 border-dashed rounded-xl overflow-hidden cursor-pointer h-full flex flex-col hover:border-gray-400 transition-colors"
+          className="border-2 border-gray-300 border-dashed rounded-xl overflow-hidden cursor-pointer flex flex-col hover:border-gray-400 transition-colors"
           onClick={handleAddPet}
         >
           <div className="flex-grow flex flex-col items-center justify-center p-8 gap-3">

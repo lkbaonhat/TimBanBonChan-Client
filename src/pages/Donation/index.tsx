@@ -99,7 +99,7 @@ export default function DonationPage() {
     };
   }, []);
 
-  const presetAmounts = ["20,000", "50,000", "1,000,000", "200,000", "500,000"];
+  const presetAmounts = ["20,000", "50,000", "200,000", "500,000", "1,000,000"];
 
   function onDonationSubmit(values: z.infer<typeof donationSchema>) {
     console.log("Donation form:", values);

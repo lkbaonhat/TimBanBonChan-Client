@@ -3,12 +3,10 @@ import { Heart, Share2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import styles from "./pet-detail.module.css";
 import { useNavigate, useParams } from "react-router-dom";
-import ROUTES from "@/constants/routes";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { PageLoading } from "@/components/Loading";
-import { axiosClient } from "@/config/axios";
-import { API_ENDPOINT } from "@/constants/api";
 import { petService } from "@/services/petService";
+import ContentHeader from "@/components/ContentHeader/ContentHeader";
 
 // Updated interfaces to match the adoption post API response
 interface Pet {
@@ -53,14 +51,6 @@ interface AdoptionPost {
   createdByUserId: number;
   createdDate: string;
   pet: Pet;
-}
-
-interface ApiResponse {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: AdoptionPost;
-  detailErrors: any;
 }
 
 export default function PetDetail() {
@@ -155,14 +145,15 @@ export default function PetDetail() {
           categoryName: postData.pet.categoryName || "Không xác định",
           adoptionStatus: formatAdoptionStatus(postData.pet.adoptionStatus),
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(
           `[${currentDateTime}] Error fetching adoption post details:`,
           err
         );
 
-        if (err.response) {
-          const status = err.response.status;
+        if (err && typeof err === "object" && "response" in err) {
+          const errorWithResponse = err as { response: { status: number } };
+          const status = errorWithResponse.response.status;
           if (status === 404) {
             setError("Không tìm thấy thông tin thú cưng này.");
           } else if (status === 403) {
@@ -170,7 +161,7 @@ export default function PetDetail() {
           } else {
             setError("Lỗi server. Vui lòng thử lại sau.");
           }
-        } else if (err.request) {
+        } else if (err && typeof err === "object" && "request" in err) {
           setError(
             "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
           );
@@ -184,32 +175,6 @@ export default function PetDetail() {
 
     fetchAdoptionPostDetails();
   }, [postId]);
-
-  // Format age string with unit
-  const formatAge = (age: string, ageUnit: string): string => {
-    if (!age) return "Không xác định";
-
-    const ageNum = parseInt(age) || 0;
-
-    switch (ageUnit?.toLowerCase()) {
-      case "months":
-      case "tháng":
-        if (ageNum < 12) {
-          return `${ageNum} tháng tuổi`;
-        } else {
-          const years = Math.floor(ageNum / 12);
-          const months = ageNum % 12;
-          return months === 0
-            ? `${years} năm tuổi`
-            : `${years} năm ${months} tháng tuổi`;
-        }
-      case "years":
-      case "năm":
-        return `${ageNum} năm tuổi`;
-      default:
-        return age; // Return as-is if it's descriptive like "Trưởng thành"
-    }
-  };
 
   // Format adoption status
   const formatAdoptionStatus = (status: string | undefined): string => {
@@ -225,21 +190,6 @@ export default function PetDetail() {
       default:
         return status;
     }
-  };
-
-  // Format food and toy preferences
-  const formatPreferences = (
-    food: string | null,
-    toys: string | null
-  ): string => {
-    if (!food && !toys) return "Thông tin chưa cập nhật";
-
-    let result = "";
-    if (food) result += `Thức ăn: ${food}`;
-    if (food && toys) result += "; ";
-    if (toys) result += `Đồ chơi: ${toys}`;
-
-    return result;
   };
 
   // Handle adoption form navigation - Updated to use pet slug
@@ -301,7 +251,7 @@ export default function PetDetail() {
       : "/placeholder.svg?height=400&width=600";
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto min-h-screen ">
       <Breadcrumb items={breadcrumbItems} />
       <div className={styles.container}>
         {error && (
@@ -310,13 +260,55 @@ export default function PetDetail() {
           </div>
         )}
 
+        {/* Pet's basic info at the top */}
+        <div className={styles.petHeader}>
+          <div className={styles.titleRow}>
+            <ContentHeader
+              title={pet?.petName || "Không có tên"}
+              className={styles.petName}
+            />
+            {/* <div className={styles.actions}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={styles.actionButton}
+                animation="none"
+              >
+                <Heart className={styles.actionIcon} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={styles.actionButton}
+                animation="none"
+              >
+                <Share2 className={styles.actionIcon} />
+              </Button>
+            </div> */}
+          </div>
+
+          <div className={styles.petTags}>
+            <span className={styles.tag}>{petDetails.categoryName}</span>
+            <span className={styles.tagSeparator}>|</span>
+            <span className={styles.tag}>{petDetails.age}</span>
+            <span className={styles.tagSeparator}>|</span>
+            <span className={styles.tag}>
+              {pet?.gender || "Không xác định"}
+            </span>
+          </div>
+
+          <p className={styles.description}>
+            {pet?.description || "Chưa có mô tả chi tiết."}
+          </p>
+        </div>
+
         <div className={styles.content}>
           <div className={styles.imageContainer}>
-            <div className="relative w-full h-0 pb-[75%] overflow-hidden rounded-lg">
+            <div className={styles.mainImageWrapper}>
               <img
                 src={mainImage}
                 alt={`${pet?.petName} - ${pet?.breedName}`}
-                className="absolute inset-0 w-full h-full object-cover"
+                className={styles.petImage}
                 onError={(e) => {
                   e.currentTarget.src = "/placeholder.svg?height=400&width=600";
                 }}
@@ -325,7 +317,7 @@ export default function PetDetail() {
 
             {/* Additional images if available */}
             {pet?.imageUrls && pet.imageUrls.length > 1 && (
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-3 gap-2 mt-2 flex-shrink-0">
                 {pet.imageUrls.slice(1, 4).map((imageUrl, index) => (
                   <div
                     key={index}
@@ -347,193 +339,162 @@ export default function PetDetail() {
           </div>
 
           <div className={styles.details}>
-            <div className={styles.titleRow}>
-              <h1 className={styles.petName}>
-                {pet?.petName || "Không có tên"}
-              </h1>
-              <div className={styles.actions}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={styles.actionButton}
-                  animation="none"
-                >
-                  <Heart className={styles.actionIcon} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={styles.actionButton}
-                  animation="none"
-                >
-                  <Share2 className={styles.actionIcon} />
-                </Button>
-              </div>
-            </div>
+            <div className={styles.infoGridScrollable}>
+              <div className={styles.infoGrid}>
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Loại thú cưng</div>
+                  <div className={styles.infoValue}>
+                    {petDetails.categoryName}
+                  </div>
+                </div>
 
-            <div className={styles.petTags}>
-              <span className={styles.tag}>{petDetails.categoryName}</span>
-              <span className={styles.tagSeparator}>|</span>
-              <span className={styles.tag}>{petDetails.age}</span>
-              <span className={styles.tagSeparator}>|</span>
-              <span className={styles.tag}>
-                {pet?.gender || "Không xác định"}
-              </span>
-            </div>
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Giống</div>
+                  <div className={styles.infoValue}>{petDetails.breed}</div>
+                </div>
 
-            <p className={styles.description}>
-              {pet?.description || "Chưa có mô tả chi tiết."}
-            </p>
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Tuổi</div>
+                  <div className={styles.infoValue}>{petDetails.age}</div>
+                </div>
 
-            <h2 className={styles.sectionTitle}>Thông tin chi tiết</h2>
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Giới tính</div>
+                  <div className={styles.infoValue}>
+                    {pet?.gender || "Không xác định"}
+                  </div>
+                </div>
 
-            <div className={styles.infoGrid}>
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Loại thú cưng</div>
-                <div className={styles.infoValue}>
-                  {petDetails.categoryName}
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Kích thước</div>
+                  <div className={styles.infoValue}>{petDetails.size}</div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Cân nặng</div>
+                  <div className={styles.infoValue}>{petDetails.weight}</div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Màu lông</div>
+                  <div className={styles.infoValue}>{petDetails.color}</div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Tình trạng sức khỏe</div>
+                  <div className={styles.infoValue}>
+                    {petDetails.healthStatus}
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Tiêm vắc-xin</div>
+                  <div className={styles.infoValue}>
+                    <span
+                      className={
+                        pet?.isVaccinated ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      {petDetails.vaccinationStatus}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Triệt sản</div>
+                  <div className={styles.infoValue}>
+                    <span
+                      className={
+                        pet?.isNeutered ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      {petDetails.neuterStatus}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Huấn luyện</div>
+                  <div className={styles.infoValue}>
+                    <span
+                      className={
+                        pet?.isTrained ? "text-green-600" : "text-red-600"
+                      }
+                    >
+                      {petDetails.trainingStatus}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Tính cách</div>
+                  <div className={styles.infoValue}>
+                    {petDetails.personality}
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>
+                    Sở thích ăn uống & chơi
+                  </div>
+                  <div className={styles.infoValue}>
+                    {petDetails.foodAndToys}
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Phù hợp với</div>
+                  <div
+                    className={styles.infoValue}
+                    dangerouslySetInnerHTML={{
+                      __html: petDetails.suitableWith,
+                    }}
+                  />
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Địa chỉ</div>
+                  <div className={styles.infoValue}>{petDetails.location}</div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <div className={styles.infoLabel}>Trạng thái nhận nuôi</div>
+                  <div className={styles.infoValue}>
+                    <span
+                      className={
+                        pet?.adoptionStatus === "Available"
+                          ? "text-green-600 "
+                          : "text-yellow-600"
+                      }
+                    >
+                      {petDetails.adoptionStatus}
+                    </span>
+                  </div>
                 </div>
               </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Giống</div>
-                <div className={styles.infoValue}>{petDetails.breed}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Tuổi</div>
-                <div className={styles.infoValue}>{petDetails.age}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Giới tính</div>
-                <div className={styles.infoValue}>
-                  {pet?.gender || "Không xác định"}
-                </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Kích thước</div>
-                <div className={styles.infoValue}>{petDetails.size}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Cân nặng</div>
-                <div className={styles.infoValue}>{petDetails.weight}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Màu lông</div>
-                <div className={styles.infoValue}>{petDetails.color}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Tình trạng sức khỏe</div>
-                <div className={styles.infoValue}>
-                  {petDetails.healthStatus}
-                </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Tiêm vắc-xin</div>
-                <div className={styles.infoValue}>
-                  <span
-                    className={
-                      pet?.isVaccinated ? "text-green-600" : "text-red-600"
-                    }
-                  >
-                    {petDetails.vaccinationStatus}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Triệt sản</div>
-                <div className={styles.infoValue}>
-                  <span
-                    className={
-                      pet?.isNeutered ? "text-green-600" : "text-red-600"
-                    }
-                  >
-                    {petDetails.neuterStatus}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Huấn luyện</div>
-                <div className={styles.infoValue}>
-                  <span
-                    className={
-                      pet?.isTrained ? "text-green-600" : "text-red-600"
-                    }
-                  >
-                    {petDetails.trainingStatus}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Tính cách</div>
-                <div className={styles.infoValue}>{petDetails.personality}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Sở thích ăn uống & chơi</div>
-                <div className={styles.infoValue}>{petDetails.foodAndToys}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Phù hợp với</div>
-                <div
-                  className={styles.infoValue}
-                  dangerouslySetInnerHTML={{ __html: petDetails.suitableWith }}
-                />
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Địa chỉ</div>
-                <div className={styles.infoValue}>{petDetails.location}</div>
-              </div>
-
-              <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>Trạng thái nhận nuôi</div>
-                <div className={styles.infoValue}>
-                  <span
-                    className={
-                      pet?.adoptionStatus === "Available"
-                        ? "text-green-600 font-semibold"
-                        : "text-yellow-600 font-semibold"
-                    }
-                  >
-                    {petDetails.adoptionStatus}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.buttonContainer}>
-              <Button
-                variant="blue"
-                shape="default"
-                animation="none"
-                className="mr-4"
-              >
-                Liên hệ trực tiếp
-              </Button>
-              <Button
-                variant="pink"
-                shape="default"
-                animation="none"
-                onClick={handleAdoptionFormClick}
-                disabled={pet?.adoptionStatus !== "Available"}
-              >
-                {pet?.adoptionStatus === "Available"
-                  ? "Đăng ký thủ tục nhận nuôi"
-                  : "Không thể nhận nuôi"}
-              </Button>
             </div>
           </div>
+        </div>
+        <div className={styles.buttonContainer}>
+          {/* <Button
+            variant="blue"
+            shape="default"
+            animation="none"
+            className="mr-4"
+          >
+            Liên hệ trực tiếp
+          </Button> */}
+          <Button
+            variant="pink"
+            shape="default"
+            animation="none"
+            onClick={handleAdoptionFormClick}
+            disabled={pet?.adoptionStatus !== "Available"}
+          >
+            {pet?.adoptionStatus === "Available"
+              ? "Đăng ký thủ tục nhận nuôi"
+              : "Không thể nhận nuôi"}
+          </Button>
         </div>
       </div>
     </div>

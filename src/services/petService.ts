@@ -39,13 +39,13 @@ interface PetCreateDto {
   isUrgent?: boolean;
   primaryImageUrl?: string; // Changed from petImageUrls to match the API
   additionalImageUrls?: string[];
+  purpose?: string; // Keep for compatibility with existing code
 
   // Legacy fields we'll keep for backward compatibility
   breed?: string;
   categoryName?: string;
   petImageUrls?: string;
   userId?: number; // Keep for compatibility with existing code
-  purpose?: string; // Keep for compatibility with existing code
 }
 
 export const petService = {
@@ -110,32 +110,53 @@ export const petService = {
   },
   createPet: async (petData: PetCreateDto) => {
     try {
+      console.log("Creating pet with data:", JSON.stringify(petData, null, 2));
 
-      // Check if the payload includes image data or a Cloudinary URL
+      // Check if the payload includes image data
       const hasImageData = petData.primaryImageUrl?.startsWith('data:');
-      const hasCloudinaryUrl = petData.primaryImageUrl?.includes('cloudinary.com');
 
       if (hasImageData) {
         console.warn("Create includes base64 image data - this should be avoided");
       }
 
+      // Remove any undefined or empty string values that might cause issues
+      const cleanedData = Object.fromEntries(
+        Object.entries(petData).filter(([, value]) => {
+          // Keep false values for booleans
+          if (typeof value === 'boolean') return true;
+          // Keep 0 values for numbers
+          if (typeof value === 'number') return true;
+          // Remove undefined, null, empty strings
+          return value !== undefined && value !== null && value !== '';
+        })
+      );
+
+      console.log("Cleaned data being sent:", JSON.stringify(cleanedData, null, 2));
+
       // Add timeout configuration for large payloads with images
       const config = hasImageData ? { timeout: 60000 } : {};
 
-      const response = await axiosClient.post("/pets", petData, config);
+      const response = await axiosClient.post("/pets", cleanedData, config);
+      console.log("Pet created successfully:", response.data);
       return response;
     } catch (error) {
       console.error("%c API Error in createPet:", "background: #F44336; color: white; padding: 4px; border-radius: 4px", error);
+      
+      // Log detailed error information
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response: { data: unknown, status: number } };
+        console.error("Response status:", axiosError.response?.status);
+        console.error("Response data:", axiosError.response?.data);
+      }
+      
       // Re-throw to be handled by the component
       throw error;
     }
   },
-  updatePet: async (id: number, petData: PetCreateDto) => {
+  updatePet: async (petData: PetCreateDto) => {
     try {
-
-      // Check if the payload includes image data or a Cloudinary URL
-      const hasImageData = petData.primaryImageUrl?.startsWith('data:');
-      const hasCloudinaryUrl = petData.primaryImageUrl?.includes('cloudinary.com');
+      // Check if the payload includes image data
+      const hasImageData = typeof petData.primaryImageUrl === 'string' && petData.primaryImageUrl?.startsWith('data:');
 
       if (hasImageData) {
         console.warn("Update includes base64 image data - this should be avoided");
@@ -144,7 +165,7 @@ export const petService = {
       // Add timeout configuration for large payloads with images
       const config = hasImageData ? { timeout: 60000 } : {};
 
-      const response = await axiosClient.put(`/pets/${id}`, petData, config);
+      const response = await axiosClient.put(`/pets`, petData, config);
       return response;
     } catch (error) {
       console.error("%c API Update Error:", "background: #F44336; color: white; padding: 4px; border-radius: 4px", error);
@@ -214,7 +235,6 @@ const getPublicIdFromUrl = (url: string): string | null => {
 
 export const cloudinaryService = {
   deleteImage: async (imageUrl: string): Promise<boolean> => {
-
     if (!imageUrl || !imageUrl.includes('cloudinary.com')) {
       console.error("Invalid Cloudinary URL - cannot delete:", imageUrl);
       return false;
@@ -227,15 +247,6 @@ export const cloudinaryService = {
         console.error("Could not extract public ID from URL:", imageUrl);
         return false;
       }
-
-      const timestamp = new Date().getTime();
-
-      // We need to create a signature for the delete request
-      // Note: In a real app, you should have this done on your backend
-      // This is just for demonstration - DO NOT use API secret in frontend code
-      // Use a backend endpoint to handle this securely
-
-      
 
       // TODO: Replace with actual API call to your backend to handle Cloudinary deletion
       // Example:
