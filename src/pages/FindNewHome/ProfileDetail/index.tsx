@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   MapPin,
   Mail,
@@ -48,6 +48,7 @@ interface Pet {
   breed: string;
   age: string;
   imageUrl: string;
+  slug: string;
 }
 
 interface AdoptionHistory {
@@ -95,6 +96,7 @@ interface ApiResponse {
 
 export default function ProfileDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -160,6 +162,7 @@ export default function ProfileDetail() {
       breed: "Corgi",
       age: "2 tuổi",
       imageUrl: "/placeholder.svg?height=100&width=100",
+      slug: "mochi-corgi-2-tuoi",
     },
     {
       id: "2",
@@ -168,6 +171,7 @@ export default function ProfileDetail() {
       breed: "Munchkin",
       age: "1 tuổi",
       imageUrl: "/placeholder.svg?height=100&width=100",
+      slug: "luna-munchkin-1-tuoi",
     },
   ];
 
@@ -318,8 +322,9 @@ export default function ProfileDetail() {
   }, [id]); // Add id to dependency array
 
   // Handler for pet card actions
-  const handleViewPetDetails = (petId: string) => {
-    console.log(`View details for pet with ID: ${petId}`);
+  const handleViewPetDetails = (pet: Pet) => {
+    // Navigate to UpdatePetInfo with read-only mode using slug
+    navigate(`/profile/pets/${pet.slug}?mode=view`);
   };
 
   // Handler for adoption history view
@@ -502,12 +507,10 @@ export default function ProfileDetail() {
 
           {/* Profile Content */}
           <div className="p-6 md:p-8 pt-20 relative z-10">
-            <div className="mb-6">
-              <ContentHeader
-                title={userProfile.name}
-                level="h1"
-                className="text-[#0053A3]"
-              />
+            <div className="">
+              <h1 className="text-[#0053A3] font-bold text-3xl md:text-4xl mt-8 mb-2">
+                {userProfile.name}
+              </h1>
               <div className="text-gray-600">
                 <p className="text-sm text-gray-500 mb-2">
                   @{userProfile.username}
@@ -527,9 +530,9 @@ export default function ProfileDetail() {
           </div>
 
           {/* Profile Content - Adjusted top padding */}
-          <div className="pt-6 relative z-10">
+          <div className=" relative z-10 w-full ">
             {/* Tab Navigation */}
-            <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
+            <div className="flex border-b border-gray-200 mb-8 overflow-x-auto justify-around">
               <button
                 className={`py-4 px-6 text-base font-medium border-b-2 whitespace-nowrap ${
                   activeTab === "personal"
@@ -564,7 +567,7 @@ export default function ProfileDetail() {
 
             {/* Personal Information Tab */}
             {activeTab === "personal" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6">
                 {/* Personal Information */}
                 <div className="bg-white rounded-xl p-6 shadow-sm transform transition-transform ">
                   <div className="space-y-6">
@@ -643,7 +646,7 @@ export default function ProfileDetail() {
                     <p className="text-gray-600 italic">"{userProfile.bio}"</p>
                   </div>
 
-                  <div className="mt-6">
+                  {/* <div className="mt-6">
                     <Button
                       variant={isContacting ? "outline" : "pink"}
                       shape="pill"
@@ -659,7 +662,7 @@ export default function ProfileDetail() {
                         ? "Đang liên hệ..."
                         : "Liên hệ ngay"}
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
@@ -667,7 +670,7 @@ export default function ProfileDetail() {
             {/* Current Pets Tab */}
             {activeTab === "pets" && (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
                   {userProfile.currentPets.length > 0 ? (
                     userProfile.currentPets.map((pet) => (
                       <div
@@ -682,7 +685,7 @@ export default function ProfileDetail() {
                           gender={pet.age}
                           location={pet.breed}
                           buttonText="Xem chi tiết"
-                          onButtonClick={() => handleViewPetDetails(pet.id)}
+                          onButtonClick={() => handleViewPetDetails(pet)}
                         />
                       </div>
                     ))
@@ -700,9 +703,9 @@ export default function ProfileDetail() {
               <div className="space-y-12">
                 {/* Adoption History */}
                 <div>
-                  <ContentHeader title="Lịch sử nhận nuôi" level="h2" />
+                  {/* <ContentHeader title="Lịch sử nhận nuôi" level="h2" /> */}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                     {userProfile.adoptionHistory.length > 0 ? (
                       userProfile.adoptionHistory.map((history) => (
                         <div
@@ -732,7 +735,7 @@ export default function ProfileDetail() {
                 </div>
 
                 {/* Pet Care Skills */}
-                <div className="mt-12">
+                {/* <div className="mt-12">
                   <ContentHeader title="Kỹ năng nuôi thú cưng" level="h2" />
 
                   <div className="rounded-xl ">
@@ -773,7 +776,7 @@ export default function ProfileDetail() {
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
           </div>

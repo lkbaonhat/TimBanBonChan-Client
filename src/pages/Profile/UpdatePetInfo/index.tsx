@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import ROUTES from "@/constants/routes";
@@ -25,6 +25,8 @@ export default function UpdatePetInfo() {
   const userInfo = useSelector(selectorAuth.userInfo) as IREDUX.UserInfo;
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const isViewMode = searchParams.get("mode") === "view";
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [petImage, setPetImage] = useState("/placeholder-pet.png");
@@ -237,7 +239,9 @@ export default function UpdatePetInfo() {
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Tài khoản", path: ROUTES.PUBLIC.PROFILE },
-    { label: "Chỉnh sửa thông tin thú cưng" },
+    {
+      label: isViewMode ? "Chi tiết thú cưng" : "Chỉnh sửa thông tin thú cưng",
+    },
   ];
 
   if (fetchLoading) {
@@ -258,24 +262,26 @@ export default function UpdatePetInfo() {
           <div className="flex flex-col md:flex-row gap-20 px-20">
             {/* Left side - Pet Photo and Cloudinary Upload */}
             <div className="w-full md:w-1/2">
-              {/* Cloudinary upload component */}
-              <div className="mb-6">
-                <CloudinaryUpload
-                  onImageUploaded={(url) => {
-                    if (url) {
-                      setNewCloudinaryUrl(url);
-                      setPetImage(url);
-                      setImageChanged(true);
-                    } else {
-                      setPetImage("/placeholder-pet.png");
-                      setImageChanged(true);
+              {/* Cloudinary upload component - only show in edit mode */}
+              {!isViewMode && (
+                <div className="mb-6">
+                  <CloudinaryUpload
+                    onImageUploaded={(url) => {
+                      if (url) {
+                        setNewCloudinaryUrl(url);
+                        setPetImage(url);
+                        setImageChanged(true);
+                      } else {
+                        setPetImage("/placeholder-pet.png");
+                        setImageChanged(true);
+                      }
+                    }}
+                    defaultImage={
+                      petImage !== "/placeholder-pet.png" ? petImage : undefined
                     }
-                  }}
-                  defaultImage={
-                    petImage !== "/placeholder-pet.png" ? petImage : undefined
-                  }
-                />
-              </div>
+                  />
+                </div>
+              )}
               <div className="relative h-full mb-6">
                 {petImage !== "/placeholder-pet.png" && (
                   <img
@@ -305,13 +311,18 @@ export default function UpdatePetInfo() {
                     className="flex-1 h-10"
                     placeholder="Nhập tên thú cưng"
                     required
+                    disabled={isViewMode}
                   />
                 </div>
 
                 {/* Breed */}
                 <div className="flex items-center h-10">
                   <span className="text-gray-700 font-medium w-24">Loài</span>
-                  <Select value={petBreed} onValueChange={setPetBreed}>
+                  <Select
+                    value={petBreed}
+                    onValueChange={setPetBreed}
+                    disabled={isViewMode}
+                  >
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue />
                     </SelectTrigger>
@@ -328,7 +339,11 @@ export default function UpdatePetInfo() {
                   <span className="text-gray-700 font-medium w-24">
                     Giới tính
                   </span>
-                  <Select value={petGender} onValueChange={setPetGender}>
+                  <Select
+                    value={petGender}
+                    onValueChange={setPetGender}
+                    disabled={isViewMode}
+                  >
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue />
                     </SelectTrigger>
@@ -349,6 +364,7 @@ export default function UpdatePetInfo() {
                     className="flex-1 h-10"
                     placeholder="Nhập tuổi"
                     required
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -362,6 +378,7 @@ export default function UpdatePetInfo() {
                     onChange={(e) => setPetColor(e.target.value)}
                     className="flex-1 h-10"
                     placeholder="Nhập màu sắc"
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -378,6 +395,7 @@ export default function UpdatePetInfo() {
                     }
                     className="flex-1 h-10"
                     placeholder="Nhập cân nặng (kg)"
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -403,6 +421,7 @@ export default function UpdatePetInfo() {
                     className="flex-1"
                     placeholder="Mô tả về thú cưng"
                     rows={3}
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -416,15 +435,20 @@ export default function UpdatePetInfo() {
                     onChange={(e) => setPetPersonality(e.target.value)}
                     className="flex-1 h-10"
                     placeholder="Mô tả tính cách"
+                    disabled={isViewMode}
                   />
                 </div>
 
                 {/* Health Status */}
-                <div className="flex items-center h-10 col-span-2">
+                {/* <div className="flex items-center h-10 col-span-2">
                   <span className="text-gray-700 font-medium w-24">
                     Sức khỏe
                   </span>
-                  <Select value={healthStatus} onValueChange={setHealthStatus}>
+                  <Select
+                    value={healthStatus}
+                    onValueChange={setHealthStatus}
+                    disabled={isViewMode}
+                  >
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue />
                     </SelectTrigger>
@@ -437,7 +461,7 @@ export default function UpdatePetInfo() {
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
 
                 {/* Checkboxes */}
                 <div className="col-span-2 grid grid-cols-3 gap-4 mt-4">
@@ -446,6 +470,7 @@ export default function UpdatePetInfo() {
                       id="isVaccinated"
                       checked={isVaccinated}
                       onCheckedChange={(checked) => setIsVaccinated(!!checked)}
+                      disabled={isViewMode}
                     />
                     <Label htmlFor="isVaccinated">Đã tiêm phòng</Label>
                   </div>
@@ -455,6 +480,7 @@ export default function UpdatePetInfo() {
                       id="isNeutered"
                       checked={isNeutered}
                       onCheckedChange={(checked) => setIsNeutered(!!checked)}
+                      disabled={isViewMode}
                     />
                     <Label htmlFor="isNeutered">Đã triệt sản</Label>
                   </div>
@@ -464,6 +490,7 @@ export default function UpdatePetInfo() {
                       id="isTrained"
                       checked={isTrained}
                       onCheckedChange={(checked) => setIsTrained(!!checked)}
+                      disabled={isViewMode}
                     />
                     <Label htmlFor="isTrained">Đã huấn luyện</Label>
                   </div>
@@ -471,19 +498,21 @@ export default function UpdatePetInfo() {
               </div>
 
               {/* Row 4 - Save Button */}
-              <div className="mt-10 w-full flex items-center justify-center">
-                <Button
-                  type="submit"
-                  variant="blue"
-                  className="py-2"
-                  shape="default"
-                  animation="none"
-                  size="lg"
-                  disabled={loading}
-                >
-                  {loading ? "Đang lưu..." : "Lưu thay đổi"}
-                </Button>
-              </div>
+              {!isViewMode && (
+                <div className="mt-10 w-full flex items-center justify-center">
+                  <Button
+                    type="submit"
+                    variant="blue"
+                    className="py-2"
+                    shape="default"
+                    animation="none"
+                    size="lg"
+                    disabled={loading}
+                  >
+                    {loading ? "Đang lưu..." : "Lưu thay đổi"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </form>
