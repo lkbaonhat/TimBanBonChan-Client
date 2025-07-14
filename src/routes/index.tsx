@@ -6,6 +6,7 @@ import ROUTES from "@constants/routes";
 import StaffRoutes from "./StaffRoutes";
 import PrivateRoute from "@/components/Auth/PrivateRoutes";
 import PublicRoute from "@/components/Auth/PublicRoutes";
+import { ROLE } from "@/constants/global";
 //* Layouts
 const DefaultLayout = lazy(() => import("@layouts/DefaultLayout"));
 const Home = lazy(() => import("@pages/Home"));
@@ -34,10 +35,11 @@ const AddPet = lazy(() => import("@/pages/Profile/AddPet"));
 const UpdatePetInfo = lazy(() => import("@/pages/Profile/UpdatePetInfo"));
 import LoadingPage from "@/pages/Loading";
 import PersistToken from "@/components/Auth/PersistLogin";
-import { ROLE } from "@/constants/global";
 import NotFound from "@/pages/NotFound";
 import MyVolunteerApplicationsPage from "@/pages/MyApplication";
-import DonationPage from "@/pages/Donation";
+const DonationPage = lazy(() => import("@/pages/Donation"));
+const DonationSuccess = lazy(() => import("@pages/Donation/DonationSuccess"))
+const DonationFailed = lazy(() => import("@pages/Donation/DonationFailed"))
 
 const RouterComponent = () => {
   const router = createBrowserRouter([
@@ -106,6 +108,8 @@ const RouterComponent = () => {
             { path: ROUTES.PUBLIC.PROFILE, element: <ProfilePage /> },
             { path: ROUTES.PUBLIC.ADD_PET, element: <AddPet /> },
             { path: ROUTES.PUBLIC.UPDATE_PET, element: <UpdatePetInfo /> },
+            { path: ROUTES.PRIVATE.DONATION_SUCCESS, element: <DonationSuccess/>},
+            { path: ROUTES.PRIVATE.DONATION_FAILED, element: <DonationFailed/>}
           ],
         },
       ],
