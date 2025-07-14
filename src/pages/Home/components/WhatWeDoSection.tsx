@@ -81,7 +81,7 @@ const WhatWeDoSection = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        {/* <div className="text-center mt-12">
           <Button asChild variant="pink" shape="pill" size="lg">
             <a href="/about">
               Hiểu thêm về chúng tôi
@@ -101,7 +101,7 @@ const WhatWeDoSection = () => {
               </svg>
             </a>
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

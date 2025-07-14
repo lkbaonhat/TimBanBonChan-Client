@@ -26,6 +26,8 @@ const ROUTES = {
   PRIVATE: {
     MY_APPLICATION: '/my-applications',
     DONATION: '/donation',
+    DONATION_SUCCESS: "/donation-successfully",
+    DONATION_FAILED: "/donation-failed",
   },
   STAFF: {
     HOME: '/staff',

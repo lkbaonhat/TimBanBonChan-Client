@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import ROUTES from "@/constants/routes";
@@ -25,6 +25,8 @@ export default function UpdatePetInfo() {
   const userInfo = useSelector(selectorAuth.userInfo) as IREDUX.UserInfo;
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const isViewMode = searchParams.get("mode") === "view";
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [petImage, setPetImage] = useState("/placeholder-pet.png");
@@ -44,6 +46,7 @@ export default function UpdatePetInfo() {
   const [isTrained, setIsTrained] = useState(false);
   const [petLocation, setPetLocation] = useState("");
   const [healthStatus, setHealthStatus] = useState("healthy");
+  const [petId, setPetId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchPetData = async () => {
@@ -51,11 +54,18 @@ export default function UpdatePetInfo() {
 
       try {
         setFetchLoading(true);
-        const petId = parseInt(id);
-        const response = await petService.getPetById(petId);
-        const petData = response.data;
+        // Use slug instead of petId
+        const response = await petService.getPetBySlug(id);
+        console.log("Full API response:", response);
+
+        // Check if data is nested in response.data.data
+        const petData = response.data?.data || response.data;
+
+        console.log("Fetched pet data:", petData);
+
+        setPetId(petData.petId); // Store the actual petId
         setPetName(petData.petName || "");
-        setPetBreed(petData.breedId?.toString() || "1");
+        setPetBreed(petData.categoryId?.toString() || "1");
         setPetGender(petData.gender || "Đực");
         setPetAge(parseInt(petData.age) || 0); // Convert string age to number
         setPetColor(petData.color || "");
@@ -66,14 +76,29 @@ export default function UpdatePetInfo() {
         setIsNeutered(petData.isNeutered || false);
         setIsTrained(petData.isTrained || false);
         setPetLocation(petData.location || "");
-        setHealthStatus(petData.healthStatus || "healthy"); // Handle different image field names
+        setHealthStatus(petData.healthStatus || "healthy");
+
+        console.log("Set breed value:", petData.categoryId?.toString());
+        console.log("Set name:", petData.petName);
+        console.log("Set age:", petData.age); // Handle different image field names
         if (petData.primaryImageUrl) {
-          setPetImage(petData.primaryImageUrl);
-          setOriginalImageUrl(petData.primaryImageUrl);
+          console.log(
+            "Setting image from primaryImageUrl:",
+            petData.primaryImageUrl
+          );
+          const imageUrl = Array.isArray(petData.primaryImageUrl)
+            ? petData.primaryImageUrl[0]
+            : petData.primaryImageUrl;
+          setPetImage(imageUrl);
+          setOriginalImageUrl(imageUrl);
           setImageChanged(false); // Reset the image changed flag
         } else if (petData.petImageUrls) {
-          setPetImage(petData.petImageUrls);
-          setOriginalImageUrl(petData.petImageUrls);
+          console.log("Setting image from petImageUrls:", petData.petImageUrls);
+          const imageUrl = Array.isArray(petData.petImageUrls)
+            ? petData.petImageUrls[0]
+            : petData.petImageUrls;
+          setPetImage(imageUrl);
+          setOriginalImageUrl(imageUrl);
           setImageChanged(false); // Reset the image changed flag
         }
       } catch (error: unknown) {
@@ -99,7 +124,7 @@ export default function UpdatePetInfo() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!userInfo.userId || !id) {
+    if (!userInfo.userId || !id || !petId) {
       toast.error("Không thể cập nhật thú cưng", {
         description: "Thiếu thông tin cần thiết",
       });
@@ -109,13 +134,12 @@ export default function UpdatePetInfo() {
     setLoading(true);
 
     try {
-      const petId = parseInt(id);
       // Build basic pet data without images first
       const petData = {
-        petId: parseInt(id),
+        petId: petId,
         petName,
-        breedId: parseInt(petBreed),
-        categoryId: parseInt(petBreed) <= 2 ? parseInt(petBreed) : 3,
+        categoryId: parseInt(petBreed),
+        breedId: 1, // Use default breedId
         gender: petGender,
         age: petAge.toString(),
         ageUnit: "year", // Default to years
@@ -142,7 +166,7 @@ export default function UpdatePetInfo() {
       }; // Include image URL in the payload if available
       if (petImage !== "/placeholder-pet.png") {
         Object.assign(petData, {
-          primaryImageUrl: petImage,
+          primaryImageUrl: petImage, // Make sure this is a string, not array
           petImageUrls: petImage, // For backward compatibility
         });
       } else {
@@ -160,7 +184,12 @@ export default function UpdatePetInfo() {
         originalImageUrl !== petImage &&
         originalImageUrl.includes("cloudinary.com");
 
-      await petService.updatePet(petId, petData);
+      console.log("Pet data being sent:", petData);
+      console.log("Primary image URL:", petData.primaryImageUrl);
+      console.log("Primary image URL type:", typeof petData.primaryImageUrl);
+
+      // Use petData with petId included for update
+      await petService.updatePet(petData);
 
       // After successful update, if we have a new image, clean up the old one
       if (shouldDeleteOldImage) {
@@ -210,7 +239,9 @@ export default function UpdatePetInfo() {
   const breadcrumbItems = [
     { label: "Trang chủ", path: "/" },
     { label: "Tài khoản", path: ROUTES.PUBLIC.PROFILE },
-    { label: "Chỉnh sửa thông tin thú cưng" },
+    {
+      label: isViewMode ? "Chi tiết thú cưng" : "Chỉnh sửa thông tin thú cưng",
+    },
   ];
 
   if (fetchLoading) {
@@ -229,16 +260,35 @@ export default function UpdatePetInfo() {
       <div className="container mx-auto py-20">
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col md:flex-row gap-20 px-20">
-            {" "}
             {/* Left side - Pet Photo and Cloudinary Upload */}
             <div className="w-full md:w-1/2">
+              {/* Cloudinary upload component - only show in edit mode */}
+              {!isViewMode && (
+                <div className="mb-6">
+                  <CloudinaryUpload
+                    onImageUploaded={(url) => {
+                      if (url) {
+                        setNewCloudinaryUrl(url);
+                        setPetImage(url);
+                        setImageChanged(true);
+                      } else {
+                        setPetImage("/placeholder-pet.png");
+                        setImageChanged(true);
+                      }
+                    }}
+                    defaultImage={
+                      petImage !== "/placeholder-pet.png" ? petImage : undefined
+                    }
+                  />
+                </div>
+              )}
               <div className="relative h-full mb-6">
                 {petImage !== "/placeholder-pet.png" && (
                   <img
                     src={petImage}
                     alt="Ảnh thú cưng"
                     className="w-full h-full rounded-xl object-cover"
-                    style={{ maxHeight: "300px", maxWidth: "600px" }}
+                    style={{ maxHeight: "400px", maxWidth: "700px" }}
                   />
                 )}
                 {petImage === "/placeholder-pet.png" && (
@@ -246,26 +296,6 @@ export default function UpdatePetInfo() {
                     <span>Chưa có ảnh thú cưng</span>
                   </div>
                 )}
-              </div>
-
-              {/* Cloudinary upload component */}
-              <div className="mb-6">
-                <h3 className="text-gray-700 font-medium mb-2">Tải ảnh lên</h3>{" "}
-                <CloudinaryUpload
-                  onImageUploaded={(url) => {
-                    if (url) {
-                      setNewCloudinaryUrl(url);
-                      setPetImage(url);
-                      setImageChanged(true);
-                    } else {
-                      setPetImage("/placeholder-pet.png");
-                      setImageChanged(true);
-                    }
-                  }}
-                  defaultImage={
-                    petImage !== "/placeholder-pet.png" ? petImage : undefined
-                  }
-                />
               </div>
             </div>
             {/* Right side - Form with 2x2 grid layout */}
@@ -281,20 +311,25 @@ export default function UpdatePetInfo() {
                     className="flex-1 h-10"
                     placeholder="Nhập tên thú cưng"
                     required
+                    disabled={isViewMode}
                   />
                 </div>
 
                 {/* Breed */}
                 <div className="flex items-center h-10">
                   <span className="text-gray-700 font-medium w-24">Loài</span>
-                  <Select value={petBreed} onValueChange={setPetBreed}>
+                  <Select
+                    value={petBreed}
+                    onValueChange={setPetBreed}
+                    disabled={isViewMode}
+                  >
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Chó</SelectItem>
-                      <SelectItem value="2">Mèo</SelectItem>
-                      <SelectItem value="3">Khác</SelectItem>
+                      <SelectItem value="1">Mèo</SelectItem>
+                      <SelectItem value="6">Chó</SelectItem>
+                      <SelectItem value="7">Khác</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -304,7 +339,11 @@ export default function UpdatePetInfo() {
                   <span className="text-gray-700 font-medium w-24">
                     Giới tính
                   </span>
-                  <Select value={petGender} onValueChange={setPetGender}>
+                  <Select
+                    value={petGender}
+                    onValueChange={setPetGender}
+                    disabled={isViewMode}
+                  >
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue />
                     </SelectTrigger>
@@ -325,6 +364,7 @@ export default function UpdatePetInfo() {
                     className="flex-1 h-10"
                     placeholder="Nhập tuổi"
                     required
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -338,6 +378,7 @@ export default function UpdatePetInfo() {
                     onChange={(e) => setPetColor(e.target.value)}
                     className="flex-1 h-10"
                     placeholder="Nhập màu sắc"
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -354,6 +395,7 @@ export default function UpdatePetInfo() {
                     }
                     className="flex-1 h-10"
                     placeholder="Nhập cân nặng (kg)"
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -379,6 +421,7 @@ export default function UpdatePetInfo() {
                     className="flex-1"
                     placeholder="Mô tả về thú cưng"
                     rows={3}
+                    disabled={isViewMode}
                   />
                 </div>
 
@@ -392,15 +435,20 @@ export default function UpdatePetInfo() {
                     onChange={(e) => setPetPersonality(e.target.value)}
                     className="flex-1 h-10"
                     placeholder="Mô tả tính cách"
+                    disabled={isViewMode}
                   />
                 </div>
 
                 {/* Health Status */}
-                <div className="flex items-center h-10 col-span-2">
+                {/* <div className="flex items-center h-10 col-span-2">
                   <span className="text-gray-700 font-medium w-24">
                     Sức khỏe
                   </span>
-                  <Select value={healthStatus} onValueChange={setHealthStatus}>
+                  <Select
+                    value={healthStatus}
+                    onValueChange={setHealthStatus}
+                    disabled={isViewMode}
+                  >
                     <SelectTrigger className="flex-1 h-10">
                       <SelectValue />
                     </SelectTrigger>
@@ -413,7 +461,7 @@ export default function UpdatePetInfo() {
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
 
                 {/* Checkboxes */}
                 <div className="col-span-2 grid grid-cols-3 gap-4 mt-4">
@@ -422,6 +470,7 @@ export default function UpdatePetInfo() {
                       id="isVaccinated"
                       checked={isVaccinated}
                       onCheckedChange={(checked) => setIsVaccinated(!!checked)}
+                      disabled={isViewMode}
                     />
                     <Label htmlFor="isVaccinated">Đã tiêm phòng</Label>
                   </div>
@@ -431,6 +480,7 @@ export default function UpdatePetInfo() {
                       id="isNeutered"
                       checked={isNeutered}
                       onCheckedChange={(checked) => setIsNeutered(!!checked)}
+                      disabled={isViewMode}
                     />
                     <Label htmlFor="isNeutered">Đã triệt sản</Label>
                   </div>
@@ -440,6 +490,7 @@ export default function UpdatePetInfo() {
                       id="isTrained"
                       checked={isTrained}
                       onCheckedChange={(checked) => setIsTrained(!!checked)}
+                      disabled={isViewMode}
                     />
                     <Label htmlFor="isTrained">Đã huấn luyện</Label>
                   </div>
@@ -447,19 +498,21 @@ export default function UpdatePetInfo() {
               </div>
 
               {/* Row 4 - Save Button */}
-              <div className="mt-10 w-full flex items-center justify-center">
-                <Button
-                  type="submit"
-                  variant="blue"
-                  className="py-2"
-                  shape="pill"
-                  animation="none"
-                  size="lg"
-                  disabled={loading}
-                >
-                  {loading ? "Đang lưu..." : "Lưu thay đổi"}
-                </Button>
-              </div>
+              {!isViewMode && (
+                <div className="mt-10 w-full flex items-center justify-center">
+                  <Button
+                    type="submit"
+                    variant="blue"
+                    className="py-2"
+                    shape="default"
+                    animation="none"
+                    size="lg"
+                    disabled={loading}
+                  >
+                    {loading ? "Đang lưu..." : "Lưu thay đổi"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </form>
