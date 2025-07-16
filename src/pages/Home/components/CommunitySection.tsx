@@ -65,7 +65,7 @@ const CommunitySection = () => {
   }, []);
 
   return (
-    <section className="py-20 px-10 bg-[#C5E2F0]">
+    <section className="py-20 px-10 bg-[#C5E2F0] -mx-4 sm:-mx-8 md:-mx-12 lg:-mx-20">
       <div className="container mx-auto">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -85,11 +85,12 @@ const CommunitySection = () => {
               target="_blank"
               rel="noopener noreferrer"
               data-index={index}
-              className={`social-item flex flex-col items-center transition-all duration-500 transform hover:scale-110 ${visibleItems.includes(index)
+              className={`social-item flex flex-col items-center transition-all duration-500 transform hover:scale-110 ${
+                visibleItems.includes(index)
                   ? "translate-y-0 opacity-100"
                   : "translate-y-10 opacity-0"
-                }`}
-            // style={{ transitionDelay: `${index * 150}ms` }}
+              }`}
+              // style={{ transitionDelay: `${index * 150}ms` }}
             >
               <div
                 className={`p-4 bg-[#FF99C0] text-white rounded-2xl mb-4 transition-all duration-300`}

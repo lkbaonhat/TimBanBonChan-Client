@@ -29,14 +29,15 @@ const VolunteerSection = () => {
   }, []);
 
   return (
-    <section className="py-20 px-20 bg-[#C5E2F0] volunteer-section">
+    <section className="py-20 px-20 bg-[#C5E2F0] volunteer-section -mx-4 sm:-mx-8 md:-mx-12 lg:-mx-20">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           <div
-            className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${isVisible
+            className={`md:w-1/2 mb-10 md:mb-0 transition-all duration-1000 transform ${
+              isVisible
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-10 opacity-0"
-              }`}
+            }`}
           >
             <div className="relative">
               <div className="absolute -top-6 -left-6 w-24 h-24 bg-pink-200 rounded-full opacity-70"></div>
@@ -50,10 +51,11 @@ const VolunteerSection = () => {
           </div>
 
           <div
-            className={`md:w-1/2 md:pl-12 transition-all duration-1000 delay-300 transform ${isVisible
+            className={`md:w-1/2 md:pl-12 transition-all duration-1000 delay-300 transform ${
+              isVisible
                 ? "translate-x-0 opacity-100"
                 : "translate-x-10 opacity-0"
-              }`}
+            }`}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight text-right">
               Trở thành

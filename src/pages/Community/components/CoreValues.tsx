@@ -58,7 +58,7 @@ const CoreValues = () => {
   return (
     <section
       ref={sectionRef}
-      className=" px-4 md:px-8 bg-blue-100 bg-opacity-50 relative"
+      className=" px-4 md:px-8 bg-blue-100 bg-opacity-50 relative -mx-4 sm:-mx-8 md:-mx-12 lg:-mx-20"
     >
       <div className="container mx-auto px-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-20">

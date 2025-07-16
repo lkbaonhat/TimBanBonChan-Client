@@ -32,20 +32,21 @@ export const userService = {
         return axiosClient.post('/volunteerApplication', payload);
     },
     createAdopterApplication: async (data: any) => {
-        
+
         try {
             const response = await axiosClient.post('/AdopterApplications', data);
-            
-            return response.data;        } catch (error: unknown) {
-            const err = error as { 
-                message?: string; 
-                response?: { 
+
+            return response.data;
+        } catch (error: unknown) {
+            const err = error as {
+                message?: string;
+                response?: {
                     status?: number;
                     statusText?: string;
-                    data?: unknown; 
-                } 
+                    data?: unknown;
+                }
             };
-            
+
             console.error("userService: API error:", {
                 status: err?.response?.status,
                 statusText: err?.response?.statusText,
@@ -63,26 +64,28 @@ export const userService = {
     },
     getAllUser: () => {
         return axiosClient.get(`/users`);
-    },    updateUserProfile: async (userId: number, payload: UserProfileUpdatePayload): Promise<UserProfileUpdatePayload> => {
+    },
+    updateUserProfile: async (userId: number, payload: UserProfileUpdatePayload): Promise<UserProfileUpdatePayload> => {
         try {
-            
+
             const fullUrl = `${API_ENDPOINT.USER.SELF_INFO}/${userId}`;
-            
+
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(fullUrl, payload);
-            
-            return response.data;} catch (error: unknown) {
+
+            return response.data;
+        } catch (error: unknown) {
             console.error("Error updating user profile:", error);
-            
+
             // Cast error to a type with response property
-            const err = error as { 
-                message?: string; 
-                response?: { 
+            const err = error as {
+                message?: string;
+                response?: {
                     status?: number;
                     statusText?: string;
-                    data?: unknown; 
-                } 
+                    data?: unknown;
+                }
             };
-            
+
             console.error("Error details:", {
                 status: err?.response?.status,
                 statusText: err?.response?.statusText,
@@ -90,27 +93,30 @@ export const userService = {
                 message: err?.message
             });
             throw error;
-        }    },updateAvatarProfile: async (userId: number, profileData: { userId?: number; isReadyToAdopt?: boolean, profilePicture?: string }): Promise<UserProfileUpdatePayload> => {
+        }
+    },
+    updateAvatarProfile: async (userId: number, profileData: { userId?: number; isReadyToAdopt?: boolean, profilePicture?: string }): Promise<UserProfileUpdatePayload> => {
         try {
-            
-            
+
+
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(`${API_ENDPOINT.USER.SELF_INFO}/${userId}`, profileData);
             return response.data;
         } catch (error) {
             console.error("Error updating avatar or adoption status:", error);
             throw error;
         }
-    },    updateAdopterStatus: async (userId: number, isReadyToAdopt: boolean): Promise<UserProfileUpdatePayload> => {
+    },
+    updateAdopterStatus: async (userId: number, isReadyToAdopt: boolean): Promise<UserProfileUpdatePayload> => {
         try {
             if (!userId) {
                 throw new Error("User ID not provided");
             }
-            
-            const payload = { 
+
+            const payload = {
                 userId: userId,  // Đảm bảo userId nằm trong payload
-                isReadyToAdopt 
+                isReadyToAdopt
             };
-            
+
             const response: AxiosResponse<UserProfileUpdatePayload> = await axiosClient.put(`${API_ENDPOINT.USER.SELF_INFO}/${userId}`, payload);
             return response.data;
         } catch (error) {
@@ -118,4 +124,8 @@ export const userService = {
             throw error;
         }
     },
+    //Donation
+    createPayment: async (payload: any) => {
+        return axiosClient.post(`/Donations/create-payment`, payload);
+    }
 }
