@@ -25,30 +25,35 @@ import { selectorAuth } from "@/store/modules/auth/selector";
 import { Link } from "react-router-dom";
 import { userService } from "@/services/userService";
 
-const donationSchema = z.object({
-  amount: z.string().min(1, "Vui lòng chọn số tiền"),
-  customAmount: z.string().optional(),
-  fullName: z.string().min(2, "Họ và tên phải có ít nhất 2 ký tự"),
-  email: z.string().email("Email không hợp lệ"),
-  address: z.string().min(5, "Địa chỉ phải có ít nhất 5 ký tự"),
-  agreeTerms: z
-    .boolean()
-    .refine((val) => val === true, "Bạn phải đồng ý với điều khoản"),
-}).refine((data) => {
-  if (data.amount === "custom") {
-    if (!data.customAmount || data.customAmount.trim() === "") {
-      return false;
+const donationSchema = z
+  .object({
+    amount: z.string().min(1, "Vui lòng chọn số tiền"),
+    customAmount: z.string().optional(),
+    fullName: z.string().min(2, "Họ và tên phải có ít nhất 2 ký tự"),
+    email: z.string().email("Email không hợp lệ"),
+    address: z.string().min(5, "Địa chỉ phải có ít nhất 5 ký tự"),
+    agreeTerms: z
+      .boolean()
+      .refine((val) => val === true, "Bạn phải đồng ý với điều khoản"),
+  })
+  .refine(
+    (data) => {
+      if (data.amount === "custom") {
+        if (!data.customAmount || data.customAmount.trim() === "") {
+          return false;
+        }
+        const numVal = Number(data.customAmount.replace(/,/g, ""));
+        if (isNaN(numVal) || numVal < 1000) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: "Vui lòng nhập số tiền hợp lệ (tối thiểu 1,000 VNĐ)",
+      path: ["customAmount"],
     }
-    const numVal = Number(data.customAmount.replace(/,/g, ''));
-    if (isNaN(numVal) || numVal < 1000) {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Vui lòng nhập số tiền hợp lệ (tối thiểu 1,000 VNĐ)",
-  path: ["customAmount"],
-});
+  );
 
 const contactSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
@@ -57,7 +62,7 @@ const contactSchema = z.object({
 
 export default function DonationPage() {
   const isAuthenticated = useSelector(selectorAuth.isAuthenticated);
-  const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo)
+  const userInfo: IRedux.UserInfo = useSelector(selectorAuth.userInfo);
 
   const donationForm = useForm<z.infer<typeof donationSchema>>({
     resolver: zodResolver(donationSchema),
@@ -107,11 +112,10 @@ export default function DonationPage() {
 
   async function onDonationSubmit(values: z.infer<typeof donationSchema>) {
     // Process the final amount value
-    const finalAmountString = values.amount === "custom"
-      ? values.customAmount
-      : values.amount;
+    const finalAmountString =
+      values.amount === "custom" ? values.customAmount : values.amount;
 
-    const finalAmount = Number(finalAmountString?.replace(/,/g, '') || '0');
+    const finalAmount = Number(finalAmountString?.replace(/,/g, "") || "0");
 
     try {
       const response = await userService.createPayment({
@@ -124,7 +128,7 @@ export default function DonationPage() {
         window.location.href = response.data.url;
       }
     } catch (error) {
-      console.error("Error create payment: ", error)
+      console.error("Error create payment: ", error);
     }
   }
 
@@ -145,7 +149,7 @@ export default function DonationPage() {
       </div>
 
       {isAuthenticated ? (
-        <div className="container mx-auto">
+        <div className="container mx-auto ">
           <div className="grid lg:grid-cols-2 gap-36 pb-10">
             {/* Left Column */}
             <div className="animate-on-scroll opacity-0">
@@ -171,18 +175,19 @@ export default function DonationPage() {
                     level="h2"
                   />
                   <p className="text-sm leading-relaxed">
-                    Mỗi sự đóng góp của bạn đều mang lại ý nghĩa to lớn, giúu mang
-                    đến hy vọng và sự sống cho những bé thú cưng bé bỏng rơi vào
-                    cảnh khó khăn và được chăm sóc cẩn thận và tận tâm mỗi đêm mỗi
-                    ngày cho đến khi chúng có thể tìm thấy đôi chủ cuộc đời của
-                    mình.
+                    Mỗi sự đóng góp của bạn đều mang lại ý nghĩa to lớn, giúu
+                    mang đến hy vọng và sự sống cho những bé thú cưng bé bỏng
+                    rơi vào cảnh khó khăn và được chăm sóc cẩn thận và tận tâm
+                    mỗi đêm mỗi ngày cho đến khi chúng có thể tìm thấy đôi chủ
+                    cuộc đời của mình.
                   </p>
                   <p className="text-sm">
                     💝{" "}
                     <span className="text-[#FF99C0] text-lg font-bold">
                       QUYÊN GÓP
                     </span>{" "}
-                    ngay để cứu những chú chó với niềm nồng cầu chuyện hạnh phúc!
+                    ngay để cứu những chú chó với niềm nồng cầu chuyện hạnh
+                    phúc!
                   </p>
                 </div>
               </div>
@@ -280,24 +285,43 @@ export default function DonationPage() {
                                       <Button
                                         key={amount}
                                         type="button"
-                                        variant={field.value === amount ? "blue" : "blueOutline"}
+                                        variant={
+                                          field.value === amount
+                                            ? "blue"
+                                            : "blueOutline"
+                                        }
                                         animation={"none"}
                                         onClick={() => {
                                           field.onChange(amount);
                                           // Clear custom amount when selecting preset
-                                          donationForm.setValue("customAmount", "");
+                                          donationForm.setValue(
+                                            "customAmount",
+                                            ""
+                                          );
                                         }}
-                                        className={field.value === amount ? "shadow-md" : ""}
+                                        className={
+                                          field.value === amount
+                                            ? "shadow-md"
+                                            : ""
+                                        }
                                       >
                                         {amount}
                                       </Button>
                                     ))}
                                     <Button
                                       type="button"
-                                      variant={field.value === "custom" ? "pink" : "pinkOutline"}
+                                      variant={
+                                        field.value === "custom"
+                                          ? "pink"
+                                          : "pinkOutline"
+                                      }
                                       animation={"none"}
                                       onClick={() => field.onChange("custom")}
-                                      className={field.value === "custom" ? "shadow-md" : ""}
+                                      className={
+                                        field.value === "custom"
+                                          ? "shadow-md"
+                                          : ""
+                                      }
                                     >
                                       Nhập số tiền khác
                                     </Button>
@@ -311,7 +335,9 @@ export default function DonationPage() {
                                         name="customAmount"
                                         render={({ field: customField }) => (
                                           <FormItem>
-                                            <FormLabel className="text-sm">Nhập số tiền (VNĐ)</FormLabel>
+                                            <FormLabel className="text-sm">
+                                              Nhập số tiền (VNĐ)
+                                            </FormLabel>
                                             <FormControl>
                                               <Input
                                                 {...customField}
@@ -428,8 +454,8 @@ export default function DonationPage() {
                 className="mb-6"
               />
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Để có thể tham gia quyên góp và giúp đỡ những bé thú cưng cần được chăm sóc,
-                bạn cần đăng nhập vào tài khoản của mình.
+                Để có thể tham gia quyên góp và giúp đỡ những bé thú cưng cần
+                được chăm sóc, bạn cần đăng nhập vào tài khoản của mình.
               </p>
             </div>
 
@@ -464,7 +490,9 @@ export default function DonationPage() {
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                       <span className="text-2xl">💝</span>
                     </div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Quyên góp dễ dàng</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Quyên góp dễ dàng
+                    </h4>
                     <p className="text-sm text-gray-600 text-center">
                       Thực hiện quyên góp một cách nhanh chóng và an toàn
                     </p>
@@ -474,7 +502,9 @@ export default function DonationPage() {
                     <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-3">
                       <span className="text-2xl">🐕</span>
                     </div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Giúp đỡ thú cưng</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Giúp đỡ thú cưng
+                    </h4>
                     <p className="text-sm text-gray-600 text-center">
                       Mỗi đóng góp đều mang lại hy vọng cho các bé thú cưng
                     </p>
@@ -484,7 +514,9 @@ export default function DonationPage() {
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
                       <span className="text-2xl">🏠</span>
                     </div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Tìm mái ấm</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Tìm mái ấm
+                    </h4>
                     <p className="text-sm text-gray-600 text-center">
                       Giúp các bé tìm được những gia đình yêu thương
                     </p>
@@ -500,9 +532,7 @@ export default function DonationPage() {
                     shape="pill"
                     className="min-w-[200px] text-lg font-semibold py-3 px-8 hover:shadow-lg transition-all duration-300"
                   >
-                    <Link to={ROUTES.PUBLIC.SIGNIN}>
-                      Đăng nhập ngay
-                    </Link>
+                    <Link to={ROUTES.PUBLIC.SIGNIN}>Đăng nhập ngay</Link>
                   </Button>
 
                   <Button
@@ -512,18 +542,17 @@ export default function DonationPage() {
                     shape="pill"
                     className="min-w-[200px] text-lg font-semibold py-3 px-8 border-2 border-[#0053A3] text-[#0053A3] hover:bg-[#0053A3] hover:text-white transition-all duration-300"
                   >
-                    <Link to={ROUTES.PUBLIC.SIGNUP}>
-                      Tạo tài khoản mới
-                    </Link>
+                    <Link to={ROUTES.PUBLIC.SIGNUP}>Tạo tài khoản mới</Link>
                   </Button>
                 </div>
 
                 {/* Additional Info */}
                 <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-sm text-blue-800">
-                    <span className="font-semibold">Lưu ý:</span> Việc đăng nhập giúp chúng tôi đảm bảo
-                    tính minh bạch và an toàn trong quá trình quyên góp. Tất cả thông tin của bạn
-                    sẽ được bảo mật tuyệt đối.
+                    <span className="font-semibold">Lưu ý:</span> Việc đăng nhập
+                    giúp chúng tôi đảm bảo tính minh bạch và an toàn trong quá
+                    trình quyên góp. Tất cả thông tin của bạn sẽ được bảo mật
+                    tuyệt đối.
                   </p>
                 </div>
               </CardContent>
@@ -541,13 +570,17 @@ export default function DonationPage() {
                 {/* Donation Preview */}
                 <Card className="shadow-md border-0 overflow-hidden">
                   <div className="bg-gradient-to-r from-[#0053A3] to-[#FF99C0] p-4">
-                    <h4 className="text-white font-semibold text-center">Quyên góp trực tiếp</h4>
+                    <h4 className="text-white font-semibold text-center">
+                      Quyên góp trực tiếp
+                    </h4>
                   </div>
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Số tiền gợi ý:</span>
-                        <span className="font-semibold">20,000 - 1,000,000 VNĐ</span>
+                        <span className="font-semibold">
+                          20,000 - 1,000,000 VNĐ
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Hình thức:</span>
@@ -570,7 +603,9 @@ export default function DonationPage() {
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🍖</span>
-                        <span className="text-gray-600">Thức ăn cho thú cưng</span>
+                        <span className="text-gray-600">
+                          Thức ăn cho thú cưng
+                        </span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">💊</span>
