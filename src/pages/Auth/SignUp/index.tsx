@@ -162,7 +162,7 @@ export default function SignUpForm() {
                     <Input
                       {...field}
                       type="text"
-                      placeholder="Tên đăng nhập"
+                      placeholder="Tên người dùng"
                       className="bg-[#C4E2EF] border-none rounded-[36px] py-4 md:py-6 text-base md:text-lg"
                     />
                   </FormControl>
