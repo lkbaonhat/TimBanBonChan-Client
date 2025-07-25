@@ -5,7 +5,6 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -24,7 +23,14 @@ const signUpSchema = z
     fullName: z.string().min(1, { message: "Họ và tên là bắt buộc" }),
     username: z
       .string()
-      .min(3, { message: "Tên đăng nhập phải có ít nhất 3 ký tự" }),
+      .min(3, { message: "Tên đăng nhập phải có ít nhất 3 ký tự" })
+      .regex(
+        /^[a-zA-Z0-9]+$/,
+        {
+          message:
+            "Tên đăng nhập chỉ được chứa chữ cái, số, không chứa khoảng trắng hoặc ký tự đặc biệt",
+        }
+      ),
     email: z
       .string()
       .min(1, { message: "Email là bắt buộc" })
@@ -95,7 +101,7 @@ export default function SignUpForm() {
       if (error.response && error.response.data) {
         setError(
           error.response.data.message ||
-            "Đã xảy ra lỗi trong quá trình đăng ký."
+          "Đã xảy ra lỗi trong quá trình đăng ký."
         );
       } else {
         setError("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
